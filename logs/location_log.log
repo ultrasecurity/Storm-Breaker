@@ -1,0 +1,19 @@
+[Wed Dec 16 20:03:28 2020] PHP 7.4.4 Development Server (http://localhost:8767) started
+[Wed Dec 16 20:03:37 2020] [::1]:4421 Accepted
+[Wed Dec 16 20:03:37 2020] [::1]:4421 [200]: (null) /
+[Wed Dec 16 20:03:37 2020] [::1]:4421 Closing
+[Wed Dec 16 20:03:37 2020] [::1]:4422 Accepted
+[Wed Dec 16 20:03:37 2020] [::1]:4422 [404]: (null) /robots.txt - No such file or directory
+[Wed Dec 16 20:03:37 2020] [::1]:4422 Closing
+[Wed Dec 16 20:03:37 2020] [::1]:4426 Accepted
+[Wed Dec 16 20:03:37 2020] [::1]:4427 Accepted
+[Wed Dec 16 20:03:37 2020] [::1]:4427 [200]: (null) /location.js
+[Wed Dec 16 20:03:37 2020] [::1]:4427 Closing
+[Wed Dec 16 20:03:37 2020] [::1]:4426 [200]: (null) /client.min.js
+[Wed Dec 16 20:03:37 2020] [::1]:4428 Accepted
+[Wed Dec 16 20:03:37 2020] [::1]:4428 [200]: (null) /loc.js
+[Wed Dec 16 20:03:37 2020] [::1]:4426 Closing
+[Wed Dec 16 20:03:37 2020] [::1]:4428 Closing
+[Wed Dec 16 20:03:40 2020] [::1]:4437 Accepted
+[Wed Dec 16 20:03:40 2020] [::1]:4437 [200]: POST /info.php
+[Wed Dec 16 20:03:40 2020] [::1]:4437 Closing
