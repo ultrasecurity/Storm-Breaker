@@ -1069,7 +1069,7 @@ def location():
         for value in infor['info']:
           print(Fore.WHITE+"\n Google Map Link : "+Fore.GREEN+f"https://www.google.com/maps/place/{value['lat']}+{value['lon']}")
           
-          print(Fore.GREEN+"\n [!] "+Fore.RED+"Waiting for User Interaction")
+          print(Fore.GREEN+"\n [!] "+Fore.WHITE+"Ha Ha Ha (: ")
           file_recv = open("getloc/"+temp+"/result.json","w")
           file_recv.write("")
           file_recv.close()
