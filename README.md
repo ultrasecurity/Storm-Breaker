@@ -32,3 +32,18 @@
 
 ![save demo](http://dl.sabzlearn.ir/demo/storm/loc-demo.PNG)
 
+
+### Operating Systems Tested
+
+- Kali Linux 2020
+
+### Installation On Kali Linux
+
+
+```bash
+$ git clone https://github.com/ultrasecurity/Storm-Breaker
+$ cd Storm-Breaker
+$ sudo bash linux-installer.sh
+$ python3 -m pip install -r requirments.txt
+$ python Storm-Breaker.py
+```
