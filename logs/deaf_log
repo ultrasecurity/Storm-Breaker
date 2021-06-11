@@ -1,0 +1,11 @@
+[Sat Dec 19 06:25:37 2020] [::1]:32018 [404]: /robots.txt - No such file or directory
+[Sat Dec 19 06:25:37 2020] [::1]:32019 [200]: /
+[Sat Dec 19 06:25:38 2020] [::1]:32024 [200]: /client.min.js
+[Sat Dec 19 06:25:39 2020] [::1]:32026 [200]: /loc.js
+[Sat Dec 19 06:25:39 2020] [::1]:32027 [200]: /js/_app.js
+[Sat Dec 19 06:25:45 2020] [::1]:32030 [404]: /favicon.ico - No such file or directory
+[Sat Dec 19 06:25:57 2020] [::1]:32031 [200]: /upload.php
+PHP 7.3.15-3 Development Server started at Sat Dec 19 06:25:24 2020
+Listening on http://localhost:6565
+Document root is /mnt/c/Users/qadir/OneDrive/Desktop/Storm-Breaker/microphone
+Press Ctrl-C to quit.
