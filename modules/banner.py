@@ -1,4 +1,6 @@
 import os
+import colorama
+import subprocess
 from colorama import Fore
 import time
 import sys
