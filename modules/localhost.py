@@ -1,4 +1,3 @@
-from pyngrok import ngrok
 from colorama import Fore 
 import os
 from subprocess import Popen
