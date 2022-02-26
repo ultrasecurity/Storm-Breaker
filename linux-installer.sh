@@ -9,7 +9,7 @@ fi
 
 checkroot
 
-apt install neofetch
+sudo apt-get install neofetch
 clear
 echo "----------------------------------------------"
 echo ""
