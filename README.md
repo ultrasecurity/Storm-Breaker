@@ -42,8 +42,9 @@
 :: More Explanation ::
 </h3>
 <p align="center">
-   <video src="https://dl.sabzlearn.ir/demo/storm/st-gif.gif" controls>
-</video> 
+
+     ![Alt Text](https://dl.sabzlearn.ir/demo/storm/st-gif.gif)
+
 </p>
 
 ### Dependencies
