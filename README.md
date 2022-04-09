@@ -53,8 +53,6 @@
 - `python3`
 - `git`
 
-![save demo](https://dl.sabzlearn.ir/demo/storm/loc-demo.png)
-
 
 ### Operating Systems Tested
 
@@ -70,3 +68,11 @@ $ sudo bash install.sh
 $ python3 -m pip install -r requirements.txt
 $ sudo python3 st.py
 ```
+
+
+<h3 align="center">
+:: Workflow ::
+</h3>
+<p align="center">
+<img src="Work.png"/>
+</p>
