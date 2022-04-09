@@ -74,7 +74,9 @@ $ sudo python3 st.py
 :: Workflow ::
 </h3>
 <p align="center">
+<img src="storm.png"/>
+<br>
 <img src="Work.png"/>
-  <br>
- <img src="storm.png"/>
+
+ 
 </p>
