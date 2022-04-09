@@ -75,9 +75,9 @@ $ python3 st.py
 :: Workflow ::
 </h3>
 <p align="center">
-<img src="storm.png"/>
+<img src="Work1.png"/>
 <br>
-<img src="Work.png"/>
+<img src="Work2.png"/>
 
  
 </p>
