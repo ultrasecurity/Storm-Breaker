@@ -34,7 +34,7 @@
 ### Update Log:
 - Second(latest) Update in  April 9, 2022
 - The overall structure of the tool is programmed from scratch
-- Previous version bugs fixed
+- Previous versions bugs fixed
 
 > We have deleted ngrok in the new version of storm breaker and entrust the user with run and share the localhost. So note that storm breaker runs a localhost for you and you have to start the ngrok on your intended port yourself.
 
