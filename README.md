@@ -36,7 +36,7 @@
 - The overall structure of the tool is programmed from scratch
 - Previous version bugs fixed
 
-> We are in the new version of Storm Breaker. We have removed ngrok and leave the implementation and the localhost sharing process to the user!
+> We have deleted ngrok in the new version of storm breaker and entrust the user with run and share the localhost. So note that storm breaker runs a localhost for you and you have to start the ngrok on your intended port yourself.
 
 <h3 align="center">
 :: More Explanation ::
