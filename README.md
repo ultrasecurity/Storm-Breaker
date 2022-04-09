@@ -57,6 +57,7 @@
 ### Operating Systems Tested
 
 - Kali Linux 2022
+- macOS Big Sur / M1 
 
 ### Installation On Kali Linux
 
