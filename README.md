@@ -43,7 +43,8 @@
 </h3>
 <p align="center">
       
-     <img src="https://dl.sabzlearn.ir/demo/storm/st-gif.gif" <a src="https://dl.sabzlearn.ir/demo/storm/st-gif.gif"></a>/>
+     <img src="https://dl.sabzlearn.ir/demo/storm/st-gif.gif" />
+  <a src="https://dl.sabzlearn.ir/demo/storm/st-gif.gif"></a>
       
 
 </p>
