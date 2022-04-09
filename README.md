@@ -43,11 +43,10 @@
 </h3>
 <p align="center">
       
-     <img src="https://dl.sabzlearn.ir/demo/storm/st-gif.gif"/>
+     <img src="https://dl.sabzlearn.ir/demo/storm/st-gif.gif" <a src="https://dl.sabzlearn.ir/demo/storm/st-gif.gif"></a>/>
+      
 
 </p>
-
-![myfile](https://dl.sabzlearn.ir/demo/storm/st-gif.gif)
 
 ### Dependencies
 
