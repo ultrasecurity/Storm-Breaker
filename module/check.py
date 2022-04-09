@@ -57,7 +57,7 @@ def check_started():
 
 
 def check_update():
-    http = requests.get("https://raw.githubusercontent.com/joshkar/test/main/Settings.json").text
+    http = requests.get("https://raw.githubusercontent.com/ultrasecurity/Storm-Breaker/master/Settings.json").text
     
     http_json = json.loads(http)
 
