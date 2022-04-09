@@ -29,6 +29,30 @@
 - Access Webcam
 - Access Microphone
 
+
+
+### Update Log:
+- Second(latest) Update in  April 9, 2022
+- The overall structure of the tool is programmed from scratch
+- Previous version bugs fixed
+
+> We are in the new version of Storm Breaker. We have removed ngrok and leave the implementation and the localhost sharing process to the user!
+
+<h3 align="center">
+:: More Explanation ::
+</h3>
+<p align="center">
+<img src="https://dl.sabzlearn.ir/demo/storm/st-gif.gif"/>
+</p>
+
+### Dependencies
+
+**`Storm Breaker`** requires following programs to run properly - 
+- `php`
+- `neofetch`
+- `python3`
+- `git`
+
 ![save demo](https://dl.sabzlearn.ir/demo/storm/loc-demo.png)
 
 
@@ -44,5 +68,5 @@ $ git clone https://github.com/ultrasecurity/Storm-Breaker
 $ cd Storm-Breaker
 $ sudo bash install.sh
 $ python3 -m pip install -r requirements.txt
-$ python3 st.py
+$ sudo python3 st.py
 ```
