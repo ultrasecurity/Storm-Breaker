@@ -42,7 +42,7 @@
 :: More Explanation ::
 </h3>
 <p align="center">
-<img src="https://dl.sabzlearn.ir/demo/storm/st-gif.mov"/>
+<img src="https://dl.sabzlearn.ir/demo/storm/st-gif.mp4"/>
 </p>
 
 ### Dependencies
