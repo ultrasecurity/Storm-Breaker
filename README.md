@@ -43,7 +43,7 @@
 </h3>
 <p align="center">
       
-     ![Alt Text](https://dl.sabzlearn.ir/demo/storm/st-gif.gif)
+     <img src="https://dl.sabzlearn.ir/demo/storm/st-gif.gif"/>
 
 </p>
 
