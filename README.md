@@ -38,14 +38,6 @@
 
 > We have deleted ngrok in the new version of storm breaker and entrusted the user with run and share the localhost. So please note that storm breaker runs a localhost for you and you have to start the ngrok on your intended port yourself.
 
-<h3 align="center">
-:: More Explanation ::
-</h3>
-<p align="center">
-      
-     <img src="https://dl.sabzlearn.ir/demo/storm/st-gif.gif">      
-
-</p>
 
 ### Dependencies
 
