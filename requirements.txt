@@ -1,0 +1,4 @@
+requests
+colorama
+ipapi
+psutil

