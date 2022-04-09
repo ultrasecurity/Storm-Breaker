@@ -42,7 +42,8 @@
 :: More Explanation ::
 </h3>
 <p align="center">
-<img src="https://dl.sabzlearn.ir/demo/storm/st-gif.gif"/>
+   <video src="https://dl.sabzlearn.ir/demo/storm/st-gif.gif" controls>
+</video> 
 </p>
 
 ### Dependencies
@@ -76,6 +77,7 @@ $ python3 st.py
 </h3>
 <p align="center">
 <img src="Work1.png"/>
+  
 <br>
 <img src="Work2.png"/>
 
