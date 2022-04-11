@@ -83,4 +83,12 @@ elif [ "$KERNEL" = "freebsd" ]; then
 elif [ "$KERNEL" = "openbsd"  ]; then
     pkg_add python py3-pip php neofetch
 
+elif [ "$KERNEL" = "darwin" ]; then
+    brew update
+    brew install python php neofetch
 fi
+
+env python3 -m pip install --user -r ./requirements.txt
+
+printf "\nDependencies installed successfully.\n"
+exit 0
