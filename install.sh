@@ -79,4 +79,8 @@ elif [ "$KERNEL" = "freebsd" ]; then
     pkg install py310-pip
     pkg install php
     pkg install neofetch
+
+elif [ "$KERNEL" = "openbsd"  ]; then
+    pkg_add python py3-pip php neofetch
+
 fi
