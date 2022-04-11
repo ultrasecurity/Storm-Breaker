@@ -12,6 +12,11 @@ checkroot() {
 
 checkroot
 
+apt_based() {
+    apt-get update
+    apt-get install python3 python3-pip php neofetch
+}
+
 
 KERNEL="$(uname -s | tr '[:upper:]' '[:lower:]')"
 if [ "$KERNEL" = "linux" ]; then
