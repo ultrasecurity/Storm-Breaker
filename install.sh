@@ -11,3 +11,9 @@ checkroot() {
 }
 
 checkroot
+
+
+KERNEL="$(uname -s | tr '[:upper:]' '[:lower:]')"
+if [ "$KERNEL" = "linux" ]; then
+    DISTRO="$(grep ^NAME= /etc/os-release | cut -d= -f2 | tr '[:upper:]' '[:lower:]')"
+fi
