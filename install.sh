@@ -30,10 +30,18 @@ pacman_based() {
     fi
 }
 
+yum_based() {
+    yum update -y
+    yum install -y python3 python3-pip php neofetch
+    if [ "$?" -ne 0 ]; then
+        printf "An error occurred! yum seems not works.\n"
+        exit 1
+    fi
+}
 
 KERNEL="$(uname -s | tr '[:upper:]' '[:lower:]')"
 if [ "$KERNEL" = "linux" ]; then
-    DISTRO="$(grep ^ID= /etc/os-release | cut -d= -f2 | tr '[:upper:]' '[:lower:]')"
+    DISTRO="$(grep ^ID= /etc/os-release | cut -d= -f2 | tr '[:upper:]' '[:lower:]' | sed 's/\"//g')"
     if [ "$DISTRO" = "gentoo" ]; then
         emerge --sync
         emerge -av dev-lang/php dev-python/pip app-misc/neofetch
@@ -55,5 +63,13 @@ if [ "$KERNEL" = "linux" ]; then
         pacman_based
     elif [ "$DISTRO" = "artix" ]; then
         pacman_based
+    elif [ "$DISTRO" = "fedora" ]; then
+        yum_based
+    elif [ "$DISTRO" = "centos" ]; then
+        yum_based
+    else
+        printf "I couldn't detect your linux distribution!\n"
+        printf "This tool needs python3, pip, php and neofetch. please install these packages on your os yourself.\n"
+        exit 1
     fi
 fi
