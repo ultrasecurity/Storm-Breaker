@@ -21,6 +21,16 @@ apt_based() {
     fi
 }
 
+pacman_based() {
+    pacman -Sy
+    pacman -S python python-pip php neofetch
+    if [ "$?" -ne 0 ]; then
+        printf "An error occurred! pacman seems not works.\n"
+        exit 1
+    fi
+}
+
+
 KERNEL="$(uname -s | tr '[:upper:]' '[:lower:]')"
 if [ "$KERNEL" = "linux" ]; then
     DISTRO="$(grep ^ID= /etc/os-release | cut -d= -f2 | tr '[:upper:]' '[:lower:]')"
@@ -35,5 +45,15 @@ if [ "$KERNEL" = "linux" ]; then
         apt_based
     elif [ "$DISTRO" = "linuxmint" ]; then
         apt_based
+    elif [ "$DISTRO" = "arch" ]; then
+        pacman_based
+    elif [ "$DISTRO" = "manjaro" ]; then
+        pacman_based
+    elif [ "$DISTRO" = "arcolinux" ]; then
+        pacman_based
+    elif [ "$DISTRO" = "garuda" ]; then
+        pacman_based
+    elif [ "$DISTRO" = "artix" ]; then
+        pacman_based
     fi
 fi
