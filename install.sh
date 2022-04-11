@@ -72,4 +72,11 @@ if [ "$KERNEL" = "linux" ]; then
         printf "This tool needs python3, pip, php and neofetch. please install these packages on your os yourself.\n"
         exit 1
     fi
+
+elif [ "$KERNEL" = "freebsd" ]; then
+    pkg update
+    pkg install python310
+    pkg install py310-pip
+    pkg install php
+    pkg install neofetch
 fi
