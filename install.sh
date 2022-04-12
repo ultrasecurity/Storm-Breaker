@@ -16,7 +16,7 @@ apt_based() {
     apt-get update
     apt-get install python3 python3-pip php neofetch
     if [ "$?" -ne 0 ]; then
-        printf "An error occurred! apt-get seems not works.\n"
+        printf "An error occurred! seems apt-get doesn't work.\n"
         exit 1
     fi
 }
@@ -25,7 +25,7 @@ pacman_based() {
     pacman -Sy
     pacman -S python python-pip php neofetch
     if [ "$?" -ne 0 ]; then
-        printf "An error occurred! pacman seems not works.\n"
+        printf "An error occurred! seems pacman doesn't work.\n"
         exit 1
     fi
 }
@@ -34,7 +34,7 @@ yum_based() {
     yum update -y
     yum install -y python3 python3-pip php neofetch
     if [ "$?" -ne 0 ]; then
-        printf "An error occurred! yum seems not works.\n"
+        printf "An error occurred! seems yum doesn't work.\n"
         exit 1
     fi
 }
@@ -45,6 +45,10 @@ if [ "$KERNEL" = "linux" ]; then
     if [ "$DISTRO" = "gentoo" ]; then
         emerge --sync
         emerge -av dev-lang/php dev-python/pip app-misc/neofetch
+        if [ "$?" -ne 0 ]; then
+            printf "An error occurred! seems portage doesn't work.\n"
+            exit 1
+        fi
     elif [ "$DISTRO" = "debian" ]; then
         apt_based
     elif [ "$DISTRO" = "kali" ]; then
@@ -79,16 +83,88 @@ elif [ "$KERNEL" = "freebsd" ]; then
     pkg install py310-pip
     pkg install php
     pkg install neofetch
+    if [ "$?" -ne 0 ]; then
+        printf "An error occurred! seems pkg doesn't work.\n"
+        exit 1
+    fi
 
 elif [ "$KERNEL" = "openbsd"  ]; then
     pkg_add python py3-pip php neofetch
-
+    if [ "$?" -ne 0 ]; then
+        printf "An error occurred! seems pkg_add doesn't work.\n"
+        exit 1
+    fi
+        
 elif [ "$KERNEL" = "darwin" ]; then
     brew update
     brew install python php neofetch
+    if [ "$?" -ne 0 ]; then
+        printf "An error occurred! seems brew doesn't work.\n"
+        exit 1
+    fi
 fi
 
 env python3 -m pip install --user -r ./requirements.txt
+
+if [ "$?" -ne 0 ]; then
+    printf "An error occurred! seems pip doesn't work.\n"
+    exit 1
+fi
+
+ARCH="$(uname -m | tr '[:upper:]' '[:lower:]')"
+URL=""
+if [ "$KERNEL" = "linux" ]; then
+    if [ "$ARCH" = "x86_64" ]; then
+        URL="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.tgz"
+    elif [ "$ARCH" = "amd64" ]; then
+        URL="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.tgz"
+    elif [ "$ARCH" = "aarch64" ]; then
+        URL="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm64.tgz"
+    elif [ "$ARCH" = "armv7l" ]; then
+        URL="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.tgz"
+    else
+        URL=""
+    fi
+
+elif [ "$KERNEL" = "freebsd" ]; then
+     if [ "$ARCH" = "amd64" ]; then
+        URL="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-freebsd-amd64.tgz"
+     elif [ "$ARCH" = "i386" ]; then
+         URL="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-freebsd-386.tgz"
+     else
+         URL=""
+     fi
+
+elif [ "$KERNEL" = "darwin" ]; then
+    if [ "$ARCH" = "amd64" ]; then
+        URL="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-darwin-amd64.zip"
+    elif [ "$ARCH" = "arm64" ]; then
+        URL="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-darwin-arm64.zip"
+    else
+        URL=""
+    fi
+fi
+
+if [ "$URL" != "" ]; then
+    if [ "$KERNEL" = "darwin" ]; then
+        curl "$URL" -o ngrok.zip
+        if [ "$?" -ne 0 ]; then
+            printf "An error occurred! seems curl can not download the ngrok"
+            exit 1
+        fi
+        unzip ngrok.zip
+        rm ngrok.zip
+    else
+        curl "$URL" -o ngrok.tgz
+        if [ "$?" -ne 0 ]; then
+            printf "An error occurred! seems curl can not download the ngrok"
+            exit 1
+        fi
+        tar -xf ngrok.tgz
+        rm ngrok.tgz
+        install ngrok /usr/local/bin/ngrok -m 0755
+    fi
+fi
 
 printf "\nDependencies installed successfully.\n"
 exit 0
