@@ -111,6 +111,60 @@ if [ "$?" -ne 0 ]; then
     exit 1
 fi
 
+ARCH="$(uname -m | tr '[:upper:]' '[:lower:]')"
+URL=""
+if [ "$KERNEL" = "linux" ]; then
+    if [ "$ARCH" = "x86_64" ]; then
+        URL="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.tgz"
+    elif [ "$ARCH" = "amd64" ]; then
+        URL="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.tgz"
+    elif [ "$ARCH" = "aarch64" ]; then
+        URL="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm64.tgz"
+    elif [ "$ARCH" = "armv7l" ]; then
+        URL="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.tgz"
+    else
+        URL=""
+    fi
+
+elif [ "$KERNEL" = "freebsd" ]; then
+     if [ "$ARCH" = "amd64" ]; then
+        URL="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-freebsd-amd64.tgz"
+     elif [ "$ARCH" = "i386" ]; then
+         URL="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-freebsd-386.tgz"
+     else
+         URL=""
+     fi
+
+elif [ "$KERNEL" = "darwin" ]; then
+    if [ "$ARCH" = "amd64" ]; then
+        URL="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-darwin-amd64.zip"
+    elif [ "$ARCH" = "arm64" ]; then
+        URL="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-darwin-arm64.zip"
+    else
+        URL=""
+    fi
+fi
+
+if [ "$URL" != "" ]; then
+    if [ "$KERNEL" = "darwin" ]; then
+        curl "$URL" -o ngrok.zip
+        if [ "$?" -ne 0 ]; then
+            printf "An error occurred! seems curl can not download the ngrok"
+            exit 1
+        fi
+        unzip ngrok.zip
+        rm ngrok.zip
+    else
+        curl "$URL" -o ngrok.tgz
+        if [ "$?" -ne 0 ]; then
+            printf "An error occurred! seems curl can not download the ngrok"
+            exit 1
+        fi
+        tar -xf ngrok.tgz
+        rm ngrok.tgz
+        install ngrok /usr/local/bin/ngrok -m 0755
+    fi
+fi
 
 printf "\nDependencies installed successfully.\n"
 exit 0
