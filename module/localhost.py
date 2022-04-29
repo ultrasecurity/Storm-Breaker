@@ -167,6 +167,6 @@ def run_php_server(port,dir_name):
         json.dump(data, jsonFile)
 
 
-    print(Fore.RED+" [+] "+Fore.GREEN+"Link : "+Fore.WHITE+f"http://localhost:{port}")
+    print(Fore.RED+" [+] "+Fore.GREEN+"Link : "+Fore.WHITE+f"https://localhost:{port}")
     print(Fore.RED+"\n [+] "+Fore.LIGHTCYAN_EX+f"Please Run NGROK On Port {port} AND Send Link To Target\n")
 
