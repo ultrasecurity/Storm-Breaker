@@ -39,6 +39,8 @@ def After_click(after_click_template_name,after_click_path_message='',after_clic
             data_decode = json.loads(data)
                 
             for i in data_decode:
+                if data_decode[i] == None:
+                    data_decode[i] = "None"
 
                 print(Fore.WHITE+ " "+i.replace("-"," ")+Fore.GREEN+" : "+Fore.RED+data_decode[i])
                     
