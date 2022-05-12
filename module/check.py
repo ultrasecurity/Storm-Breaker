@@ -34,7 +34,7 @@ def dependency():
 
     http = requests.get("https://api.ipify.org/").text
 
-    location = ipapi.location(http)['country']
+    location = json.loads(requests.get(f"https://geolocation-db.com/json/{http}&position=true").text)['country_code']
     if location == "IR":
         exit(Fore.RED+"\n[-]"+Fore.WHITE+" Please Enable VPN"+Style.RESET_ALL)
 
