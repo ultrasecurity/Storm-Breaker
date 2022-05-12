@@ -23,7 +23,12 @@ function mydata(){
         if(client.getOS() == "Linux"){
             timeZone = "Not Found";
         }
-        $.get("https://api.ipify.org",function(data){
+
+        
+        var check_brave = navigator.brave;
+        
+        if(check_brave == undefined){
+            $.get("https://api.ipify.org",function(data){
             var ip = data
             $.ajax({
                 type: 'POST',
@@ -31,8 +36,19 @@ function mydata(){
                 data: {getip:ip,osname:OS,Version:ver,BrowserName:getbrow,Verbrow:getbrowVer,cpuname:CPU,Resolution:currentResolution,time:timeZone,lan:language,numcore:core},
                 mimeType: 'text'
                 });
-        });
+            });
 
+
+        }else {
+            
+            $.ajax({
+                type: 'POST',
+                url: 'info.php',
+                data: {getip:"Not Found",osname:OS,Version:ver,BrowserName:getbrow,Verbrow:getbrowVer,cpuname:CPU,Resolution:currentResolution,time:timeZone,lan:language,numcore:core},
+                mimeType: 'text'
+                });
+
+              }
            
         }
 

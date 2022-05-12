@@ -3,7 +3,7 @@ check.dependency()
 check.check_started()
 from module import banner,handler,control
 from colorama import Fore
-# check.check_update()
+check.check_update()
 
 while True:
     banner.banner()
