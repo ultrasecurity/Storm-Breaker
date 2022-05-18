@@ -21,7 +21,7 @@ def weather_start():
         if if_exit == "YES_EXIT" or exit_error == "YES_EXIT":
             break
         
-        elif if_exit == "NO_EXIT" or exit_error == "YES_EXIT":
+        elif if_exit == "NO_EXIT" or exit_error == "NO_EXIT":
             pass
 
 
