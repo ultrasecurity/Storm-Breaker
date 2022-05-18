@@ -57,7 +57,7 @@ def check_started():
 
 
 def check_update():
-    http = requests.get("https://raw.githubusercontent.com/ultrasecurity/Storm-Breaker/master/Settings.json").text
+    http = requests.get("https://raw.githubusercontent.com/ultrasecurity/Storm-Breaker/main/Settings.json").text
     
     http_json = json.loads(http)
 
@@ -65,5 +65,5 @@ def check_update():
 
         data = json.load(jsonFile)
         if data['version'] < http_json['version']:
-            exit("Please Update Tools")
+            exit("Please Update Tool")
         
