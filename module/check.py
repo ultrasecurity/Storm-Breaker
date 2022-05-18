@@ -11,6 +11,9 @@ def dependency():
     else:
         pass
 
+    
+    if os.geteuid() != 0:
+        exit("You need to have root privileges to run this script.\nPlease try again, this time using 'sudo'. Exiting.")
 
     check_php = getoutput("php -v")
     if "not found" in check_php:
