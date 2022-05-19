@@ -1,22 +1,30 @@
 #!/bin/sh
 
+
+if test -f .ascii; then
+    cat .ascii
+fi
+
+RED='\033[0;31m'
+BLU='\033[0;34m'
+GRN='\033[0;32m'
+RST='\033[0m'
+
 checkroot() {
     SAVE_LD_PRELOAD="$LD_PRELOAD"
     unset LD_PRELOAD
     if [ "$(id -u)" -ne 0 ]; then
-        printf "\e[1;77mPlease, run as root!\n\e[0m"
+        printf "${RED}Please, run as root!\n${RST}"
         exit 1
      fi
      LD_PRELOAD="$SAVE_LD_PRELOAD"
 }
 
-checkroot
-
 apt_based() {
     apt-get update
     apt-get install python3 python3-pip php neofetch
     if [ "$?" -ne 0 ]; then
-        printf "An error occurred! seems apt-get doesn't work.\n"
+        printf "${RED}An error occurred! seems apt-get doesn't work.\n${RST}"
         exit 1
     fi
 }
@@ -25,7 +33,7 @@ pacman_based() {
     pacman -Sy
     pacman -S python python-pip php neofetch
     if [ "$?" -ne 0 ]; then
-        printf "An error occurred! seems pacman doesn't work.\n"
+        printf "${RED}An error occurred! seems pacman doesn't work.\n${RST}"
         exit 1
     fi
 }
@@ -34,10 +42,12 @@ yum_based() {
     yum update -y
     yum install -y python3 python3-pip php neofetch
     if [ "$?" -ne 0 ]; then
-        printf "An error occurred! seems yum doesn't work.\n"
+        printf "${RED}An error occurred! seems yum doesn't work.\n{RST}"
         exit 1
     fi
 }
+
+checkroot
 
 KERNEL="$(uname -s | tr '[:upper:]' '[:lower:]')"
 if [ "$KERNEL" = "linux" ]; then
@@ -46,7 +56,7 @@ if [ "$KERNEL" = "linux" ]; then
         emerge --sync
         emerge -av dev-lang/php dev-python/pip app-misc/neofetch
         if [ "$?" -ne 0 ]; then
-            printf "An error occurred! seems portage doesn't work.\n"
+            printf "${RED}An error occurred! seems portage doesn't work.\n${RST}"
             exit 1
         fi
     elif [ "$DISTRO" = "debian" ]; then
@@ -72,8 +82,8 @@ if [ "$KERNEL" = "linux" ]; then
     elif [ "$DISTRO" = "centos" ]; then
         yum_based
     else
-        printf "I couldn't detect your linux distribution!\n"
-        printf "This tool needs python3, pip, php and neofetch. please install these packages on your os yourself.\n"
+        printf "${RED}I couldn't detect your linux distribution!\n${RST}"
+        printf "${BLU}This tool needs python3, pip, php and neofetch. please install these packages on your os yourself.\n{RST}"
         exit 1
     fi
 
@@ -84,14 +94,14 @@ elif [ "$KERNEL" = "freebsd" ]; then
     pkg install php
     pkg install neofetch
     if [ "$?" -ne 0 ]; then
-        printf "An error occurred! seems pkg doesn't work.\n"
+        printf "${RED}An error occurred! seems pkg doesn't work.\n${RST}"
         exit 1
     fi
 
 elif [ "$KERNEL" = "openbsd"  ]; then
     pkg_add python py3-pip php neofetch
     if [ "$?" -ne 0 ]; then
-        printf "An error occurred! seems pkg_add doesn't work.\n"
+        printf "${RED}An error occurred! seems pkg_add doesn't work.\n${RST}"
         exit 1
     fi
         
@@ -99,7 +109,7 @@ elif [ "$KERNEL" = "darwin" ]; then
     brew update
     brew install python php neofetch
     if [ "$?" -ne 0 ]; then
-        printf "An error occurred! seems brew doesn't work.\n"
+        printf "${RED}An error occurred! seems brew doesn't work.\n${RST}"
         exit 1
     fi
 fi
@@ -107,7 +117,7 @@ fi
 env python3 -m pip install --user -r ./requirements.txt
 
 if [ "$?" -ne 0 ]; then
-    printf "An error occurred! seems pip doesn't work.\n"
+    printf "${RED}An error occurred! seems pip doesn't work.\n${RST}"
     exit 1
 fi
 
@@ -149,7 +159,7 @@ if [ "$URL" != "" ]; then
     if [ "$KERNEL" = "darwin" ]; then
         curl "$URL" -o ngrok.zip
         if [ "$?" -ne 0 ]; then
-            printf "An error occurred! seems curl can not download the ngrok"
+            printf "${RED}An error occurred! seems curl can not download the ngrok${RST}"
             exit 1
         fi
         unzip ngrok.zip
@@ -157,7 +167,7 @@ if [ "$URL" != "" ]; then
     else
         curl "$URL" -o ngrok.tgz
         if [ "$?" -ne 0 ]; then
-            printf "An error occurred! seems curl can not download the ngrok"
+            printf "${RED}An error occurred! seems curl can not download the ngrok${RST}"
             exit 1
         fi
         tar -xf ngrok.tgz
@@ -166,5 +176,5 @@ if [ "$URL" != "" ]; then
     fi
 fi
 
-printf "\nDependencies installed successfully.\n"
+printf "${GRN}\nDependencies installed successfully.\n{RST}"
 exit 0
