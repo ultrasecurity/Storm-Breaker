@@ -5,9 +5,11 @@ if test -f .ascii; then
     cat .ascii
 fi
 
+GRY='\033[1;30m'
 RED='\033[0;31m'
 BLU='\033[0;34m'
 GRN='\033[0;32m'
+PUL='\033[0;35m'
 RST='\033[0m'
 
 checkroot() {
@@ -42,7 +44,7 @@ yum_based() {
     yum update -y
     yum install -y python3 python3-pip php neofetch
     if [ "$?" -ne 0 ]; then
-        printf "${RED}An error occurred! seems yum doesn't work.\n{RST}"
+        printf "${RED}An error occurred! seems yum doesn't work.\n${RST}"
         exit 1
     fi
 }
@@ -50,6 +52,7 @@ yum_based() {
 checkroot
 
 KERNEL="$(uname -s | tr '[:upper:]' '[:lower:]')"
+KERNEL="darwin"
 if [ "$KERNEL" = "linux" ]; then
     DISTRO="$(grep ^ID= /etc/os-release | cut -d= -f2 | tr '[:upper:]' '[:lower:]' | sed 's/\"//g')"
     if [ "$DISTRO" = "gentoo" ]; then
@@ -83,7 +86,7 @@ if [ "$KERNEL" = "linux" ]; then
         yum_based
     else
         printf "${RED}I couldn't detect your linux distribution!\n${RST}"
-        printf "${BLU}This tool needs python3, pip, php and neofetch. please install these packages on your os yourself.\n{RST}"
+        printf "${BLU}This tool needs python3, pip, php and neofetch. please install these packages on your os yourself.\n${RST}"
         exit 1
     fi
 
@@ -106,20 +109,64 @@ elif [ "$KERNEL" = "openbsd"  ]; then
     fi
         
 elif [ "$KERNEL" = "darwin" ]; then
-    brew update
-    brew install python php neofetch
-    if [ "$?" -ne 0 ]; then
-        printf "${RED}An error occurred! seems brew doesn't work.\n${RST}"
+    printf "${PUL}Which package manager do you have?\n${RST}"
+    printf "  1) ${GRN}MacPorts${RST}       2) ${GRN}Homebrew\n{RST}"
+
+    printf "\n(1 or 2) ${GRY}#${RST} "
+    read -r pm
+    if [ "$pm" = "1" ]; then
+        port selfupdate
+        port install python38 py38-pip php neofetch
+        if [ "$?" -ne 0 ]; then
+            printf "${RED}An error occurred! seems port doesn't work.\n${RST}"
+            exit 1
+        fi
+
+        python3.8 -m pip install -r ./requirements.txt
+        if [ "$?" -ne 0 ]; then
+            printf "${RED}An error occurred! seems pip doesn't work.\n${RST}"
+            exit 1
+        fi
+
+        printf "${PUL}I want to make python3.8 your default python3, Can I do it?\n${RST}"
+
+        printf "\n(y or n) ${GRY}#${RST} "
+        read -r op
+        if [ "$op" = "y" ]; then
+            port select --set python3 python38
+            printf "${BLU}Reopen terminal emulator to apply changes\n${RST}"
+            sleep 2
+        elif [ "$op" = "n" ]; then
+            printf "${BLU}You can run python v3.8 by \`python3.8\`\n${RST}"
+            sleep 2
+        else
+            printf "${RED}Invalid input\n${RST}"
+            exit 1
+        fi
+
+    elif [ "$pm" = "2" ]; then
+        brew update
+        brew install python php neofetch
+        python3 -m pip install -r ./requirements.txt
+        if [ "$?" -ne 0 ]; then
+            printf "${RED}An error occurred! seems brew doesn't work.\n${RST}"
+            exit 1
+        fi
+    else
+        printf "${RED}Invalid input\n${RST}"
         exit 1
     fi
 fi
 
-env python3 -m pip install --user -r ./requirements.txt
 
-if [ "$?" -ne 0 ]; then
-    printf "${RED}An error occurred! seems pip doesn't work.\n${RST}"
-    exit 1
+if [ "$KERNEL" != "darwin" ]; then
+    env python3 -m pip install -r ./requirements.txt
+    if [ "$?" -ne 0 ]; then
+        printf "${RED}An error occurred! seems pip doesn't work.\n${RST}"
+        exit 1
+    fi
 fi
+
 
 ARCH="$(uname -m | tr '[:upper:]' '[:lower:]')"
 URL=""
@@ -164,6 +211,7 @@ if [ "$URL" != "" ]; then
         fi
         unzip ngrok.zip
         rm ngrok.zip
+        install ngrok /usr/local/bin/ngrok -m 0755
     else
         curl "$URL" -o ngrok.tgz
         if [ "$?" -ne 0 ]; then
@@ -176,5 +224,5 @@ if [ "$URL" != "" ]; then
     fi
 fi
 
-printf "${GRN}\nDependencies installed successfully.\n{RST}"
+printf "${GRN}\nDependencies installed successfully.\n${RST}"
 exit 0
