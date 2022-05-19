@@ -36,4 +36,4 @@ while True:
 
     except KeyboardInterrupt:
         control.kill_php_proc()
-        exit("\n Goodbye :) ")
+        exit("\n Goodbye :)")
