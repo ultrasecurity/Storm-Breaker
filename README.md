@@ -49,7 +49,7 @@
 - `git`
 - `ngrok`
 
-![demo](screen1.png)
+![demo](work3.gif)
 
 ### Operating Systems Tested
 
@@ -70,8 +70,6 @@ $ sudo python3 st.py
 
 <h3 align="center">
 :: Workflow ::
-
-![demo](work3.gif)
 
 </h3>
 <p align="center">
