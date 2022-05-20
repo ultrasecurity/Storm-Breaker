@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <a href="https://github.com/ultrasecurity/Storm-Breaker"><img src="http://dl.sabzlearn.ir/demo/storm/1demo.png" alt="Darkside"></a>
+  <a href="https://github.com/ultrasecurity/Storm-Breaker"><img src=".imgs/1demo.png" alt="StormBreaker"></a>
 
 </h1>
 
@@ -20,7 +20,7 @@
   </a>
 </p>
 
-![demo](https://dl.sabzlearn.ir/demo/storm/cu-demo.png)
+![demo](.imgs/Work0.png)
 
 ### Features:
 
@@ -49,7 +49,7 @@
 - `git`
 - `ngrok`
 
-![demo](work3.gif)
+![demo](.imgs/work3.gif)
 
 ### Operating Systems Tested
 
@@ -73,10 +73,10 @@ $ sudo python3 st.py
 
 </h3>
 <p align="center">
-<img src="Work1.png"/>
+<img src=".imgs/Work1.png"/>
   
 <br>
-<img src="Work2.png"/>
+<img src=".imgs/Work2.png"/>
 
  
 </p>
