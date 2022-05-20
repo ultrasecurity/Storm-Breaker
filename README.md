@@ -70,6 +70,9 @@ $ sudo python3 st.py
 
 <h3 align="center">
 :: Workflow ::
+
+![demo](https://dl.sabzlearn.ir/demo/storm/cu-demo.png)
+
 </h3>
 <p align="center">
 <img src="Work1.png"/>
