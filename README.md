@@ -49,7 +49,7 @@
 - `git`
 - `ngrok`
 
-![demo](.imgs/work3.gif)
+![demo](.imgs/Work3.gif)
 
 ### Operating Systems Tested
 
