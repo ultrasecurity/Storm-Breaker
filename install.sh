@@ -110,7 +110,7 @@ elif [ "$KERNEL" = "openbsd"  ]; then
         
 elif [ "$KERNEL" = "darwin" ]; then
     printf "${PUL}Which package manager do you have?\n${RST}"
-    printf "  1) ${GRN}MacPorts${RST}       2) ${GRN}Homebrew\n{RST}"
+    printf "  1) ${GRN}MacPorts${RST}       2) ${GRN}Homebrew\n${RST}"
 
     printf "\n(1 or 2) ${GRY}#${RST} "
     read -r pm
