@@ -52,7 +52,6 @@ yum_based() {
 checkroot
 
 KERNEL="$(uname -s | tr '[:upper:]' '[:lower:]')"
-KERNEL="darwin"
 if [ "$KERNEL" = "linux" ]; then
     DISTRO="$(grep ^ID= /etc/os-release | cut -d= -f2 | tr '[:upper:]' '[:lower:]' | sed 's/\"//g')"
     if [ "$DISTRO" = "gentoo" ]; then
