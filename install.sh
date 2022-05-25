@@ -18,8 +18,8 @@ checkroot() {
     if [ "$(id -u)" -ne 0 ]; then
         printf "${RED}Please, run as root!\n${RST}"
         exit 1
-     fi
-     LD_PRELOAD="$SAVE_LD_PRELOAD"
+    fi
+    LD_PRELOAD="$SAVE_LD_PRELOAD"
 }
 
 apt_based() {
@@ -54,40 +54,35 @@ checkroot
 KERNEL="$(uname -s | tr '[:upper:]' '[:lower:]')"
 if [ "$KERNEL" = "linux" ]; then
     DISTRO="$(grep ^ID= /etc/os-release | cut -d= -f2 | tr '[:upper:]' '[:lower:]' | sed 's/\"//g')"
-    if [ "$DISTRO" = "gentoo" ]; then
-        emerge --sync
-        emerge -av dev-lang/php dev-python/pip app-misc/neofetch
-        if [ "$?" -ne 0 ]; then
-            printf "${RED}An error occurred! seems portage doesn't work.\n${RST}"
+
+    case "$DISTRO" in
+
+        "gentoo")
+            emerge --sync
+            emerge -av dev-lang/php dev-python/pip app-misc/neofetch
+            if [ "$?" -ne 0 ]; then
+                printf "${RED}An error occurred! seems portage doesn't work.\n${RST}"
+                exit 1
+            fi
+        ;;
+
+        "debian" | "kali" | "ubuntu" | "linuxmint")
+            apt_based
+        ;;
+
+        "arch" | "manjaro" | "arcolinux" | "garuda" | "artix")
+            pacman_based
+        ;;
+
+        "fedora" | "centos")
+            yum_based
+        ;;
+
+        *)
+            printf "${RED}I couldn't detect your linux distribution!\n${RST}"
+            printf "${BLU}This tool needs python3, pip, php and neofetch. please install these packages on your os yourself.\n${RST}"
             exit 1
-        fi
-    elif [ "$DISTRO" = "debian" ]; then
-        apt_based
-    elif [ "$DISTRO" = "kali" ]; then
-        apt_based
-    elif [ "$DISTRO" = "ubuntu" ]; then
-        apt_based
-    elif [ "$DISTRO" = "linuxmint" ]; then
-        apt_based
-    elif [ "$DISTRO" = "arch" ]; then
-        pacman_based
-    elif [ "$DISTRO" = "manjaro" ]; then
-        pacman_based
-    elif [ "$DISTRO" = "arcolinux" ]; then
-        pacman_based
-    elif [ "$DISTRO" = "garuda" ]; then
-        pacman_based
-    elif [ "$DISTRO" = "artix" ]; then
-        pacman_based
-    elif [ "$DISTRO" = "fedora" ]; then
-        yum_based
-    elif [ "$DISTRO" = "centos" ]; then
-        yum_based
-    else
-        printf "${RED}I couldn't detect your linux distribution!\n${RST}"
-        printf "${BLU}This tool needs python3, pip, php and neofetch. please install these packages on your os yourself.\n${RST}"
-        exit 1
-    fi
+    esac
 
 elif [ "$KERNEL" = "freebsd" ]; then
     pkg update
