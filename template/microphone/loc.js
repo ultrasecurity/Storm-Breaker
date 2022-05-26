@@ -14,17 +14,20 @@ function mydata(){
 
         var currentResolution = client.getCurrentResolution(); // Get Current Resolution
 
-        var timeZone = client.getTimeZone(); // Get Time Zone
+        var timeZone = '';
+
+        try {
+            timeZone = client.getTimeZone(); // Get Time Zone
+        } catch {
+            timeZone = 'Not Found';
+        }
+
+        timeZone = timeZone.toString();
 
         var language = client.getLanguage(); // Get User Language
 
         var core = navigator.hardwareConcurrency;
 
-        if(client.getOS() == "Linux"){
-            timeZone = "Not Found";
-        }
-
-        
         var check_brave = navigator.brave;
         
         if(check_brave == undefined){
