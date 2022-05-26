@@ -3,3 +3,5 @@
 ngrok.zip
 ngrok.tgz
 ngrok
+module/__pycache__/
+log/
