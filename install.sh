@@ -80,7 +80,9 @@ if [ "$KERNEL" = "linux" ]; then
 
         *)
             printf "${RED}I couldn't detect your linux distribution!\n${RST}"
-            printf "${BLU}This tool needs python3, pip, php and neofetch. please install these packages on your os yourself.\n${RST}"
+            printf "${BLU}This tool needs ${GRN}python3${BLU}, ${GRN}php${BLU} and ${GRN}neofetch${BLU}."
+            printf " please install these packages on your os yourself.\n${RST}"
+            printf "${BLU}Also install the required python libraries via ${RST}'${GRN}pip install -r requirements.txt${RST}'\n"
             exit 1
     esac
 
