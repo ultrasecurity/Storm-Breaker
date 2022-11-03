@@ -22,7 +22,7 @@
 
 </p>
 
-![demo](.imgs/screen1.png)
+![demo](.imgs/screen1.jpeg)
 
 ### Features:
 
