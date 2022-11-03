@@ -80,15 +80,10 @@ $ sudo python3 st.py
 
 ### how to run personal host
 
+> Zip the contents of the storm-web folder completely and upload it to the public_html path 
+> Note that the tool should not be opened in such a path > yourdomain.com/st-web
+> Rather, it should be opened purely in the public_html path (i.e., don't just zip the storm-web folder itself, but manually zip its contents (the index.php file and other belongings should be in the public_html path)
 
-```bash
-Zip the contents of the storm-web folder completely and upload it to the public_html path
-
-
-Note that the tool should not be opened in such a path > yourdomain.com/st-web
-
-Rather, it should be opened purely in the public_html path (i.e., don't just zip the storm-web folder itself, but manually zip its contents (the index.php file and other belongings should be in the public_html path)
-```
 
 
 </p>
