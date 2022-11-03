@@ -9,7 +9,7 @@ def dependency():
 
     try:
         from colorama import Fore,Style
-        import requests,ipapi,psutil
+        import requests,psutil
 
     except ImportError:
         exit("please install library \n command > python3 -m pip install -r requirements.txt")
