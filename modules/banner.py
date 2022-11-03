@@ -18,6 +18,4 @@ def banner():
     print(Fore.CYAN+"|___/  |_|    \___/ |_|_\ |_|  |_|      |___/|_|_\|___|/_/ \_\  _|\_\ |___||_|_\\")
     print(Style.RESET_ALL)
 
-
-
 banner()
