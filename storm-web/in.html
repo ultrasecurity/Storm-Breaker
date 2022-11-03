@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="./assets/js/jquery.min.js"></script>
+    <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./assets/css/light-theme.min.css" rel="stylesheet">
+    <!-- <script src="./assets/js/script.js"></script> -->
+    <script src="./assets/js/sweetalert2.min.js"></script>
+    <script src="./assets/js/growl-notification.min.js"></script>
+
+    <title>Document</title>
+</head>
+<body onload="check_new_version()">
+    <script>
+
+    function show_notif(msg,path,status){
+        var btn_text = 'open file'
+        var timer = 5000
+        var type_notif = "success"
+
+        if(msg.includes("Google Map") || msg.includes("available")){
+            btn_text = "open link"
+            timer = 0
+            type_notif = "danger"
+        }
+
+        GrowlNotification.notify({
+            title: msg,
+            description: path ,
+            type: type_notif,
+            closeTimeout: timer,
+            showProgress: true, 
+            showButtons: status,
+            buttons: {
+                action: {
+                    text: btn_text,
+                    callback: function() {
+                        window.open(path,'popUpWindow','height=640,width=640,left=1000,top=300,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes');
+                    }
+                },
+                    cancel: {
+                    text: 'Cancel',
+                    callback: function() {}
+                }
+            },
+            
+        });
+    }
+
+
+
+
+        function check_new_version(){
+            var last_version = 0
+            $.get("Settings.json",function(data){
+                last_version +=data.version
+                
+            })
+
+
+
+            function check_version_on_git(){
+                $.get("https://raw.githubusercontent.com/ultrasecurity/Storm-Breaker/main/Settings.json",function(data){
+                    new_version = JSON.parse(data)
+                        if(last_version < new_version.version){
+                            show_notif("New version available (:","https://github.com/ultrasecurity/Storm-Breaker",true)
+                        }
+                })
+            }
+
+        
+
+            setTimeout(check_version_on_git,3000)
+
+
+            }
+
+
+    
+
+        
+    </script>
+</body>
+</html>
