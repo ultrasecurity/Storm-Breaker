@@ -61,7 +61,7 @@
 
 ![demo](.imgs/Work3.gif)
 
-### Operating Systems Tested
+### Platforms Tested
 
 - Kali Linux 2022 
 - macOS Big Sur / M1 
