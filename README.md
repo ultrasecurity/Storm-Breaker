@@ -34,12 +34,13 @@
 <br>
 
 ### Update Log:
-- Second(latest) Update in  November 03, 2022
+- Second(latest) Update in  November 04, 2022
 - The overall structure of the tool is programmed from the beginning and is available as a web panel (in previous versions, the tool was available in the command line).
 - Previous versions bugs fixed
 - Added auto-download ngrok
 - The templates are optimized
 - Logs can be downloaded
+- Added clear log
 - It can be uploaded on a personal host (you will not have the problems of ngrok anymore)
 - You can start and stop the listener (at will)
 - Beautiful user interface
