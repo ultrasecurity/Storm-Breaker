@@ -177,3 +177,11 @@ $(document).ready(function(){
 
 })
 
+
+// clear text area
+
+$("#btn-clear").click(function(){
+
+    $("#result").val("")
+    old_data = ""
+})

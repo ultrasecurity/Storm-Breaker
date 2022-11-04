@@ -1,12 +1,12 @@
 <?php
 session_start();
 include "./assets/components/login-arc.php";
-include "./assets/components/header.php";
-
 
 
 if(isset($_COOKIE['logindata']) && $_COOKIE['logindata'] == $key['token'] && $key['expired'] == "no"){
-    $_SESSION['IAm-logined'] = 'yes';
+    if(!isset($_SESSION['IAm-logined'])){
+        $_SESSION['IAm-logined'] = 'yes';
+    }
 
 }
 elseif(isset($_SESSION['IAm-logined'])){
@@ -47,6 +47,7 @@ else {
 <div class="mt-2 d-flex justify-content-center">
     <button class="btn btn-danger m-2" id="btn-listen">Listener Runing / press to stop</button>
     <button class="btn btn-success m-2" id="btn-listen" onclick=saveTextAsFile(result.value,'log.txt')>Download Logs</button>
+    <button class="btn btn-warning m-2" id="btn-clear">Clear Logs</button>
 </div>
 
 

@@ -50,6 +50,10 @@
 #### Attention!:
 > This version can be run both on local host and on your personal domain and host. In any case, you can use it for both situations. If your country has filtered the ngrok service, or your country has banned ngrok, or your victim cannot open the ngrok link (for the reasons that he sees such a link as suspicious, or if this service is filtered in his country), we suggest. The use of the tool is on personal hosting and domain
 
+## Default username and password:
+- username : admin
+- password : admin
+- You can edit the config.php file to change the username and password
 
 ### Dependencies
 
@@ -59,7 +63,7 @@
 - `git`
 - `ngrok`
 
-![demo](.imgs/Work3.gif)
+<!-- ![demo](.imgs/Work3.gif) -->
 
 ### Platforms Tested
 
@@ -85,6 +89,6 @@ $ sudo python3 st.py
 > Note that the tool should not be opened in such a path > yourdomain.com/st-web
 > Rather, it should be opened purely in the public_html path (i.e., don't just zip the storm-web folder itself, but manually zip its contents (the index.php file and other belongings should be in the public_html path)
 
-
-
+#### Attention!:
+>Note that to use this tool on your own host. You also need SSL. Because many of the tool's capabilities require SSL
 </p>
