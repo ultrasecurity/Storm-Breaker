@@ -31,7 +31,7 @@
 - Access Webcam
 - Access Microphone
 
-
+<br>
 
 ### Update Log:
 - Second(latest) Update in  November 03, 2022
@@ -46,14 +46,17 @@
 
 
 > We have deleted ngrok in the new version of storm breaker and entrusted the user with run and share the localhost. So please note that storm breaker runs a localhost for you and you have to start the ngrok on your intended port yourself.
+<br>
 
 #### Attention!:
 > This version can be run both on local host and on your personal domain and host. In any case, you can use it for both situations. If your country has filtered the ngrok service, or your country has banned ngrok, or your victim cannot open the ngrok link (for the reasons that he sees such a link as suspicious, or if this service is filtered in his country), we suggest. The use of the tool is on personal hosting and domain
+<br>
 
 ## Default username and password:
 - `username` : `admin`
 - `password` : `admin`
 - You can edit the config.php file to change the username and password
+<br>
 
 ### Dependencies
 
@@ -64,12 +67,14 @@
 - `ngrok`
 
 <!-- ![demo](.imgs/Work3.gif) -->
+<br>
 
 ### Platforms Tested
 
 - Kali Linux 2022 
 - macOS Big Sur / M1 
 - Personal hosting (direct admin and cPanel) 
+<br>
 
 ### Installation On Kali Linux 
 
