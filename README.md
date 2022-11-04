@@ -4,7 +4,7 @@
 
 </h1>
 
-<h4 align="center">A tool with attractive capabilities</h4>
+<h4 align="center">A Tool With Attractive Capabilities. </h4>
 
 <p align="center">
 
@@ -26,37 +26,37 @@
 
 ### Features:
 
-- Get Device Information Without Any Permissions
-- Access Location [SMARTPHONES]
-- Access Webcam
-- Access Microphone
+- Obtain Device Information Without Any Permission !
+- Access Location [SMARTPHONES] 
+- Access Webcam 
+- Access Microphone 
 
 <br>
 
 ### Update Log:
-- Second(latest) Update in  November 04, 2022
+- Second (latest) Update on  November 4th , 2022 .
 - The overall structure of the tool is programmed from the beginning and is available as a web panel (in previous versions, the tool was available in the command line).
-- Previous versions bugs fixed
-- Added auto-download ngrok
-- The templates are optimized
-- Logs can be downloaded
-- Added clear log
-- It can be uploaded on a personal host (you will not have the problems of ngrok anymore)
-- You can start and stop the listener (at will)
-- Beautiful user interface
+- Previous version's bugs fixed !
+- Auto-download Ngrok Added !
+- The templates have been optimized !
+- Logs can be downloaded (NEW) !
+- Clear log Added !
+- It can be uploaded on a personal host (you won't have the Ngork problems anymore)
+- You can start and stop the listener anytime ! (At will)
+- Beautified user interface (NEW) !
 
 
-> We have deleted ngrok in the new version of storm breaker and entrusted the user with run and share the localhost. So please note that storm breaker runs a localhost for you and you have to start the ngrok on your intended port yourself.
+> We have deleted Ngrok in the new version of Storm breaker and entrusted the user with running and sharing the localhost . So please note that Storm breaker runs a localhost for you and you have to start the Ngrok on your intended port yourself .
 <br>
 
-#### Attention!:
-> This version can be run both on local host and on your personal domain and host. In any case, you can use it for both situations. If your country has filtered the ngrok service, or your country has banned ngrok, or your victim cannot open the ngrok link (for the reasons that he sees such a link as suspicious, or if this service is filtered in his country), we suggest. The use of the tool is on personal hosting and domain
+#### Attention! :
+> This version can be run on both local host and your personal domain and host . However , you can use it for both situations. If your country has suspended the Ngrok service, or your country's banned Ngrok, or your victim can't open the Ngrok link (for the reasons such as : He sees such a link as suspicious, Or if this service is suspended in his country) We suggest using the tool on your personal host and domain .
 <br>
 
 ## Default username and password:
 - `username` : `admin`
 - `password` : `admin`
-- You can edit the config.php file to change the username and password
+- You can edit the config.php file to change the username and password .
 <br>
 
 ### Dependencies
@@ -65,7 +65,7 @@
 - `php`
 - `python3`
 - `git`
-- `ngrok`
+- `Ngrok`
 
 <!-- ![demo](.imgs/Work3.gif) -->
 <br>
@@ -74,7 +74,7 @@
 
 - Kali Linux 2022 
 - macOS Big Sur / M1 
-- Personal hosting (direct admin and cPanel) 
+- Personal host (direct admin and cPanel) 
 <br>
 
 ### Installation On Kali Linux 
@@ -91,11 +91,11 @@ $ sudo python3 st.py
 
 **`how to run personal host 👇`**
 
-> Zip the contents of the storm-web folder completely and upload it to the public_html path 
+> Zip the contents of the storm-web folder completely and upload it to the public_html path .
 
-> Note that the tool should not be opened in such a path > yourdomain.com/st-web
-> Rather, it should be opened purely in the public_html path (i.e., don't just zip the storm-web folder itself, but manually zip its contents (the index.php file and other belongings should be in the public_html path)
+> Note that the tool should not be opened in a path like this > yourdomain.com/st-web
+> Instead , it should be opened purely in the public_html path (i.e. :  don't just zip the storm-web folder itself, but manually zip its contents (the index.php file and other belongings should be in the public_html path)
 
 #### Attention!:
->Note that to use this tool on your own host. You also need SSL. Because many of the tool's capabilities require SSL
+>Note that to use this tool on your Localhost , You also need SSL . Because many of the tool's capabilities require SSL .
 </p>
