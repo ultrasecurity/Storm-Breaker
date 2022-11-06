@@ -24,7 +24,7 @@ checkroot() {
 
 apt_based() {
     apt-get update
-    apt-get install python3 python3-pip php neofetch
+    apt-get install python3 python3-pip php
     if [ "$?" -ne 0 ]; then
         printf "${RED}An error occurred! seems apt-get doesn't work.\n${RST}"
         exit 1
@@ -33,7 +33,7 @@ apt_based() {
 
 pacman_based() {
     pacman -Sy
-    pacman -S python python-pip php neofetch
+    pacman -S python python-pip php
     if [ "$?" -ne 0 ]; then
         printf "${RED}An error occurred! seems pacman doesn't work.\n${RST}"
         exit 1
@@ -42,7 +42,7 @@ pacman_based() {
 
 yum_based() {
     yum update -y
-    yum install -y python3 python3-pip php neofetch
+    yum install -y python3 python3-pip php
     if [ "$?" -ne 0 ]; then
         printf "${RED}An error occurred! seems yum doesn't work.\n${RST}"
         exit 1
@@ -59,7 +59,7 @@ if [ "$KERNEL" = "linux" ]; then
 
         "gentoo")
             emerge --sync
-            emerge -av dev-lang/php dev-python/pip app-misc/neofetch
+            emerge -av dev-lang/php dev-python/pip
             if [ "$?" -ne 0 ]; then
                 printf "${RED}An error occurred! seems portage doesn't work.\n${RST}"
                 exit 1
@@ -80,7 +80,7 @@ if [ "$KERNEL" = "linux" ]; then
 
         *)
             printf "${RED}I couldn't detect your linux distribution!\n${RST}"
-            printf "${BLU}This tool needs ${GRN}python3${BLU}, ${GRN}php${BLU} and ${GRN}neofetch${BLU}."
+            printf "${BLU}This tool needs ${GRN}python3${BLU} and ${GRN}php${BLU}."
             printf " please install these packages on your os yourself.\n${RST}"
             printf "${BLU}Also install the required python libraries via ${RST}'${GRN}pip install -r requirements.txt${RST}'\n"
             exit 1
@@ -88,17 +88,14 @@ if [ "$KERNEL" = "linux" ]; then
 
 elif [ "$KERNEL" = "freebsd" ]; then
     pkg update
-    pkg install python310
-    pkg install py310-pip
-    pkg install php
-    pkg install neofetch
+    pkg install python310 py310-pip php
     if [ "$?" -ne 0 ]; then
         printf "${RED}An error occurred! seems pkg doesn't work.\n${RST}"
         exit 1
     fi
 
 elif [ "$KERNEL" = "openbsd"  ]; then
-    pkg_add python py3-pip php neofetch
+    pkg_add python py3-pip php
     if [ "$?" -ne 0 ]; then
         printf "${RED}An error occurred! seems pkg_add doesn't work.\n${RST}"
         exit 1
@@ -112,7 +109,7 @@ elif [ "$KERNEL" = "darwin" ]; then
     read -r pm
     if [ "$pm" = "1" ]; then
         port selfupdate
-        port install python38 py38-pip php neofetch
+        port install python38 py38-pip php
         if [ "$?" -ne 0 ]; then
             printf "${RED}An error occurred! seems port doesn't work.\n${RST}"
             exit 1
@@ -142,7 +139,7 @@ elif [ "$KERNEL" = "darwin" ]; then
 
     elif [ "$pm" = "2" ]; then
         brew update
-        brew install python php neofetch
+        brew install python php
         python3 -m pip install -r ./requirements.txt
         if [ "$?" -ne 0 ]; then
             printf "${RED}An error occurred! seems brew doesn't work.\n${RST}"
