@@ -66,7 +66,7 @@ if [ "$KERNEL" = "linux" ]; then
             fi
         ;;
 
-        "debian" | "kali" | "ubuntu" | "linuxmint")
+        "debian" | "kali" | "ubuntu" | "linuxmint" | "parrot")
             apt_based
         ;;
 
