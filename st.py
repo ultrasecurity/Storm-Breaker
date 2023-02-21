@@ -17,5 +17,17 @@ while True:
         exit()
     
     except:
-        control.kill_php_proc()
-        exit()
+        control.kill_php_prock_start
+        forefoforefo
+fore
+run.php
+forefo
+forefo
+okok
+NgrokNgrok
+check_update
+
+exit
+exit
+st.py
+ok
