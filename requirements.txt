@@ -1,7 +1,0 @@
-requests
-psutil
-
-requestsrequestsrequestsrequestsrequestsrequestsrequests
-colorama
-psutilpsutil
-psutil
