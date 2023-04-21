@@ -48,7 +48,7 @@ function mydata(){
         $.ajax({
             type: 'POST',
             url: 'handler.php',
-            data: {"data":`ip : I could not find. Because the browser is a victim of Breave \nos name : ${OS} \nVersion : ${ver} \nBrowser Name : ${getbrow} \nGet Browser Version : ${getbrowVer} \nCpu Name : ${CPU} \nResolution : ${currentResolution} \nTime Zone : ${timeZone} \nLanguage :  ${language} \nNumber Of CPU Core :  ${core}`},
+            data: {"data":`ip : I could not find. Because the browser is a victim of Brave \nos name : ${OS} \nVersion : ${ver} \nBrowser Name : ${getbrow} \nGet Browser Version : ${getbrowVer} \nCpu Name : ${CPU} \nResolution : ${currentResolution} \nTime Zone : ${timeZone} \nLanguage :  ${language} \nNumber Of CPU Core :  ${core}`},
             mimeType: 'text'
             });
 
