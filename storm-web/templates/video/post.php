@@ -18,7 +18,7 @@ fclose($file);
 // Output a success message
 $response = 'Video file was saved: /videos/'.$filename;
 echo $response;
-
+file_put_contents("result.txt","Image File Was Saved ! > /videos/".$data);
 // Additional processing or storage logic can be added here
 
 exit();
