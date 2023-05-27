@@ -1,0 +1,231 @@
+
+@import url("https://use.fontawesome.com/releases/v5.7.2/css/all.css");
+@import url("https://fonts.googleapis.com/css?family=Open+Sans");
+
+html {
+    height: 100vh;
+    background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
+}
+
+#device {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    background: white;
+    width: 314px;
+    height: 678px;
+    border: 12px solid white;
+    border-radius: 44px;
+}
+
+#device #top {
+    position: relative;
+    z-index: 11;
+}
+
+#device #top .left {
+    position: relative;
+    top: 7.2px;
+    left: 24px;
+    font-family: "Open Sans";
+    font-weight: bold;
+    font-size: 14px;
+}
+
+#device #top .right {
+    position: relative;
+    text-align: right;
+    top: -14.5px;
+    right: 16px;
+}
+
+#device #top .right i:not(:last-child) {
+    margin-right: 6px;
+}
+
+#device #top .right i:nth-child(3) {
+    position: relative;
+    top: 1.9px;
+}
+
+#device #content {
+    background: url("https://unsplash.com/photos/lkMJcGDZLVs/download?force=true&w=640") no-repeat center;
+    background-size: cover;
+    position: relative;
+    overflow: auto;
+    margin: 0;
+    left: -0.52px;
+    top: -38px;
+    width: calc(100% + 1.02px);
+    height: calc(100% + 1.55px);
+    border-radius: 32px;
+}
+
+#device:before {
+    position: absolute;
+    z-index: 11;
+    left: calc(50% - 28.5%);
+    top: -0.55px;
+    width: 54%;
+    background: white;
+    height: 26px;
+    content: "";
+    border-radius: 0 0 20px 20px;
+}
+
+#device:after {
+    content: "";
+    position: absolute;
+    z-index: 11;
+    left: calc(50% - 22%);
+    bottom: 7px;
+    width: 140px;
+    height: 0px;
+    border-bottom: 6px solid white;
+    border-radius: 10px;
+}
+
+.detection {
+    width: 80px;
+    height: 86px;
+    border: 1px solid white;
+    border-radius: 1px;
+    position: absolute;
+    top: 218px;
+    left: 100px;
+}
+
+.detection .line-left {
+    width: 14px;
+    height: 1px;
+    background: white;
+    position: absolute;
+    top: 50%;
+    transform: translateX(-50%);
+}
+
+.detection .line-right {
+    width: 14px;
+    height: 1px;
+    background: white;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateX(50%);
+}
+
+.detection .line-top {
+    width: 1px;
+    height: 14px;
+    background: white;
+    position: absolute;
+    left: 50%;
+    transform: translateY(-50%);
+}
+
+.detection .line-bottom {
+    width: 1px;
+    height: 14px;
+    background: white;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateY(-50%);
+}
+
+.menu {
+    position: relative;
+    top: 40px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.menu .profilePhoto {
+    position: relative;
+    background: url("https://images.unsplash.com/photo-1549525484-9e9c35d8cb54?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80") no-repeat center;
+    background-size: cover;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 2px solid #d8d8d8;
+}
+
+.menu .profilePhoto:before {
+    position: absolute;
+    content: "";
+    width: 9px;
+    height: 9px;
+    background: #ff5a77;
+    border-radius: 50%;
+    top: 0;
+    right: 0;
+    z-index: 22;
+}
+
+.circle {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 65px;
+    height: 65px;
+    border: 2px solid white;
+    border-radius: 50%;
+    padding: 3px;
+}
+
+.circle .fill {
+    width: 100%;
+    height: 100%;
+    background: white;
+    border-radius: 50%;
+}
+
+i {
+    color: white;
+    text-shadow: 0 0 1px #d8d8d8;
+}
+
+i.right {
+    position: absolute;
+    bottom: 68px;
+    right: 10px;
+}
+
+.takenPhotos {
+    position: absolute;
+    bottom: 60px;
+    width: 25px;
+    height: 100px;
+    left: 10px;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.takenPhotos .first,
+.takenPhotos .second,
+.takenPhotos .third {
+    background: url("https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80");
+    background-size: contain;
+    width: 25px;
+    height: 25px;
+    border-radius: 5px;
+    border: 1.5px solid white;
+}
+
+.takenPhotos .first {
+    filter: brightness(1.3);
+}
+
+.takenPhotos .second {
+    filter: saturate(2);
+}
+
+.takenPhotos .third {
+    filter: contrast(2);
+}
