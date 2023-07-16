@@ -153,17 +153,15 @@ fi
 
 
 if [ "$KERNEL" != "darwin" ]; then
-    pythonV="$(python3 --version | grep -oP '(?<=\.)\d+(?=\.)')"
-    status=1
+    # make sure grep or sed is not gnu. The default installed one is bsd in macOS.
+    pythonV="$(python3 --version | sed 's/[^0-9]* 3\.\([0-9]*\)\.[0-9]*/\1/' )"
     if [ "${pythonV}" -ge 11 ]; then
         env python3 -m pip install -r --break-system-packages ./requirements.txt
-        status=$?
     else
         env python3 -m pip install -r ./requirements.txt
-        status=$?
     fi
 
-    if [ "${status}" -ne 0 ]; then
+    if [ "$?" -ne 0 ]; then
         printf "${RED}An error occurred! seems pip doesn't work.\n${RST}"
         exit 1
     fi
