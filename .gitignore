@@ -4,3 +4,4 @@ ngrok.zip
 ngrok.tgz
 ngrok
 modules/__pycache__/
+storm-web/log/*.log
