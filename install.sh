@@ -156,10 +156,10 @@ if [ "$KERNEL" != "darwin" ]; then
     pythonV="$(python3 --version | grep -oP '(?<=\.)\d+(?=\.)')"
     status=1
     if [ "${pythonV}" -ge 11 ]; then
-        env python3 -m pip install -r --break-system-packages ./requirements.txt
+        env python3 -m pip install -r requirements.txt
         status=$?
     else
-        env python3 -m pip install -r ./requirements.txt
+        env python3 -m pip install -r requirements.txt
         status=$?
     fi
 
