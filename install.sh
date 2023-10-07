@@ -164,7 +164,12 @@ else
     fi
 fi
 if [ $TERMUX -gt 0 ];then
-    pip install -r requirements.txt
+    env pip install -r requirements.txt
+    status=$?
+    if [ "${status}" -ne 0 ]; then
+        printf "${RED}An error occurred! seems pip doesn't work.\n${RST}"
+        exit 1
+    fi
 elif [ "$KERNEL" != "darwin" ]; then
     pythonV="$(python3 --version | grep -oP '(?<=\.)\d+(?=\.)')"
     status=1
