@@ -155,7 +155,7 @@ else
             exit 1
         fi
     fi
-
+fi
 
 if [ "$KERNEL" != "darwin" ]; then
     pythonV="$(python3 --version | grep -oP '(?<=\.)\d+(?=\.)')"
