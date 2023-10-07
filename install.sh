@@ -163,8 +163,9 @@ else
         fi
     fi
 fi
-
-if [ "$KERNEL" != "darwin" ]; then
+if [ $TERMUX -gt 0 ];then
+    pip install -r requirements.txt
+elif [ "$KERNEL" != "darwin" ]; then
     pythonV="$(python3 --version | grep -oP '(?<=\.)\d+(?=\.)')"
     status=1
     if [ "${pythonV}" -ge 11 ]; then
