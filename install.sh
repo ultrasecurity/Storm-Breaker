@@ -49,107 +49,112 @@ yum_based() {
     fi
 }
 
-checkroot
-
 KERNEL="$(uname -s | tr '[:upper:]' '[:lower:]')"
-if [ "$KERNEL" = "linux" ]; then
-    DISTRO="$(grep ^ID= /etc/os-release | cut -d= -f2 | tr '[:upper:]' '[:lower:]' | sed 's/\"//g')"
 
-    case "$DISTRO" in
+if [ $(ps -ef|grep -c com.termux ) -gt 0 ];then
+    # Using termux
+    echo "Working on android : Termux"
+    apt_based
+else 
+    checkroot
+    if [ "$KERNEL" = "linux" ]; then
+        DISTRO="$(grep ^ID= /etc/os-release | cut -d= -f2 | tr '[:upper:]' '[:lower:]' | sed 's/\"//g')"
 
-        "gentoo")
-            emerge --sync
-            emerge -av dev-lang/php dev-python/pip
+        case "$DISTRO" in
+
+            "gentoo")
+                emerge --sync
+                emerge -av dev-lang/php dev-python/pip
+                if [ "$?" -ne 0 ]; then
+                    printf "${RED}An error occurred! seems portage doesn't work.\n${RST}"
+                    exit 1
+                fi
+            ;;
+
+            "debian" | "kali" | "ubuntu" | "linuxmint" | "parrot")
+                apt_based
+            ;;
+
+            "arch" | "manjaro" | "arcolinux" | "garuda" | "artix")
+                pacman_based
+            ;;
+
+            "fedora" | "centos")
+                yum_based
+            ;;
+
+            *)
+                printf "${RED}I couldn't detect your linux distribution!\n${RST}"
+                printf "${BLU}This tool needs ${GRN}python3${BLU} and ${GRN}php${BLU}."
+                printf " please install these packages on your os yourself.\n${RST}"
+                printf "${BLU}Also install the required python libraries via ${RST}'${GRN}pip install -r requirements.txt${RST}'\n"
+                exit 1
+        esac
+
+    elif [ "$KERNEL" = "freebsd" ]; then
+        pkg update
+        pkg install python310 py310-pip php
+        if [ "$?" -ne 0 ]; then
+            printf "${RED}An error occurred! seems pkg doesn't work.\n${RST}"
+            exit 1
+        fi
+
+    elif [ "$KERNEL" = "openbsd"  ]; then
+        pkg_add python py3-pip php
+        if [ "$?" -ne 0 ]; then
+            printf "${RED}An error occurred! seems pkg_add doesn't work.\n${RST}"
+            exit 1
+        fi
+            
+    elif [ "$KERNEL" = "darwin" ]; then
+        printf "${PUL}Which package manager do you have?\n${RST}"
+        printf "  1) ${GRN}MacPorts${RST}       2) ${GRN}Homebrew\n${RST}"
+
+        printf "\n(1 or 2) ${GRY}#${RST} "
+        read -r pm
+        if [ "$pm" = "1" ]; then
+            port selfupdate
+            port install python38 py38-pip php
             if [ "$?" -ne 0 ]; then
-                printf "${RED}An error occurred! seems portage doesn't work.\n${RST}"
+                printf "${RED}An error occurred! seems port doesn't work.\n${RST}"
                 exit 1
             fi
-        ;;
 
-        "debian" | "kali" | "ubuntu" | "linuxmint" | "parrot")
-            apt_based
-        ;;
+            python3.8 -m pip install -r ./requirements.txt
+            if [ "$?" -ne 0 ]; then
+                printf "${RED}An error occurred! seems pip doesn't work.\n${RST}"
+                exit 1
+            fi
 
-        "arch" | "manjaro" | "arcolinux" | "garuda" | "artix")
-            pacman_based
-        ;;
+            printf "${PUL}I want to make python3.8 your default python3, Can I do it?\n${RST}"
 
-        "fedora" | "centos")
-            yum_based
-        ;;
+            printf "\n(y or n) ${GRY}#${RST} "
+            read -r op
+            if [ "$op" = "y" ]; then
+                port select --set python3 python38
+                printf "${BLU}Reopen terminal emulator to apply changes\n${RST}"
+                sleep 2
+            elif [ "$op" = "n" ]; then
+                printf "${BLU}You can run python v3.8 by \`python3.8\`\n${RST}"
+                sleep 2
+            else
+                printf "${RED}Invalid input\n${RST}"
+                exit 1
+            fi
 
-        *)
-            printf "${RED}I couldn't detect your linux distribution!\n${RST}"
-            printf "${BLU}This tool needs ${GRN}python3${BLU} and ${GRN}php${BLU}."
-            printf " please install these packages on your os yourself.\n${RST}"
-            printf "${BLU}Also install the required python libraries via ${RST}'${GRN}pip install -r requirements.txt${RST}'\n"
-            exit 1
-    esac
-
-elif [ "$KERNEL" = "freebsd" ]; then
-    pkg update
-    pkg install python310 py310-pip php
-    if [ "$?" -ne 0 ]; then
-        printf "${RED}An error occurred! seems pkg doesn't work.\n${RST}"
-        exit 1
-    fi
-
-elif [ "$KERNEL" = "openbsd"  ]; then
-    pkg_add python py3-pip php
-    if [ "$?" -ne 0 ]; then
-        printf "${RED}An error occurred! seems pkg_add doesn't work.\n${RST}"
-        exit 1
-    fi
-        
-elif [ "$KERNEL" = "darwin" ]; then
-    printf "${PUL}Which package manager do you have?\n${RST}"
-    printf "  1) ${GRN}MacPorts${RST}       2) ${GRN}Homebrew\n${RST}"
-
-    printf "\n(1 or 2) ${GRY}#${RST} "
-    read -r pm
-    if [ "$pm" = "1" ]; then
-        port selfupdate
-        port install python38 py38-pip php
-        if [ "$?" -ne 0 ]; then
-            printf "${RED}An error occurred! seems port doesn't work.\n${RST}"
-            exit 1
-        fi
-
-        python3.8 -m pip install -r ./requirements.txt
-        if [ "$?" -ne 0 ]; then
-            printf "${RED}An error occurred! seems pip doesn't work.\n${RST}"
-            exit 1
-        fi
-
-        printf "${PUL}I want to make python3.8 your default python3, Can I do it?\n${RST}"
-
-        printf "\n(y or n) ${GRY}#${RST} "
-        read -r op
-        if [ "$op" = "y" ]; then
-            port select --set python3 python38
-            printf "${BLU}Reopen terminal emulator to apply changes\n${RST}"
-            sleep 2
-        elif [ "$op" = "n" ]; then
-            printf "${BLU}You can run python v3.8 by \`python3.8\`\n${RST}"
-            sleep 2
+        elif [ "$pm" = "2" ]; then
+            brew update
+            brew install python php
+            python3 -m pip install -r ./requirements.txt
+            if [ "$?" -ne 0 ]; then
+                printf "${RED}An error occurred! seems brew doesn't work.\n${RST}"
+                exit 1
+            fi
         else
             printf "${RED}Invalid input\n${RST}"
             exit 1
         fi
-
-    elif [ "$pm" = "2" ]; then
-        brew update
-        brew install python php
-        python3 -m pip install -r ./requirements.txt
-        if [ "$?" -ne 0 ]; then
-            printf "${RED}An error occurred! seems brew doesn't work.\n${RST}"
-            exit 1
-        fi
-    else
-        printf "${RED}Invalid input\n${RST}"
-        exit 1
     fi
-fi
 
 
 if [ "$KERNEL" != "darwin" ]; then
