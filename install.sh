@@ -21,7 +21,14 @@ checkroot() {
     fi
     LD_PRELOAD="$SAVE_LD_PRELOAD"
 }
-
+termux_based() {
+    apt-get update
+    pkg install python php # use pkg install
+    if [ "$?" -ne 0 ]; then
+        printf "${RED}An error occurred! seems pkg install doesn't work.\n${RST}"
+        exit 1
+    fi
+}
 apt_based() {
     apt-get update
     apt-get install python3 python3-pip php
@@ -50,11 +57,11 @@ yum_based() {
 }
 
 KERNEL="$(uname -s | tr '[:upper:]' '[:lower:]')"
-
-if [ $(ps -ef|grep -c com.termux ) -gt 0 ];then
+TERMUX=$(echo "$PREFIX"|grep -c com.termux )
+if [ $TERMUX -gt 0 ];then
     # Using termux
     echo "Working on android : Termux"
-    apt_based
+    termux_based
 else 
     checkroot
     if [ "$KERNEL" = "linux" ]; then
@@ -219,6 +226,16 @@ if [ "$URL" != "" ]; then
         unzip ngrok.zip
         rm ngrok.zip
         install ngrok /usr/local/bin/ngrok -m 0755
+    elif [ $TERMUX -gt 0 ]; then
+        # install ngrok for termux
+        curl "$URL" -o ngrok.tgz
+        if [ "$?" -ne 0 ]; then
+            printf "${RED}An error occurred! seems curl can not download the ngrok${RST}"
+            exit 1
+        fi
+        tar -xf ngrok.tgz
+        rm ngrok.tgz
+        install ngrok "${PREFIX}/bin/ngrok" -m 0755
     else
         curl "$URL" -o ngrok.tgz
         if [ "$?" -ne 0 ]; then
