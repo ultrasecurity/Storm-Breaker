@@ -1,5 +1,4 @@
-#!/bin/sh
-
+#!/bin/bash
 
 if test -f .ascii; then
     cat .ascii
@@ -21,19 +20,21 @@ checkroot() {
     fi
     LD_PRELOAD="$SAVE_LD_PRELOAD"
 }
+
 termux_based() {
     apt-get update
     pkg install python php # use pkg install
     if [ "$?" -ne 0 ]; then
-        printf "${RED}An error occurred! seems pkg install doesn't work.\n${RST}"
+        printf "${RED}An error occurred! Seems pkg install doesn't work.\n${RST}"
         exit 1
     fi
 }
+
 apt_based() {
     apt-get update
     apt-get install python3 python3-pip php
     if [ "$?" -ne 0 ]; then
-        printf "${RED}An error occurred! seems apt-get doesn't work.\n${RST}"
+        printf "${RED}An error occurred! Seems apt-get doesn't work.\n${RST}"
         exit 1
     fi
 }
@@ -42,7 +43,7 @@ pacman_based() {
     pacman -Sy
     pacman -S python python-pip php
     if [ "$?" -ne 0 ]; then
-        printf "${RED}An error occurred! seems pacman doesn't work.\n${RST}"
+        printf "${RED}An error occurred! Seems pacman doesn't work.\n${RST}"
         exit 1
     fi
 }
@@ -51,14 +52,14 @@ yum_based() {
     yum update -y
     yum install -y python3 python3-pip php
     if [ "$?" -ne 0 ]; then
-        printf "${RED}An error occurred! seems yum doesn't work.\n${RST}"
+        printf "${RED}An error occurred! Seems yum doesn't work.\n${RST}"
         exit 1
     fi
 }
 
 KERNEL="$(uname -s | tr '[:upper:]' '[:lower:]')"
-TERMUX=$(echo "$PREFIX"|grep -c com.termux )
-if [ $TERMUX -gt 0 ];then
+TERMUX=$(echo "$PREFIX" | grep -c com.termux )
+if [ $TERMUX -gt 0 ]; then
     # Using termux
     echo "Working on android : Termux"
     termux_based
@@ -68,51 +69,51 @@ else
         DISTRO="$(grep ^ID= /etc/os-release | cut -d= -f2 | tr '[:upper:]' '[:lower:]' | sed 's/\"//g')"
 
         case "$DISTRO" in
-
             "gentoo")
                 emerge --sync
                 emerge -av dev-lang/php dev-python/pip
                 if [ "$?" -ne 0 ]; then
-                    printf "${RED}An error occurred! seems portage doesn't work.\n${RST}"
+                    printf "${RED}An error occurred! Seems portage doesn't work.\n${RST}"
                     exit 1
                 fi
-            ;;
+                ;;
 
             "debian" | "kali" | "ubuntu" | "linuxmint" | "parrot")
                 apt_based
-            ;;
+                ;;
 
             "arch" | "manjaro" | "arcolinux" | "garuda" | "artix")
                 pacman_based
-            ;;
+                ;;
 
             "fedora" | "centos")
                 yum_based
-            ;;
+                ;;
 
             *)
-                printf "${RED}I couldn't detect your linux distribution!\n${RST}"
+                printf "${RED}I couldn't detect your Linux distribution!\n${RST}"
                 printf "${BLU}This tool needs ${GRN}python3${BLU} and ${GRN}php${BLU}."
-                printf " please install these packages on your os yourself.\n${RST}"
+                printf " Please install these packages on your OS yourself.\n${RST}"
                 printf "${BLU}Also install the required python libraries via ${RST}'${GRN}pip install -r requirements.txt${RST}'\n"
                 exit 1
+                ;;
         esac
 
     elif [ "$KERNEL" = "freebsd" ]; then
         pkg update
         pkg install python310 py310-pip php
         if [ "$?" -ne 0 ]; then
-            printf "${RED}An error occurred! seems pkg doesn't work.\n${RST}"
+            printf "${RED}An error occurred! Seems pkg doesn't work.\n${RST}"
             exit 1
         fi
 
-    elif [ "$KERNEL" = "openbsd"  ]; then
+    elif [ "$KERNEL" = "openbsd" ]; then
         pkg_add python py3-pip php
         if [ "$?" -ne 0 ]; then
-            printf "${RED}An error occurred! seems pkg_add doesn't work.\n${RST}"
+            printf "${RED}An error occurred! Seems pkg_add doesn't work.\n${RST}"
             exit 1
         fi
-            
+
     elif [ "$KERNEL" = "darwin" ]; then
         printf "${PUL}Which package manager do you have?\n${RST}"
         printf "  1) ${GRN}MacPorts${RST}       2) ${GRN}Homebrew\n${RST}"
@@ -123,17 +124,17 @@ else
             port selfupdate
             port install python38 py38-pip php
             if [ "$?" -ne 0 ]; then
-                printf "${RED}An error occurred! seems port doesn't work.\n${RST}"
+                printf "${RED}An error occurred! Seems port doesn't work.\n${RST}"
                 exit 1
             fi
 
             python3.8 -m pip install -r ./requirements.txt
             if [ "$?" -ne 0 ]; then
-                printf "${RED}An error occurred! seems pip doesn't work.\n${RST}"
+                printf "${RED}An error occurred! Seems pip doesn't work.\n${RST}"
                 exit 1
             fi
 
-            printf "${PUL}I want to make python3.8 your default python3, Can I do it?\n${RST}"
+            printf "${PUL}I want to make Python3.8 your default Python3. Can I do it?\n${RST}"
 
             printf "\n(y or n) ${GRY}#${RST} "
             read -r op
@@ -142,7 +143,7 @@ else
                 printf "${BLU}Reopen terminal emulator to apply changes\n${RST}"
                 sleep 2
             elif [ "$op" = "n" ]; then
-                printf "${BLU}You can run python v3.8 by \`python3.8\`\n${RST}"
+                printf "${BLU}You can run Python v3.8 by \`python3.8\`\n${RST}"
                 sleep 2
             else
                 printf "${RED}Invalid input\n${RST}"
@@ -154,7 +155,7 @@ else
             brew install python php
             python3 -m pip install -r ./requirements.txt
             if [ "$?" -ne 0 ]; then
-                printf "${RED}An error occurred! seems brew doesn't work.\n${RST}"
+                printf "${RED}An error occurred! Seems brew doesn't work.\n${RST}"
                 exit 1
             fi
         else
@@ -163,30 +164,31 @@ else
         fi
     fi
 fi
-if [ $TERMUX -gt 0 ];then
-    env pip install -r requirements.txt
-    status=$?
-    if [ "${status}" -ne 0 ]; then
-        printf "${RED}An error occurred! seems pip doesn't work.\n${RST}"
-        exit 1
-    fi
-elif [ "$KERNEL" != "darwin" ]; then
-    pythonV="$(python3 --version | grep -oP '(?<=\.)\d+(?=\.)')"
-    status=1
-    if [ "${pythonV}" -ge 11 ]; then
-        env python3 -m pip install -r --break-system-packages ./requirements.txt
-        status=$?
+
+# Check if requirements are already installed
+check_requirements() {
+    if [ $TERMUX -gt 0 ]; then
+        env python -c "import sys, pkgutil; sys.exit(0 if pkgutil.find_loader('requirements') else 1)"
     else
-        env python3 -m pip install -r ./requirements.txt
-        status=$?
+        python3 -c "import sys, pkgutil; sys.exit(0 if pkgutil.find_loader('requirements') else 1)"
+    fi
+}
+
+if check_requirements; then
+    printf "${GRN}\nRequirements already installed. Skipping installation.\n${RST}"
+else
+    # Install requirements
+    if [ $TERMUX -gt 0 ]; then
+        env pip install -r requirements.txt
+    else
+        env python3 -m pip install -r requirements.txt
     fi
 
-    if [ "${status}" -ne 0 ]; then
-        printf "${RED}An error occurred! seems pip doesn't work.\n${RST}"
+    if [ "$?" -ne 0 ]; then
+        printf "${RED}An error occurred! Seems pip doesn't work.\n${RST}"
         exit 1
     fi
 fi
-
 
 ARCH="$(uname -m | tr '[:upper:]' '[:lower:]')"
 URL=""
@@ -204,13 +206,13 @@ if [ "$KERNEL" = "linux" ]; then
     fi
 
 elif [ "$KERNEL" = "freebsd" ]; then
-     if [ "$ARCH" = "amd64" ]; then
+    if [ "$ARCH" = "amd64" ]; then
         URL="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-freebsd-amd64.tgz"
-     elif [ "$ARCH" = "i386" ]; then
-         URL="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-freebsd-386.tgz"
-     else
-         URL=""
-     fi
+    elif [ "$ARCH" = "i386" ]; then
+        URL="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-freebsd-386.tgz"
+    else
+        URL=""
+    fi
 
 elif [ "$KERNEL" = "darwin" ]; then
     if [ "$ARCH" = "amd64" ]; then
@@ -226,7 +228,7 @@ if [ "$URL" != "" ]; then
     if [ "$KERNEL" = "darwin" ]; then
         curl "$URL" -o ngrok.zip
         if [ "$?" -ne 0 ]; then
-            printf "${RED}An error occurred! seems curl can not download the ngrok${RST}"
+            printf "${RED}An error occurred! Seems curl cannot download ngrok.\n${RST}"
             exit 1
         fi
         unzip ngrok.zip
@@ -236,7 +238,7 @@ if [ "$URL" != "" ]; then
         # install ngrok for termux
         curl "$URL" -o ngrok.tgz
         if [ "$?" -ne 0 ]; then
-            printf "${RED}An error occurred! seems curl can not download the ngrok${RST}"
+            printf "${RED}An error occurred! Seems curl cannot download ngrok.\n${RST}"
             exit 1
         fi
         tar -xf ngrok.tgz
@@ -245,7 +247,7 @@ if [ "$URL" != "" ]; then
     else
         curl "$URL" -o ngrok.tgz
         if [ "$?" -ne 0 ]; then
-            printf "${RED}An error occurred! seems curl can not download the ngrok${RST}"
+            printf "${RED}An error occurred! Seems curl cannot download ngrok.\n${RST}"
             exit 1
         fi
         tar -xf ngrok.tgz
@@ -256,3 +258,4 @@ fi
 
 printf "${GRN}\nDependencies installed successfully.\n${RST}"
 exit 0
+
