@@ -127,7 +127,7 @@ else
                 exit 1
             fi
 
-            python3.8 -m pip install -r ./requirements.txt
+            python3.8 -m pip install -r ./requirements.txt --break-system-packages
             if [ "$?" -ne 0 ]; then
                 printf "${RED}An error occurred! seems pip doesn't work.\n${RST}"
                 exit 1
@@ -152,7 +152,7 @@ else
         elif [ "$pm" = "2" ]; then
             brew update
             brew install python php
-            python3 -m pip install -r ./requirements.txt
+            python3 -m pip install -r ./requirements.txt --break-system-packages
             if [ "$?" -ne 0 ]; then
                 printf "${RED}An error occurred! seems brew doesn't work.\n${RST}"
                 exit 1
@@ -164,7 +164,7 @@ else
     fi
 fi
 if [ $TERMUX -gt 0 ];then
-    env pip install -r requirements.txt
+    env pip install -r requirements.txt --break-system-packages 
     status=$?
     if [ "${status}" -ne 0 ]; then
         printf "${RED}An error occurred! seems pip doesn't work.\n${RST}"
@@ -174,10 +174,10 @@ elif [ "$KERNEL" != "darwin" ]; then
     pythonV="$(python3 --version | grep -oP '(?<=\.)\d+(?=\.)')"
     status=1
     if [ "${pythonV}" -ge 11 ]; then
-        env python3 -m pip install -r --break-system-packages ./requirements.txt
+        env python3 -m pip install -r ./requirements.txt --break-system-packages
         status=$?
     else
-        env python3 -m pip install -r ./requirements.txt
+        env python3 -m pip install -r ./requirements.txt --break-system-packages
         status=$?
     fi
 
