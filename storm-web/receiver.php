@@ -1,19 +1,25 @@
 <?php
 
-$PATH = "./templates/";
-$FILE_NAME = "/result.txt";
+session_start();
+include "./assets/components/login-arc.php";
 
+if (!has_valid_session()) {
+    http_response_code(403);
+    exit;
+}
 
+$TEMPLATES_DIR = "./templates/";
+$RESULT_FILE_NAME = "/result.txt";
 
-if(isset($_POST['send_me_result'])){
+if (isset($_POST['send_me_result'])) {
 
-    $data = array_slice(scandir($PATH),2);
+    $template_dirs = array_diff(scandir($TEMPLATES_DIR), array('.', '..'));
 
-    foreach($data as $i ){
-        $data = file_get_contents($PATH.$i.$FILE_NAME);
-        if($data != ""){
-            echo $data;
-            file_put_contents($PATH.$i.$FILE_NAME,""); //clear result.txt
+    foreach ($template_dirs as $dir) {
+        $content = file_get_contents($TEMPLATES_DIR . $dir . $RESULT_FILE_NAME);
+        if ($content != "") {
+            echo $content;
+            file_put_contents($TEMPLATES_DIR . $dir . $RESULT_FILE_NAME, ""); //clear result.txt
         }
     }
 

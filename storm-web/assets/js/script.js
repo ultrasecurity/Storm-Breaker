@@ -126,14 +126,14 @@ function check_new_version(){
 
 $(document).ready(function(){
     $.post("list_templates.php",function(data){
-        
+
         var get_json = JSON.parse(data)
         for(let i = 0; i < get_json.length;){
-            
-            $("#links").append('<div class="mt-2 d-flex justify-content-center" ><p id="path" class="form-control m-1 w-50 ptext">'+"http://"+location.host+"/templates/"+get_json[i]+"/index.html"+'</p><span class="input-group-btn m-1 cp-btn"><button class="btn btn-default" type="button" id="copy-button" data-toggle="tooltip" data-placement="button" title="Copy to Clipboard">Copy </button></span></div>')
+
+            $("#links").append('<div class="link-row"><div class="link-text">'+"http://"+location.host+"/templates/"+get_json[i]+"/index.html"+'</div><button class="btn btn-outline btn-sm cp-btn" type="button" data-toggle="tooltip" data-placement="button" title="Copy to Clipboard">Copy</button></div>')
             i++
-        
-        } 
+
+        }
     })
 
     setTimeout(function(){
@@ -155,19 +155,20 @@ $(document).ready(function(){
 
             $("#btn-listen").click(function(){
 
-                if($("#btn-listen").text() == "Listener Runing / press to stop"){
+                if($("#btn-listen").text() == "Listener Running / press to stop"){
                     clearInterval(timer)
                     console.log("stoped listener")
-                    $("#btn-listen").text("Listener stoped / press to start")
-
+                    $("#btn-listen").text("Listener stopped / press to start")
+                    $("#btn-listen").removeClass("btn-danger").addClass("btn-secondary")
 
                 }else{
-                    
+
                     timer = setInterval(Listener,2000)
                     console.log("started listener")
-                    $("#btn-listen").text("Listener Runing / press to stop")
+                    $("#btn-listen").text("Listener Running / press to stop")
+                    $("#btn-listen").removeClass("btn-secondary").addClass("btn-danger")
                 }
-                
+
 
             })
 

@@ -1,23 +1,14 @@
 <?php
 
 session_start();
+include "./assets/components/login-arc.php";
 
-$key = json_decode(file_get_contents("check-c.json"),true);
-
-if(isset($_COOKIE['logindata']) && $_COOKIE['logindata'] == $key['token'] && $key['expired'] == "no"){
-	header("location: panel.php");
-
-    
+if (has_valid_session()) {
+    header("location: panel.php");
+    exit;
 }
 
-elseif(isset($_SESSION['IAm-logined'])){
-	header('location: panel.php');
-	exit;
-}
-
-else{
-	header("location: login.php");
-	exit;
-}
+header("location: login.php");
+exit;
 
 ?>
