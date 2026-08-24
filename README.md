@@ -98,6 +98,3 @@ server.serve_forever()<!DOCTYPE html>
       align-items: center;
       margin: 16px 0;Forwarding  https://abc123.ngrok-free.app -> http://localhost:80# Install
 pip install h8mail
-
-# Use
-h8mail -t kuldip__005 -bc "https://raw.githubusercontent.com/awesome-wordlists/breach-compilation/main/breach.txt"
