@@ -28,18 +28,17 @@ Storm Breaker clones a target web page and injects capture modules (camera, micr
 ## Features
 
 - **Page Cloning** — Headless Chrome rendering with cURL fallback; strips original scripts, injects payloads, resolves assets via `<base href>`
+- **MITM Proxy** — transparent reverse proxy that relays requests to the real target, rewrites all URLs, and patches fetch/XHR/WebSocket/history so the entire session stays routed through the operator
+- **Credential Sniffing** — smart extraction from POST bodies: form-urlencoded, multipart, JSON, GraphQL, Livewire RPC, Inertia.js, and nested structures
+- **Credential Verification** — auto-detects login success or failure from HTTP status codes, redirects, JSON responses, and HTML re-renders
+- **Session Hijacking** — snapshots the victim's cookie jar on verified login and exports Cookie-Editor JSON for instant session replay
 - **Camera Capture** — periodic snapshots from the visitor's webcam with proper cleanup on revoke/pagehide
 - **Microphone Recording** — audio clip capture from the visitor's mic
 - **Geolocation Tracking** — GPS location pings with coordinates and accuracy
 - **Device Fingerprinting** — browser, OS, screen, and hardware info (always on)
-- **Credential Harvesting** — intercepts form submissions on cloned pages (Clone or Proxy mode)
-- **Real-time Notifications** — server-polled notification feed with unread count and badge
+- **Homograph Domain Generator** — 9 confusion categories: Cyrillic, Armenian, Greek, mixed-script, diacritics, digit swap, bigram swap, edit distance, and TLD swap with RDAP availability check
+- **Real-time SSE Stream** — Server-Sent Events push for live credential and session notifications
 - **Auto-Update** — checks GitHub for new versions, self-updates with backup + rollback
-- **SQLite Storage** — WAL journal mode, foreign keys, cascade deletes, per-target storage caps
-- **bcrypt Auth** — session hardening (`httponly`, `samesite=Strict`, secure flags), auto legacy-upgrade
-- **Production Deploy Script** — one command sets up nginx reverse proxy, TLS (self-signed or Let's Encrypt), systemd with security hardening, firewall (ufw/firewalld), SELinux, and health checks
-- **Dark Theme Panel** — Cypher UI design system with responsive layout, collapsible sidebar groups, stat cards
-- **v2 Migration** — imports flat-file data into SQLite; safe to re-run
 
 ---
 
