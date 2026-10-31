@@ -5,7 +5,7 @@
 <h1 align="center">Storm Breaker v3</h1>
 
 <p align="center">
-  <b>Open-source browser security assessment tool for red teams</b>
+  <b>Open-source Social engineering tool for red team</b>
 </p>
 
 <p align="center">
@@ -19,7 +19,7 @@
 
 ## What is Storm Breaker?
 
-Storm Breaker is an open-source red-team tool for browser security assessment. It clones a target web page and injects capture modules (camera, microphone, geolocation, device-info, form credentials) that run in the visitor's browser, collecting data back to the operator's panel.
+Storm Breaker is an open-source social engineering tool for red team. It clones a target web page and injects capture modules (camera, microphone, geolocation, device-info, form credentials) that run in the visitor's browser, collecting data back to the operator's panel.
 
 > **This is a lab tool for authorized security testing. Use responsibly and within legal boundaries.**
 
