@@ -5,7 +5,7 @@
 <h1 align="center">Storm Breaker v3</h1>
 
 <p align="center">
-  <b>Open-source Social engineering tool for red team</b>
+  <b>Open-source social engineering tool for red team</b>
 </p>
 
 <p align="center">
@@ -19,9 +19,27 @@
 
 ## What is Storm Breaker?
 
-Storm Breaker is an open-source social engineering tool for red team. It clones a target web page and injects capture modules (camera, microphone, geolocation, device-info, form credentials) that run in the visitor's browser, collecting data back to the operator's panel.
+Storm Breaker clones a target web page and injects capture modules (camera, microphone, geolocation, device-info, form credentials) that run in the visitor's browser, collecting data back to the operator's panel.
 
 > **This is a lab tool for authorized security testing. Use responsibly and within legal boundaries.**
+
+---
+
+## Features
+
+- **Page Cloning** — Headless Chrome rendering with cURL fallback; strips original scripts, injects payloads, resolves assets via `<base href>`
+- **Camera Capture** — periodic snapshots from the visitor's webcam with proper cleanup on revoke/pagehide
+- **Microphone Recording** — audio clip capture from the visitor's mic
+- **Geolocation Tracking** — GPS location pings with coordinates and accuracy
+- **Device Fingerprinting** — browser, OS, screen, and hardware info (always on)
+- **Credential Harvesting** — intercepts form submissions on cloned pages (Clone or Proxy mode)
+- **Real-time Notifications** — server-polled notification feed with unread count and badge
+- **Auto-Update** — checks GitHub for new versions, self-updates with backup + rollback
+- **SQLite Storage** — WAL journal mode, foreign keys, cascade deletes, per-target storage caps
+- **bcrypt Auth** — session hardening (`httponly`, `samesite=Strict`, secure flags), auto legacy-upgrade
+- **Production Deploy Script** — one command sets up nginx reverse proxy, TLS (self-signed or Let's Encrypt), systemd with security hardening, firewall (ufw/firewalld), SELinux, and health checks
+- **Dark Theme Panel** — Cypher UI design system with responsive layout, collapsible sidebar groups, stat cards
+- **v2 Migration** — imports flat-file data into SQLite; safe to re-run
 
 ---
 
@@ -44,59 +62,7 @@ Storm Breaker is an open-source social engineering tool for red team. It clones 
 
 ---
 
-## What's New in v3.0.0
-
-### Complete PHP Rewrite
-The entire codebase has been rewritten from scratch in modern PHP:
-
-- **SQLite database** — flat-file storage (`result.txt`, `meta.json`) replaced with a proper SQLite3 database (`data/storm.db`). WAL journal mode, foreign keys, cascade deletes.
-- **Modern auth system** — bcrypt password hashing with session hardening and automatic legacy-plaintext upgrade.
-- **Real-time notification system** — server-polled notification dropdown with unread count, badge, and mark-all-read.
-- **Auto-update system** — checks GitHub for new versions, shows a modal with version diff, and can self-update with backup + rollback.
-- **New panel UI** — dark theme with a design system (custom properties, tokens, responsive layout), sidebar navigation, stat cards, and modals.
-
-### Panel UI Improvements
-- **StormBreaker v3 header** — new branded header logo replacing the old shield icon.
-- **Collapsible sidebar groups** — chevron indicators on each group showing expand/collapse state.
-- **Devices after Phishing** — sidebar reordered so Devices appears right after the Phishing group for quicker access.
-- **device-info always on** — device fingerprinting is enabled by default and cannot be toggled off.
-- **Credentials toggle** — credentials payload is off by default; enabling it reveals Clone/Proxy mode radio buttons.
-- **Consistent radio/checkbox styling** — chip-style controls with `appearance: none` and custom pseudo-elements.
-
-### Capture Improvements
-- **Camera** — fixed snapshot interval leak (kept POSTing after camera revoked); proper cleanup on track `ended` / `pagehide`.
-- **Credentials** — coalesced `MutationObserver` bursts into one hook pass per frame.
-- **Per-target storage caps** — `CAPTURE_MAX_FRAMES`, `CAPTURE_MAX_CLIPS`, `CAPTURE_MAX_LOG_BYTES` → 429 when exceeded.
-
-### Clone Engine
-- Headless Chrome (`--dump-dom`) for full SPA rendering; falls back to cURL.
-- Strips all original `<script>` tags after render, injects payload block.
-- `<base href>` injection so un-downloaded assets still resolve.
-- Fixed stray `<?xml>` processing instruction left by UTF-8 parse.
-
-### Design System
-- **Cypher UI v1.1** — a standalone design system reference (`design-system.html`) documenting all tokens, components, and patterns used in the panel. Dark theme, Space Grotesk + Inter + JetBrains Mono type stack, cyan/green/amber/red accent palette with glow effects.
-
----
-
-## Requirements
-
-| Dependency | Required | Notes |
-|------------|----------|-------|
-| **PHP** | 7.4+ | Core runtime |
-| **ext-sqlite3** | Yes | Database storage |
-| **ext-curl** | Yes | Clone engine + update checker |
-| **ext-json** | Yes | API endpoints |
-| **ext-session** | Yes | Authentication |
-| **Headless Chrome** | Optional | Full SPA rendering; falls back to cURL without it |
-
----
-
-## Installation
-
-### Quick Start (local testing)
-
-> **Prerequisite:** PHP 7.4+ must be installed on your system. See [Installing PHP](#installing-php) below if you don't have it.
+## Quick Start
 
 ```bash
 git clone https://github.com/ultrasecurity/Storm-Breaker.git
@@ -106,243 +72,56 @@ php run-local.php
 
 Open `http://localhost:2525` — default credentials: `admin` / `admin`.
 
-### Server Deployment
+**Requirements:** PHP 7.4+ with ext-sqlite3, ext-curl, ext-json, ext-session. Headless Chrome optional (enables full SPA cloning).
 
-```bash
-git clone https://github.com/ultrasecurity/Storm-Breaker.git
-cd Storm-Breaker
-chmod +x deploy.sh
-./deploy.sh
-```
+---
 
-The deploy script handles the full production stack:
-
-1. **Detect OS** — supports Debian/Ubuntu (apt) and RHEL/Rocky/Alma/CentOS/Fedora (dnf/yum)
-2. **Install dependencies** — PHP 7.4+ with sqlite3, curl, json, session extensions + nginx + openssl
-3. **Verify PHP** — checks version and all required extensions
-4. **Check for headless Chrome** — optional, warns if missing
-5. **Create service user** — dedicated `stormbreaker` user with nologin shell
-6. **Harden storage** — `data/`, `targets/`, `log/` at 0700/0600 (owner-only); app code read-only to service user
-7. **Set up credentials** — if default `admin/admin` is detected, interactively prompts for a new username and password
-8. **systemd service** — PHP built-in server on 127.0.0.1:9874 with security hardening (NoNewPrivileges, PrivateTmp, ProtectSystem, UMask=0077)
-9. **TLS certificate** — self-signed by default, Let's Encrypt if `--domain` and `--email` provided
-10. **nginx reverse proxy** — TLS termination, HTTP→HTTPS redirect, security headers (HSTS, nosniff, SAMEORIGIN, noindex), defensive path blocks
-11. **Firewall** — auto-opens ports on ufw or firewalld
-12. **SELinux** — sets httpd_can_network_connect and file contexts on RHEL systems
-13. **Health check** — verifies the panel responds after deployment
-
-CLI flags for non-interactive deployment:
+## Server Deployment
 
 ```bash
 sudo bash deploy.sh --ip 1.2.3.4 --domain panel.example.com --email you@example.com
-sudo bash deploy.sh --uninstall   # remove service + nginx config
 ```
+
+The script auto-detects Debian/Ubuntu and RHEL/CentOS/Fedora, installs dependencies, creates a hardened systemd service, configures nginx with TLS, opens firewall ports, and sets SELinux contexts. It prompts for new credentials if defaults are still in place.
+
+| Flag | Description |
+|------|-------------|
+| `--ip` | Server IP address |
+| `--domain` | Domain for Let's Encrypt TLS (uses self-signed without it) |
+| `--email` | Email for Let's Encrypt registration |
+| `--https` / `--http` | HTTPS (default) or HTTP-only mode |
+| `--php-port` | Internal PHP port (default: 9874) |
+| `--user` | Service user name (default: stormbreaker) |
+| `--uninstall` | Remove service + nginx config |
 
 > **HTTPS is required** — camera, microphone, and geolocation APIs only work in secure contexts.
-
-### Installing Headless Chrome (optional)
-
-```bash
-# Debian/Ubuntu
-sudo apt install chromium-browser
-# or
-sudo apt install google-chrome-stable
-
-# CentOS/RHEL
-sudo yum install chromium
-
-# macOS
-brew install --cask google-chrome
-```
-
-### Installing PHP
-
-<details>
-<summary><b>macOS</b></summary>
-
-```bash
-brew install php
-```
-</details>
-
-<details>
-<summary><b>Debian / Ubuntu</b></summary>
-
-```bash
-sudo apt update
-sudo apt install php php-cli php-sqlite3 php-curl php-json
-```
-</details>
-
-<details>
-<summary><b>Fedora / RHEL / CentOS</b></summary>
-
-```bash
-sudo dnf install php php-cli php-pdo php-sqlite3 php-curl php-json
-```
-</details>
-
-<details>
-<summary><b>Arch Linux</b></summary>
-
-```bash
-sudo pacman -S php
-```
-</details>
-
----
-
-## How It Works
-
-```
-Operator                        Visitor
-   │                               │
-   ├── Login to panel              │
-   ├── Enter target URL            │
-   ├── Select payloads             │
-   ├── "Clone & host"              │
-   │    ├── Headless Chrome render  │
-   │    ├── Strip original scripts  │
-   │    └── Inject capture modules  │
-   │                               │
-   │    /<slug> ───────────────────>│
-   │                               ├── Page loads in browser
-   │                               ├── Payloads run (camera/mic/geo/...)
-   │                               └── Data POSTed to /api/capture.php
-   │                               │
-   ├── Dashboard shows live stats  │
-   ├── View captures, audio, geo…  │
-   └── Real-time notifications     │
-```
-
----
-
-## Project Structure
-
-```
-Storm-Breaker/
-├── run-local.php              # Dev server launcher (localhost:2525)
-├── deploy.sh                  # Server deployment helper
-├── Settings.json              # Version metadata (semver)
-├── design-system.html         # UI design system reference (Cypher UI v1.1)
-│
-└── storm-web/                 # Web root
-    ├── router.php             # Front controller (slug routing + security)
-    ├── index.php              # Entry point → panel or login
-    ├── auth.php               # Auth: bcrypt, session hardening
-    ├── config.php             # Credentials store (managed by auth.php)
-    ├── panel.php              # Operator panel (single-page, routed)
-    ├── login.php              # Login page
-    │
-    ├── api/
-    │   ├── capture.php        # PUBLIC ingestion endpoint (no auth)
-    │   ├── targets.php        # Clone CRUD (auth-required)
-    │   ├── captures.php       # Camera frame browser
-    │   ├── audio.php          # Audio clip browser
-    │   ├── geo.php            # Geolocation data
-    │   ├── credentials.php    # Captured credentials
-    │   ├── devices.php        # Device info
-    │   ├── notifications.php  # Real-time notification feed
-    │   └── update.php         # Auto-update from GitHub
-    │
-    ├── lib/
-    │   ├── cloner.php         # Clone engine (Chrome/cURL + inject)
-    │   └── store.php          # SQLite storage layer
-    │
-    ├── data/
-    │   └── storm.db           # SQLite database (auto-created)
-    │
-    ├── assets/
-    │   ├── payloads/          # Capture modules
-    │   │   ├── consent.js     # Consent gate (optional)
-    │   │   ├── camera.js      # Camera capture (gated)
-    │   │   ├── microphone.js  # Mic recording (gated)
-    │   │   ├── geolocation.js # Location tracking (gated)
-    │   │   ├── device-info.js # Device fingerprint (always on)
-    │   │   └── credentials.js # Form credential capture (gated)
-    │   ├── components/        # Panel UI partials
-    │   ├── css/               # Design system + panel styles
-    │   └── js/                # Panel helpers + vendor libs
-    │
-    ├── targets/               # Generated clones (output, not source)
-    ├── log/                   # Notification state
-    └── tools/
-        ├── migrate-to-sqlite.php  # Flat-file → SQLite migration
-        └── rerender-targets.php   # Re-inject payload into old clones
-```
 
 ---
 
 ## Usage
 
-### Creating a Target
-
-1. Go to **Targets** in the panel
-2. Enter the **Source URL** (the page to clone)
-3. Optionally set a custom **slug** (or leave blank for auto-generated)
-4. Select **payloads** to inject:
-   - `device-info` — always enabled (browser/OS fingerprint)
-   - `credentials` — form credential capture (off by default; enables Clone/Proxy mode selector)
-   - `geolocation` — GPS location tracking
-   - `camera` — camera snapshot capture
-   - `microphone` — audio recording
-5. Click **Clone & host**
-
-The cloned page is now live at `https://your-domain.com/<slug>`.
-
-### Viewing Captured Data
-
-- **Dashboard** — overview stats (total captures, audio clips, geo pings, active targets)
-- **Devices** — browser fingerprints and device info
-- **Credentials** — see captured form submissions
-- **Captures** — browse camera frames per target
-- **Audio** — play back recorded mic clips
-- **Geo Data** — view location pings on a map with coordinates + accuracy
-
-### Auto-Update
-
-Click the version number in the sidebar footer to check for updates. If a new version is available, a modal shows the version diff and an **Apply Update** button. The updater:
-
-- Downloads the latest ZIP from GitHub
-- Backs up current files (excluding `config.php`, `data/`, `targets/`, `log/`)
-- Copies new files over
-- Shows the result with file count and backup location
+1. Go to **Targets** → enter a URL → select payloads → **Clone & host**
+2. Send the generated `https://your-domain.com/<slug>` link to the target
+3. View captured data in **Devices**, **Credentials**, **Captures**, **Audio**, **Geo Data**
 
 ---
 
 ## Security Notes
 
 - **Change default credentials** — the deploy script prompts for this; do it.
-- **Use HTTPS** — camera/mic/geo APIs require a secure context.
-- **`capture.php` is intentionally public** — visitor browsers POST data to it. It has slug validation, path-traversal guards, and size/rate caps.
+- **`capture.php` is intentionally public** — it has slug validation, path-traversal guards, and size/rate caps.
 - **`data/` is protected** — `router.php` blocks direct access; `.htaccess` as backup.
-- **Session hardening** — `httponly`, `samesite=Strict`, secure flags, regeneration on login.
+- **systemd hardening** — `NoNewPrivileges`, `PrivateTmp`, `ProtectSystem=full`, `UMask=0077`.
 
 ---
 
 ## Migrating from v2
 
-If you have an existing Storm-Breaker v2 installation with flat-file data:
-
 ```bash
-cd Storm-Breaker
 php storm-web/tools/migrate-to-sqlite.php
 ```
 
-This reads `result.txt`, `meta.json`, `captures/`, and `audio/` from each target directory and imports them into the SQLite database. Safe to re-run.
-
----
-
-## Development
-
-```bash
-# Start the dev server
-php run-local.php                 # localhost:2525
-
-# Lint
-php -l storm-web/<file>.php       # PHP syntax check
-node --check storm-web/assets/payloads/<file>.js   # JS syntax check
-```
+Imports `result.txt`, `meta.json`, `captures/`, and `audio/` from each target into SQLite. Safe to re-run.
 
 ---
 
