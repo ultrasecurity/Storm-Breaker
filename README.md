@@ -115,48 +115,27 @@ chmod +x deploy.sh
 ./deploy.sh
 ```
 
-The deploy script will:
+The deploy script handles the full production stack:
 
-1. **Check PHP version** (7.4+ required)
-2. **Verify extensions** (json, session, sqlite3, curl)
-3. **Check for headless Chrome** (optional, warns if missing)
-4. **Create directories** (`data/`, `targets/`, `log/`) with proper permissions
-5. **Set up credentials** — if default `admin/admin` is detected, interactively prompts for a new username and password
+1. **Detect OS** — supports Debian/Ubuntu (apt) and RHEL/Rocky/Alma/CentOS/Fedora (dnf/yum)
+2. **Install dependencies** — PHP 7.4+ with sqlite3, curl, json, session extensions + nginx + openssl
+3. **Verify PHP** — checks version and all required extensions
+4. **Check for headless Chrome** — optional, warns if missing
+5. **Create service user** — dedicated `stormbreaker` user with nologin shell
+6. **Harden storage** — `data/`, `targets/`, `log/` at 0700/0600 (owner-only); app code read-only to service user
+7. **Set up credentials** — if default `admin/admin` is detected, interactively prompts for a new username and password
+8. **systemd service** — PHP built-in server on 127.0.0.1:9874 with security hardening (NoNewPrivileges, PrivateTmp, ProtectSystem, UMask=0077)
+9. **TLS certificate** — self-signed by default, Let's Encrypt if `--domain` and `--email` provided
+10. **nginx reverse proxy** — TLS termination, HTTP→HTTPS redirect, security headers (HSTS, nosniff, SAMEORIGIN, noindex), defensive path blocks
+11. **Firewall** — auto-opens ports on ufw or firewalld
+12. **SELinux** — sets httpd_can_network_connect and file contexts on RHEL systems
+13. **Health check** — verifies the panel responds after deployment
 
-Then point your web server's document root at `storm-web/`:
+CLI flags for non-interactive deployment:
 
-```nginx
-# Nginx example
-server {
-    listen 443 ssl;
-    server_name your-domain.com;
-
-    root /path/to/Storm-Breaker/storm-web;
-    index index.php;
-
-    location / {
-        try_files $uri $uri/ /router.php?$query_string;
-    }
-
-    location ~ \.php$ {
-        fastcgi_pass unix:/run/php/php-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        include fastcgi_params;
-    }
-
-    # Block direct access to data
-    location ~ ^/(data|log)/ {
-        deny all;
-    }
-}
-```
-
-```apache
-# Apache — .htaccess (included in storm-web/)
-RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ router.php [QSA,L]
+```bash
+sudo bash deploy.sh --ip 1.2.3.4 --domain panel.example.com --email you@example.com
+sudo bash deploy.sh --uninstall   # remove service + nginx config
 ```
 
 > **HTTPS is required** — camera, microphone, and geolocation APIs only work in secure contexts.
