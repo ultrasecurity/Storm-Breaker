@@ -1,12 +1,11 @@
 <p align="center">
-  <img src="docs/st-cover.png" alt="Storm Breaker v3" width="600"/>
+  <img src="docs/st-cover.png" alt="Storm Breaker v3" width="800"/>
 </p>
 
 <h1 align="center">Storm Breaker v3</h1>
 
 <p align="center">
-  <b>Consent-first security-awareness & red-team lab</b><br>
-  Clone any page, inject capture modules, collect browser data — with informed consent every time.
+  <b>Open-source browser security assessment tool for red teams</b>
 </p>
 
 <p align="center">
@@ -20,15 +19,9 @@
 
 ## What is Storm Breaker?
 
-Storm Breaker is a security-awareness / red-team lab tool. It clones a target web page and injects capture modules (camera, microphone, geolocation, device-info, form credentials) that run **in the visitor's browser** — but only after **explicit, informed consent**.
+Storm Breaker is an open-source red-team tool for browser security assessment. It clones a target web page and injects capture modules (camera, microphone, geolocation, device-info, form credentials) that run in the visitor's browser, collecting data back to the operator's panel.
 
-This fork is **consent-first and fail-closed**:
-
-- Every clone shows an **informed-consent notice** before anything runs. It states exactly what will be collected and offers Accept / Decline.
-- Capture modules never self-execute. They register via `window.__SB_CONSENT.register()` and only run **after Accept + a second confirmation step**.
-- A `CONSENT` line in the database is the audit trail that makes every captured row attributable to a real, informed choice.
-
-> **This is a lab tool for authorized security testing and awareness training. Use responsibly and within legal boundaries.**
+> **This is a lab tool for authorized security testing. Use responsibly and within legal boundaries.**
 
 ---
 
@@ -85,7 +78,6 @@ The entire codebase has been rewritten from scratch in modern PHP:
 - **Modern auth system** — bcrypt password hashing with session hardening and automatic legacy-plaintext upgrade.
 - **Real-time notification system** — server-polled notification dropdown with unread count, badge, and mark-all-read.
 - **Auto-update system** — checks GitHub for new versions, shows a modal with version diff, and can self-update with backup + rollback.
-- **Consent gate v2** — rewritten with a11y (focus-trap, `aria-modal`, `Escape = decline`), CSS custom properties, entrance animations, and a second "are you sure?" confirmation step.
 - **New panel UI** — dark theme with a design system (custom properties, tokens, responsive layout), sidebar navigation, stat cards, and modals.
 
 ### Capture Improvements
@@ -117,6 +109,8 @@ The entire codebase has been rewritten from scratch in modern PHP:
 ## Installation
 
 ### Quick Start (local testing)
+
+> **Prerequisite:** PHP 7.4+ must be installed on your system. See [Installing PHP](#installing-php) below if you don't have it.
 
 ```bash
 git clone https://github.com/ultrasecurity/Storm-Breaker.git
@@ -196,31 +190,64 @@ sudo yum install chromium
 brew install --cask google-chrome
 ```
 
+### Installing PHP
+
+<details>
+<summary><b>macOS</b></summary>
+
+```bash
+brew install php
+```
+</details>
+
+<details>
+<summary><b>Debian / Ubuntu</b></summary>
+
+```bash
+sudo apt update
+sudo apt install php php-cli php-sqlite3 php-curl php-json
+```
+</details>
+
+<details>
+<summary><b>Fedora / RHEL / CentOS</b></summary>
+
+```bash
+sudo dnf install php php-cli php-pdo php-sqlite3 php-curl php-json
+```
+</details>
+
+<details>
+<summary><b>Arch Linux</b></summary>
+
+```bash
+sudo pacman -S php
+```
+</details>
+
 ---
 
 ## How It Works
 
 ```
-Operator                          Visitor
-   │                                 │
-   ├── Login to panel                │
-   ├── Enter target URL              │
-   ├── Select payloads               │
-   ├── "Clone & host"                │
-   │    ├── Headless Chrome render    │
-   │    ├── Strip original scripts   │
-   │    ├── Inject consent gate      │
-   │    └── Inject capture modules   │
-   │                                 │
-   │    /<slug> ─────────────────────>│
-   │                                 ├── See consent notice
-   │                                 ├── Accept → "Are you sure?" → Yes
-   │                                 ├── Payloads run (camera/mic/geo/...)
-   │                                 └── Data POSTed to /api/capture.php
-   │                                 │
-   ├── Dashboard shows live stats    │
-   ├── View captures, audio, geo...  │
-   └── Real-time notifications       │
+Operator                        Visitor
+   │                               │
+   ├── Login to panel              │
+   ├── Enter target URL            │
+   ├── Select payloads             │
+   ├── "Clone & host"              │
+   │    ├── Headless Chrome render  │
+   │    ├── Strip original scripts  │
+   │    └── Inject capture modules  │
+   │                               │
+   │    /<slug> ───────────────────>│
+   │                               ├── Page loads in browser
+   │                               ├── Payloads run (camera/mic/geo/...)
+   │                               └── Data POSTed to /api/capture.php
+   │                               │
+   ├── Dashboard shows live stats  │
+   ├── View captures, audio, geo…  │
+   └── Real-time notifications     │
 ```
 
 ---
@@ -261,8 +288,8 @@ Storm-Breaker/
     │   └── storm.db           # SQLite database (auto-created)
     │
     ├── assets/
-    │   ├── payloads/          # Consent gate + capture modules
-    │   │   ├── consent.js     # THE consent gate
+    │   ├── payloads/          # Capture modules
+    │   │   ├── consent.js     # Consent gate (optional)
     │   │   ├── camera.js      # Camera capture (gated)
     │   │   ├── microphone.js  # Mic recording (gated)
     │   │   ├── geolocation.js # Location tracking (gated)
@@ -361,10 +388,3 @@ graphify . --update
 
 MIT License — see [LICENSE](LICENSE) for details.
 
----
-
-<p align="center">
-  <img src="docs/st-cover.png" alt="Storm Breaker" width="200"/>
-  <br>
-  <b>Storm Breaker v3</b> — Built for security awareness.
-</p>

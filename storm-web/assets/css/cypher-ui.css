@@ -231,7 +231,7 @@ body::after {
 }
 .app-header-inner {
   max-width: 1400px; margin: 0 auto;
-  padding: var(--space-3) var(--space-6);
+  padding: var(--space-4) var(--space-6);
   display: flex; align-items: center; gap: var(--space-5);
 }
 .brand {
@@ -1644,8 +1644,8 @@ body::after {
   flex-direction: column;
   gap: var(--space-1);
   position: sticky;
-  top: 57px;
-  height: calc(100vh - 57px);
+  top: 69px;
+  height: calc(100vh - 69px);
   overflow-y: auto;
 }
 .panel-sidebar-section {

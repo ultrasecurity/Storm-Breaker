@@ -25,9 +25,59 @@ fi
 
 # ── PHP version ──────────────────────────────────────────────
 
+detect_os() {
+    case "$(uname -s)" in
+        Darwin) OS="macos" ;;
+        Linux)
+            if [ -f /etc/os-release ]; then
+                . /etc/os-release
+                case "$ID" in
+                    ubuntu|debian|pop|linuxmint|elementary|kali) OS="debian" ;;
+                    fedora|rhel|centos|rocky|alma|ol) OS="rhel" ;;
+                    arch|manjaro|endeavouros) OS="arch" ;;
+                    opensuse*|sles) OS="suse" ;;
+                    alpine) OS="alpine" ;;
+                    *) OS="linux" ;;
+                esac
+            else
+                OS="linux"
+            fi
+            ;;
+        *) OS="unknown" ;;
+    esac
+}
+detect_os
+
+php_install_hint() {
+    case "$OS" in
+        macos)  echo "  brew install php" ;;
+        debian) echo "  sudo apt install php php-cli php-sqlite3 php-curl php-json" ;;
+        rhel)   echo "  sudo dnf install php php-cli php-pdo php-sqlite3 php-curl php-json" ;;
+        arch)   echo "  sudo pacman -S php" ;;
+        suse)   echo "  sudo zypper install php8 php8-sqlite php8-curl" ;;
+        alpine) echo "  sudo apk add php82 php82-sqlite3 php82-curl php82-session php82-json" ;;
+        *)      echo "  Install PHP 7.4+ with sqlite3, curl, json, and session extensions." ;;
+    esac
+}
+
+ext_install_hint() {
+    local exts="$1"
+    case "$OS" in
+        macos)  echo "  Extensions are bundled with Homebrew PHP. Try: brew reinstall php" ;;
+        debian) echo "  sudo apt install $(echo "$exts" | sed 's/[^ ]*/php-&/g')" ;;
+        rhel)   echo "  sudo dnf install $(echo "$exts" | sed 's/[^ ]*/php-&/g')" ;;
+        arch)   echo "  Enable them in /etc/php/php.ini (built-in with php package)" ;;
+        suse)   echo "  sudo zypper install $(echo "$exts" | sed 's/[^ ]*/php8-&/g')" ;;
+        alpine) echo "  sudo apk add $(echo "$exts" | sed 's/[^ ]*/php82-&/g')" ;;
+        *)      echo "  Install the missing PHP extensions: $exts" ;;
+    esac
+}
+
 info "Checking PHP availability"
 if ! command -v php >/dev/null 2>&1; then
-    err "php is not installed. Install PHP 7.4 or later before running this script."
+    err "PHP is not installed."
+    info "Install it with:"
+    php_install_hint
     exit 1
 fi
 
@@ -54,7 +104,8 @@ done
 
 if [ ${#MISSING[@]} -gt 0 ]; then
     err "Missing PHP extensions: ${MISSING[*]}"
-    err "Install them before continuing (e.g. apt install php-sqlite3 php-curl)."
+    info "Install them with:"
+    ext_install_hint "${MISSING[*]}"
     exit 1
 fi
 ok "Required extensions present (json, session, sqlite3, curl)"
@@ -62,7 +113,14 @@ ok "Required extensions present (json, session, sqlite3, curl)"
 # ── Optional: headless Chrome ────────────────────────────────
 
 info "Checking for headless Chrome (optional)"
+CHROME_FOUND=false
 if command -v google-chrome >/dev/null 2>&1 || command -v chromium-browser >/dev/null 2>&1 || command -v chromium >/dev/null 2>&1; then
+    CHROME_FOUND=true
+elif [ "$OS" = "macos" ] && [ -d "/Applications/Google Chrome.app" ]; then
+    CHROME_FOUND=true
+fi
+
+if $CHROME_FOUND; then
     ok "Headless Chrome found — clones will use full DOM rendering"
 else
     warn "Headless Chrome not found — clone engine will fall back to cURL (SPAs won't render fully)"
@@ -80,6 +138,21 @@ for d in "${WRITABLE[@]}"; do
     mkdir -p "$d"
     chmod 0755 "$d"
 done
+
+if [ "$OS" != "macos" ] && command -v id >/dev/null 2>&1; then
+    WEB_USER=""
+    for u in www-data nginx apache http; do
+        if id "$u" >/dev/null 2>&1; then
+            WEB_USER="$u"
+            break
+        fi
+    done
+    if [ -n "$WEB_USER" ]; then
+        chown -R "$WEB_USER:$WEB_USER" "$WEB/data" "$WEB/targets" "$WEB/log" 2>/dev/null && \
+            ok "Ownership set to ${WEB_USER}" || \
+            warn "Could not set ownership to ${WEB_USER} — run deploy.sh with sudo if needed"
+    fi
+fi
 
 # .gitkeep for targets
 touch "$WEB/targets/.gitkeep"
