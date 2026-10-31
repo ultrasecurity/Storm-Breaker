@@ -17,12 +17,7 @@
       <svg class="icon icon-md"><use href="#i-menu"/></svg>
     </button>
 
-    <a href="panel.php" class="brand">
-      <span class="brand-mark"><svg class="icon icon-md"><use href="#i-shield-check"/></svg></span>
-      <span class="brand-name">STORM<span>BREAKER</span></span>
-    </a>
-
-    <div class="app-header-actions" style="margin-left:auto">
+    <div class="app-header-actions">
 
       <!-- Notifications: bell + count badge + dropdown panel. -->
       <div class="notif-wrap">

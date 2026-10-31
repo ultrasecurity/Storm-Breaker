@@ -195,6 +195,28 @@ if ($route !== 'home' && isset($badge_map[$route])) {
   </div>
 </div>
 
+<!-- ── UPDATE MODAL ────────────────────────────────────── -->
+<div class="modal-scrim" id="modal-update" onclick="handleScrimClick(event,'modal-update')">
+  <div class="modal modal-md" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <div class="modal-icon modal-icon-cyan"><svg class="icon icon-md"><use href="#i-download-cloud"/></svg></div>
+        <div>
+          <div class="modal-title">VERSION</div>
+          <div class="modal-subtitle">// update check</div>
+        </div>
+      </div>
+      <button type="button" class="modal-x" onclick="closeModal('modal-update')"><svg class="icon icon-sm"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="modal-body" id="update-modal-body">
+      <div class="upd-progress"><svg class="icon icon-sm spin"><use href="#i-loader"/></svg> Checking for updates…</div>
+    </div>
+    <div class="modal-footer" id="update-modal-footer">
+      <button type="button" class="btn btn-ghost btn-sm" onclick="closeModal('modal-update')">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── TOAST CONTAINER ─────────────────────────────────── -->
 <div class="toast-container" id="toastContainer"></div>
 
@@ -284,6 +306,167 @@ function dismissToast(id) {
   el.classList.add('removing');
   el.addEventListener('animationend', () => el.remove(), { once: true });
 }
+
+/* ── Version / update system ──────────────────────────── */
+const versionBtn = document.getElementById('btn-version');
+const versionV   = document.getElementById('sidebar-version-v');
+const versionDot = versionBtn?.querySelector('.sidebar-version-dot');
+let lastVerData  = null;
+
+function setVersionState(state) {
+  if (versionDot) versionDot.dataset.state = state;
+}
+
+async function fetchVersion(force = false) {
+  setVersionState('checking');
+  try {
+    const r = await fetch('api/update.php?action=check' + (force ? '&force=1' : ''));
+    const j = await r.json();
+    if (!j.ok) throw new Error('check failed');
+    lastVerData = j;
+    if (versionV) versionV.textContent = 'v' + j.local_version;
+    if (j.update_available) {
+      setVersionState('update');
+      if (versionBtn) versionBtn.dataset.update = 'available';
+    } else {
+      setVersionState('ok');
+      if (versionBtn) delete versionBtn.dataset.update;
+    }
+  } catch {
+    setVersionState('error');
+  }
+}
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+function renderUpdateModal() {
+  const body = document.getElementById('update-modal-body');
+  const footer = document.getElementById('update-modal-footer');
+  const d = lastVerData;
+
+  if (!d) {
+    body.innerHTML = '<div class="upd-progress"><svg class="icon icon-sm spin"><use href="#i-loader"/></svg> Checking for updates…</div>';
+    footer.innerHTML = '<button type="button" class="btn btn-ghost btn-sm" onclick="closeModal(\'modal-update\')">Close</button>';
+    return;
+  }
+
+  if (d.update_available === true) {
+    body.innerHTML = `
+      <div class="upd-head"><span class="upd-state upd-state-new">UPDATE AVAILABLE</span></div>
+      <div class="upd-versions">
+        <div class="upd-version-row">
+          <span class="upd-version-k">Installed</span>
+          <span class="upd-version-v">v${esc(d.local_version)}</span>
+        </div>
+        <div class="upd-version-row upd-version-new">
+          <span class="upd-version-k">Latest</span>
+          <span class="upd-version-v">v${esc(d.remote_version)}</span>
+        </div>
+      </div>
+      <div class="upd-summary">A new version is available on GitHub. Click <strong>Update now</strong> to download and apply it automatically. Your config, database, and captured data will not be touched.</div>
+    `;
+    footer.innerHTML = `
+      <button type="button" class="btn btn-ghost btn-sm" id="upd-check-again" onclick="recheckVersion()">
+        <svg class="icon icon-sm"><use href="#i-loader"/></svg> Check again
+      </button>
+      <button type="button" class="btn btn-primary btn-sm" id="upd-apply" onclick="applyUpdate()">
+        <svg class="icon icon-sm"><use href="#i-download-cloud"/></svg> Update now
+      </button>
+    `;
+  } else if (d.update_available === false) {
+    body.innerHTML = `
+      <div class="upd-head"><span class="upd-state upd-state-ok">UP TO DATE</span></div>
+      <div class="upd-versions">
+        <div class="upd-version-row">
+          <span class="upd-version-k">Installed</span>
+          <span class="upd-version-v">v${esc(d.local_version)}</span>
+        </div>
+      </div>
+      <div class="upd-summary">You're running the latest release. Last checked ${d.checked_at ? new Date(d.checked_at * 1000).toLocaleString() : 'just now'}.</div>
+    `;
+    footer.innerHTML = `
+      <button type="button" class="btn btn-ghost btn-sm" id="upd-check-again" onclick="recheckVersion()">
+        <svg class="icon icon-sm"><use href="#i-loader"/></svg> Check again
+      </button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="closeModal('modal-update')">Close</button>
+    `;
+  } else {
+    body.innerHTML = `
+      <div class="upd-head"><span class="upd-state upd-state-err">CHECK FAILED</span></div>
+      <div class="upd-versions">
+        <div class="upd-version-row">
+          <span class="upd-version-k">Installed</span>
+          <span class="upd-version-v">v${esc(d.local_version || '?')}</span>
+        </div>
+      </div>
+      <div class="upd-warn">Could not reach the update server. This is usually a network or rate-limit issue — try again in a minute.</div>
+    `;
+    footer.innerHTML = `
+      <button type="button" class="btn btn-ghost btn-sm" id="upd-check-again" onclick="recheckVersion()">
+        <svg class="icon icon-sm"><use href="#i-loader"/></svg> Retry
+      </button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="closeModal('modal-update')">Close</button>
+    `;
+  }
+}
+
+function openUpdateModal() {
+  renderUpdateModal();
+  openModal('modal-update');
+  if (!lastVerData) {
+    fetchVersion(true).then(() => renderUpdateModal());
+  }
+}
+
+async function recheckVersion() {
+  const btn = document.getElementById('upd-check-again');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<svg class="icon icon-sm spin"><use href="#i-loader"/></svg> Checking…'; }
+  await fetchVersion(true);
+  renderUpdateModal();
+}
+
+async function applyUpdate() {
+  const btn = document.getElementById('upd-apply');
+  const body = document.getElementById('update-modal-body');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<svg class="icon icon-sm spin"><use href="#i-loader"/></svg> Updating…'; }
+  body.innerHTML = '<div class="upd-progress"><svg class="icon icon-sm spin"><use href="#i-loader"/></svg> Downloading update from GitHub… This may take a moment.</div>';
+  document.getElementById('update-modal-footer').innerHTML = '';
+
+  try {
+    const r = await fetch('api/update.php?action=apply', { method: 'POST' });
+    const data = await r.json();
+    if (data.ok) {
+      body.innerHTML = `
+        <div class="upd-head"><span class="upd-state upd-state-ok">UPDATE COMPLETE</span></div>
+        <div class="upd-versions">
+          <div class="upd-version-row upd-version-new">
+            <span class="upd-version-k">New version</span>
+            <span class="upd-version-v">v${esc(data.new_version)}</span>
+          </div>
+        </div>
+        <div class="upd-summary">${data.updated_files} files updated. Backup saved to <code>data/${esc(data.backup_dir)}</code>. Reloading in 2 seconds…</div>
+      `;
+      fireToast('success', 'UPDATE COMPLETE', 'Storm Breaker updated to v' + data.new_version);
+      setTimeout(() => location.reload(), 2000);
+    } else {
+      body.innerHTML = `
+        <div class="upd-head"><span class="upd-state upd-state-err">UPDATE FAILED</span></div>
+        <div class="upd-warn">${esc(data.error || 'Unknown error')}</div>
+      `;
+      document.getElementById('update-modal-footer').innerHTML = '<button type="button" class="btn btn-primary btn-sm" onclick="closeModal(\'modal-update\')">Close</button>';
+      fireToast('error', 'UPDATE FAILED', data.error || 'Unknown error');
+    }
+  } catch (e) {
+    body.innerHTML = `
+      <div class="upd-head"><span class="upd-state upd-state-err">NETWORK ERROR</span></div>
+      <div class="upd-warn">${esc(e.message)}</div>
+    `;
+    document.getElementById('update-modal-footer').innerHTML = '<button type="button" class="btn btn-primary btn-sm" onclick="closeModal(\'modal-update\')">Close</button>';
+  }
+}
+
+versionBtn?.addEventListener('click', openUpdateModal);
+setTimeout(() => fetchVersion(false), 1500);
 
 /* Save settings (POST → settings.php) */
 async function saveSettings(e) {

@@ -17,6 +17,10 @@ $nav = [
 ];
 ?>
 <aside class="panel-sidebar" id="panelSidebar">
+  <a href="panel.php" class="sidebar-brand">
+    <span class="brand-mark"><svg class="icon icon-md"><use href="#i-shield-check"/></svg></span>
+    <span class="brand-name">STORM<span>BREAKER</span></span>
+  </a>
   <div class="panel-sidebar-section">Navigation</div>
   <?php foreach ($nav as $key => $item): ?>
     <a href="<?= htmlspecialchars($item['url']) ?>"
@@ -34,7 +38,10 @@ $nav = [
       <svg class="icon panel-sidebar-icon"><use href="#i-log-out"/></svg>
       <span>Log out</span>
     </a>
-    <div class="panel-sidebar-footer">Storm Breaker · v3.0</div>
+    <button type="button" class="panel-sidebar-footer sidebar-version-btn" id="btn-version" title="Click to check for updates">
+      <span class="sidebar-version-dot" data-state="idle"></span>
+      Storm Breaker · <span id="sidebar-version-v">v<?= json_decode(file_get_contents(__DIR__ . '/../../Settings.json'), true)['version'] ?? '?' ?></span>
+    </button>
   </div>
 </aside>
 <div class="panel-sidebar-scrim" id="panelSidebarScrim" onclick="toggleSidebar()"></div>

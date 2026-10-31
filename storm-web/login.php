@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
 
     <div class="login-footer">
-      <div>v3.0</div>
+      <div>v<?= json_decode(file_get_contents(__DIR__ . '/Settings.json'), true)['version'] ?? '?' ?></div>
       <div class="status"><span class="dot"></span> Ready</div>
     </div>
   </div>
