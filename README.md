@@ -5,7 +5,7 @@
 <h1 align="center">Storm Breaker v3</h1>
 
 <p align="center">
-  <b>Open-source social engineering tool for red team</b>
+  <b>Advanced Phishing & Social Engineering Framework with MITM Proxy, Credential Harvesting, Session Hijacking, and Browser-Based Tracking.</b>
 </p>
 
 <p align="center">
