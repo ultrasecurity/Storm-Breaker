@@ -1,23 +1,23 @@
 <?php
+// index.php — entry point.
+//
+// Normally Apache / Nginx / `run-local.php` route every request through
+// router.php, so this file is only ever hit for `/`. The conditional below
+// covers the awkward case where the PHP built-in server is started WITHOUT
+// router.php as its router argument (e.g. `php -S host:port -t storm-web`):
+// for any URL whose file doesn't exist, PHP falls back to the nearest
+// index.php. Without this defer, that fallback would silently break the
+// slug routing for cloned targets and force victims through login.php.
 
-session_start();
-
-$key = json_decode(file_get_contents("check-c.json"),true);
-
-if(isset($_COOKIE['logindata']) && $_COOKIE['logindata'] == $key['token'] && $key['expired'] == "no"){
-	header("location: panel.php");
-
-    
+$path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '/';
+$path = '/' . ltrim($path, '/');
+if ($path !== '/' && $path !== '/index.php') {
+    require __DIR__ . '/router.php';
+    exit;
 }
 
-elseif(isset($_SESSION['IAm-logined'])){
-	header('location: panel.php');
-	exit;
-}
+require_once __DIR__ . '/auth.php';
+auth_boot();
 
-else{
-	header("location: login.php");
-	exit;
-}
-
-?>
+header('Location: ' . (auth_user() !== null ? 'panel.php' : 'login.php'));
+exit;

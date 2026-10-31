@@ -1,111 +1,130 @@
-<h1 align="center">
-  <br>
-  <a href="https://github.com/ultrasecurity/Storm-Breaker"><img src=".imgs/1demo.png" alt="StormBreaker"></a>
+<p align="center">
+  <img src="docs/st-cover.png" alt="Storm Breaker v3" width="800"/>
+</p>
 
-</h1>
-
-<h4 align="center">A Tool With Attractive Capabilities. </h4>
+<h1 align="center">Storm Breaker v3</h1>
 
 <p align="center">
-
-  <a href="http://python.org">
-    <img src="https://img.shields.io/badge/python-v3-blue">
-  </a>
-  <a href="https://php.net">
-    <img src="https://img.shields.io/badge/php-7.4.4-green"
-         alt="php">
-  </a>
-
-  <a href="https://en.wikipedia.org/wiki/Linux">
-    <img src="https://img.shields.io/badge/Platform-Linux-red">
-  </a>
-
+  <b>Open-source social engineering tool for red team</b>
 </p>
 
-![demo](.imgs/screen1.jpeg)
+<p align="center">
+  <img src="https://img.shields.io/badge/version-3.0.0-00c8ff?style=flat-square" alt="Version 3.0.0"/>
+  <img src="https://img.shields.io/badge/PHP-7.4+-777bb4?style=flat-square&logo=php" alt="PHP 7.4+"/>
+  <img src="https://img.shields.io/badge/SQLite-3-003b57?style=flat-square&logo=sqlite" alt="SQLite 3"/>
+  <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT License"/>
+</p>
 
-### Features:
+---
 
-- Obtain Device Information Without Any Permission !
-- Access Location [SMARTPHONES]
-- Access Webcam
-- Access Microphone
+## What is Storm Breaker?
 
-<br>
+Storm Breaker clones a target web page and injects capture modules (camera, microphone, geolocation, device-info, form credentials) that run in the visitor's browser, collecting data back to the operator's panel.
 
-### Update Log:
+> **This is a lab tool for authorized security testing. Use responsibly and within legal boundaries.**
 
-- Second (latest) Update on November 4th , 2022 .
-- The overall structure of the tool is programmed from the beginning and is available as a web panel (in previous versions, the tool was available in the command line).
-- Previous version's bugs fixed !
-- Auto-download Ngrok Added !
-- The templates have been optimized !
-- Logs can be downloaded (NEW) !
-- Clear log Added !
-- It can be uploaded on a personal host (you won't have the Ngork problems anymore)
-- You can start and stop the listener anytime ! (At will)
-- Beautified user interface (NEW) !
+---
 
-> We have deleted Ngrok in the new version of Storm breaker and entrusted the user with running and sharing the localhost . So please note that Storm breaker runs a localhost for you and you have to start the Ngrok on your intended port yourself .
-> <br>
+## Features
 
-#### Attention! :
+- **Page Cloning** — Headless Chrome rendering with cURL fallback; strips original scripts, injects payloads, resolves assets via `<base href>`
+- **Camera Capture** — periodic snapshots from the visitor's webcam with proper cleanup on revoke/pagehide
+- **Microphone Recording** — audio clip capture from the visitor's mic
+- **Geolocation Tracking** — GPS location pings with coordinates and accuracy
+- **Device Fingerprinting** — browser, OS, screen, and hardware info (always on)
+- **Credential Harvesting** — intercepts form submissions on cloned pages (Clone or Proxy mode)
+- **Real-time Notifications** — server-polled notification feed with unread count and badge
+- **Auto-Update** — checks GitHub for new versions, self-updates with backup + rollback
+- **SQLite Storage** — WAL journal mode, foreign keys, cascade deletes, per-target storage caps
+- **bcrypt Auth** — session hardening (`httponly`, `samesite=Strict`, secure flags), auto legacy-upgrade
+- **Production Deploy Script** — one command sets up nginx reverse proxy, TLS (self-signed or Let's Encrypt), systemd with security hardening, firewall (ufw/firewalld), SELinux, and health checks
+- **Dark Theme Panel** — Cypher UI design system with responsive layout, collapsible sidebar groups, stat cards
+- **v2 Migration** — imports flat-file data into SQLite; safe to re-run
 
-> This version can be run on both local host and your personal domain and host . However , you can use it for both situations. If your country has suspended the Ngrok service, or your country's banned Ngrok, or your victim can't open the Ngrok link (for the reasons such as : He sees such a link as suspicious, Or if this service is suspended in his country) We suggest using the tool on your personal host and domain .
-> <br>
+---
 
-## Default username and password:
+## Screenshots
 
-- `username` : `admin`
-- `password` : `admin`
-- You can edit the config.php file to change the username and password .
-  <br>
+### Targets — Clone & Host
+<p align="center">
+  <img src="docs/screenshots/targets.png" alt="Targets" width="100%"/>
+</p>
 
-### Dependencies
+### Credentials — Captured Logins
+<p align="center">
+  <img src="docs/screenshots/credentials.png" alt="Credentials" width="100%"/>
+</p>
 
-**`Storm Breaker`** requires following programs to run properly -
+### Geo Data — Location Pings
+<p align="center">
+  <img src="docs/screenshots/geo.png" alt="Geo Data" width="100%"/>
+</p>
 
-- `php`
-- `python3`
-- `git`
-- `Ngrok`
+---
 
-<!-- ![demo](.imgs/Work3.gif) -->
-<br>
+## Quick Start
 
-### Platforms Tested
-
-- Kali Linux 2022
-- macOS Big Sur / M1
-- Termux (android)
-- Personal host (direct admin and cPanel)
-  <br>
-
-### Installation On Kali Linux
-
-```
-git clone https://github.com/ultrasecurity/Storm-Breaker
+```bash
+git clone https://github.com/ultrasecurity/Storm-Breaker.git
 cd Storm-Breaker
-sudo bash install.sh
-sudo python3 -m pip install -r requirements.txt
-sudo python3 st.py
+php run-local.php
 ```
 
-<br>
+Open `http://localhost:2525` — default credentials: `admin` / `admin`.
 
-**`how to run personal host 👇`**
+**Requirements:** PHP 7.4+ with ext-sqlite3, ext-curl, ext-json, ext-session. Headless Chrome optional (enables full SPA cloning).
 
-> Zip the contents of the storm-web folder completely and upload it to the public_html path .
+---
 
-> Note that the tool should not be opened in a path like this > yourdomain.com/st-web
-> Instead , it should be opened purely in the public_html path (i.e. : don't just zip the storm-web folder itself, but manually zip its contents (the index.php file and other belongings should be in the public_html path)
+## Server Deployment
 
-#### Attention!:
+```bash
+sudo bash deploy.sh --ip 1.2.3.4 --domain panel.example.com --email you@example.com
+```
 
-> Note that to use this tool on your Localhost , You also need SSL . Because many of the tool's capabilities require SSL .
+The script auto-detects Debian/Ubuntu and RHEL/CentOS/Fedora, installs dependencies, creates a hardened systemd service, configures nginx with TLS, opens firewall ports, and sets SELinux contexts. It prompts for new credentials if defaults are still in place.
 
-#### Attention!:
+| Flag | Description |
+|------|-------------|
+| `--ip` | Server IP address |
+| `--domain` | Domain for Let's Encrypt TLS (uses self-signed without it) |
+| `--email` | Email for Let's Encrypt registration |
+| `--https` / `--http` | HTTPS (default) or HTTP-only mode |
+| `--php-port` | Internal PHP port (default: 9874) |
+| `--user` | Service user name (default: stormbreaker) |
+| `--uninstall` | Remove service + nginx config |
 
-> To run ngrok on termux you need to enable your personal hotspot and cellular network.
+> **HTTPS is required** — camera, microphone, and geolocation APIs only work in secure contexts.
 
-</p>
+---
+
+## Usage
+
+1. Go to **Targets** → enter a URL → select payloads → **Clone & host**
+2. Send the generated `https://your-domain.com/<slug>` link to the target
+3. View captured data in **Devices**, **Credentials**, **Captures**, **Audio**, **Geo Data**
+
+---
+
+## Security Notes
+
+- **Change default credentials** — the deploy script prompts for this; do it.
+- **`capture.php` is intentionally public** — it has slug validation, path-traversal guards, and size/rate caps.
+- **`data/` is protected** — `router.php` blocks direct access; `.htaccess` as backup.
+- **systemd hardening** — `NoNewPrivileges`, `PrivateTmp`, `ProtectSystem=full`, `UMask=0077`.
+
+---
+
+## Migrating from v2
+
+```bash
+php storm-web/tools/migrate-to-sqlite.php
+```
+
+Imports `result.txt`, `meta.json`, `captures/`, and `audio/` from each target into SQLite. Safe to re-run.
+
+---
+
+## License
+
+MIT License — see [LICENSE](LICENSE) for details.
