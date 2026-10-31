@@ -21,6 +21,7 @@
  */
 
 require_once __DIR__ . '/lib/cloner.php';
+require_once __DIR__ . '/lib/store.php';
 
 $docroot      = __DIR__;
 $targets_root = $docroot . '/targets';
@@ -64,6 +65,26 @@ $slug  = strtolower($parts[0] ?? '');
 $rest  = array_slice($parts, 1);
 
 if ($slug !== '' && cloner_valid_slug($slug)) {
+    // Check if this is a proxy-mode target
+    if (count($rest) >= 1 && $rest[0] === 'proxy') {
+        $target = store_target_get($slug);
+        if ($target !== null && ($target['mode'] ?? 'clone') === 'proxy') {
+            require_once __DIR__ . '/lib/proxy.php';
+            $sub_path = implode('/', array_slice($rest, 1));
+            proxy_handle($slug, $sub_path, $target);
+            exit;
+        }
+    }
+
+    // For proxy-mode targets, bare /<slug> redirects to /<slug>/proxy/
+    $target_check = store_target_get($slug);
+    if ($target_check !== null && ($target_check['mode'] ?? 'clone') === 'proxy') {
+        if (count($rest) === 0) {
+            header('Location: /' . $slug . '/proxy/', true, 302);
+            exit;
+        }
+    }
+
     $target_dir = $targets_root . '/' . $slug;
     if (is_dir($target_dir)) {
         // /<slug>  or  /<slug>/  →  index.html

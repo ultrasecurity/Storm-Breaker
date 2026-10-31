@@ -7,6 +7,6 @@
 // Default credentials: admin / admin  (change them via the panel's settings).
 $CONFIG = [
     'admin' => [
-        'hash' => '$2y$10$rWRM/86rX63rwTadZAu1AeGyhH6ddlkKjaHMRRTiu8S78XDjg6aq2',
+        'hash' => '$2y$12$c5kdjb51ZJPFtLii2TXo8uKRQ9nnqFZNNrubMeZ.KrTQChPfYmjnO',
     ],
 ];

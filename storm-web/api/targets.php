@@ -111,6 +111,31 @@ if ($action === 'create') {
     $host           = (string) ($_SERVER['HTTP_HOST'] ?? 'localhost');
     $public_origin  = "{$proto}://{$host}";
 
+    $mode = strtolower(trim((string) ($_POST['mode'] ?? 'clone')));
+    if ($mode !== 'clone' && $mode !== 'proxy') {
+        reply(400, ['ok' => false, 'error' => 'Mode must be "clone" or "proxy".']);
+    }
+
+    $target_host = (string) parse_url($url, PHP_URL_HOST);
+
+    if ($mode === 'proxy') {
+        @mkdir($target_dir, 0755, true);
+        store_target_create($slug, $url, $target_host, $payloads, [], 'proxy', '', 'proxy');
+        $meta = [
+            'slug'        => $slug,
+            'url'         => $url,
+            'host'        => $target_host,
+            'payloads'    => $payloads,
+            'mode'        => 'proxy',
+            'render_mode' => 'proxy',
+            'created_at'  => time(),
+        ];
+        file_put_contents("$target_dir/meta.json", json_encode($meta, JSON_PRETTY_PRINT), LOCK_EX);
+        $meta['captures_count'] = 0;
+        $meta['audio_count']    = 0;
+        reply(200, ['ok' => true, 'target' => $meta, 'warnings' => []]);
+    }
+
     $consent_in = api_targets_read_consent();
     $consent    = cloner_consent_config($consent_in ?? []);
 
@@ -121,12 +146,8 @@ if ($action === 'create') {
     }
 
     $render_mode = $result['render_mode'] ?? 'http';
-    $target_host = (string) parse_url($url, PHP_URL_HOST);
 
-    // Write to DB instead of meta.json.
-    store_target_create($slug, $url, $target_host, $payloads, $consent_in ?? [], $render_mode);
-    // Patch created_at since store_target_create uses time().
-    // Also keep meta.json for backward compat during transition.
+    store_target_create($slug, $url, $target_host, $payloads, $consent_in ?? [], $render_mode, '', 'clone');
     $meta = [
         'slug'        => $slug,
         'url'         => $url,
@@ -134,6 +155,7 @@ if ($action === 'create') {
         'payloads'    => $payloads,
         'consent'     => $consent_in ?? [],
         'render_mode' => $render_mode,
+        'mode'        => 'clone',
         'created_at'  => time(),
     ];
     file_put_contents("$target_dir/meta.json", json_encode($meta, JSON_PRETTY_PRINT), LOCK_EX);

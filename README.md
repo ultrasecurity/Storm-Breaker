@@ -27,44 +27,19 @@ Storm Breaker is an open-source social engineering tool for red team. It clones 
 
 ## Screenshots
 
-### Login
-<p align="center">
-  <img src="docs/screenshots/login.png" alt="Login" width="100%"/>
-</p>
-
-### Dashboard
-<p align="center">
-  <img src="docs/screenshots/dashboard.png" alt="Dashboard" width="100%"/>
-</p>
-
 ### Targets — Clone & Host
 <p align="center">
   <img src="docs/screenshots/targets.png" alt="Targets" width="100%"/>
 </p>
 
-### Captures — Camera Frames
+### Credentials — Captured Logins
 <p align="center">
-  <img src="docs/screenshots/captures.png" alt="Captures" width="100%"/>
+  <img src="docs/screenshots/credentials.png" alt="Credentials" width="100%"/>
 </p>
 
 ### Geo Data — Location Pings
 <p align="center">
   <img src="docs/screenshots/geo.png" alt="Geo Data" width="100%"/>
-</p>
-
-### Audio — Mic Clips
-<p align="center">
-  <img src="docs/screenshots/audio.png" alt="Audio" width="100%"/>
-</p>
-
-### Credentials
-<p align="center">
-  <img src="docs/screenshots/credentials.png" alt="Credentials" width="100%"/>
-</p>
-
-### Devices
-<p align="center">
-  <img src="docs/screenshots/devices.png" alt="Devices" width="100%"/>
 </p>
 
 ---
@@ -80,6 +55,14 @@ The entire codebase has been rewritten from scratch in modern PHP:
 - **Auto-update system** — checks GitHub for new versions, shows a modal with version diff, and can self-update with backup + rollback.
 - **New panel UI** — dark theme with a design system (custom properties, tokens, responsive layout), sidebar navigation, stat cards, and modals.
 
+### Panel UI Improvements
+- **StormBreaker v3 header** — new branded header logo replacing the old shield icon.
+- **Collapsible sidebar groups** — chevron indicators on each group showing expand/collapse state.
+- **Devices after Phishing** — sidebar reordered so Devices appears right after the Phishing group for quicker access.
+- **device-info always on** — device fingerprinting is enabled by default and cannot be toggled off.
+- **Credentials toggle** — credentials payload is off by default; enabling it reveals Clone/Proxy mode radio buttons.
+- **Consistent radio/checkbox styling** — chip-style controls with `appearance: none` and custom pseudo-elements.
+
 ### Capture Improvements
 - **Camera** — fixed snapshot interval leak (kept POSTing after camera revoked); proper cleanup on track `ended` / `pagehide`.
 - **Credentials** — coalesced `MutationObserver` bursts into one hook pass per frame.
@@ -90,6 +73,9 @@ The entire codebase has been rewritten from scratch in modern PHP:
 - Strips all original `<script>` tags after render, injects payload block.
 - `<base href>` injection so un-downloaded assets still resolve.
 - Fixed stray `<?xml>` processing instruction left by UTF-8 parse.
+
+### Design System
+- **Cypher UI v1.1** — a standalone design system reference (`design-system.html`) documenting all tokens, components, and patterns used in the panel. Dark theme, Space Grotesk + Inter + JetBrains Mono type stack, cyan/green/amber/red accent palette with glow effects.
 
 ---
 
@@ -259,6 +245,7 @@ Storm-Breaker/
 ├── run-local.php              # Dev server launcher (localhost:2525)
 ├── deploy.sh                  # Server deployment helper
 ├── Settings.json              # Version metadata (semver)
+├── design-system.html         # UI design system reference (Cypher UI v1.1)
 │
 └── storm-web/                 # Web root
     ├── router.php             # Front controller (slug routing + security)
@@ -267,7 +254,6 @@ Storm-Breaker/
     ├── config.php             # Credentials store (managed by auth.php)
     ├── panel.php              # Operator panel (single-page, routed)
     ├── login.php              # Login page
-    ├── Settings.json          # Version metadata
     │
     ├── api/
     │   ├── capture.php        # PUBLIC ingestion endpoint (no auth)
@@ -293,7 +279,7 @@ Storm-Breaker/
     │   │   ├── camera.js      # Camera capture (gated)
     │   │   ├── microphone.js  # Mic recording (gated)
     │   │   ├── geolocation.js # Location tracking (gated)
-    │   │   ├── device-info.js # Device fingerprint (gated)
+    │   │   ├── device-info.js # Device fingerprint (always on)
     │   │   └── credentials.js # Form credential capture (gated)
     │   ├── components/        # Panel UI partials
     │   ├── css/               # Design system + panel styles
@@ -316,8 +302,8 @@ Storm-Breaker/
 2. Enter the **Source URL** (the page to clone)
 3. Optionally set a custom **slug** (or leave blank for auto-generated)
 4. Select **payloads** to inject:
-   - `credentials` — always enabled (intercepts form submissions)
-   - `device-info` — browser/OS fingerprint
+   - `device-info` — always enabled (browser/OS fingerprint)
+   - `credentials` — form credential capture (off by default; enables Clone/Proxy mode selector)
    - `geolocation` — GPS location tracking
    - `camera` — camera snapshot capture
    - `microphone` — audio recording
@@ -328,11 +314,11 @@ The cloned page is now live at `https://your-domain.com/<slug>`.
 ### Viewing Captured Data
 
 - **Dashboard** — overview stats (total captures, audio clips, geo pings, active targets)
+- **Devices** — browser fingerprints and device info
+- **Credentials** — see captured form submissions
 - **Captures** — browse camera frames per target
 - **Audio** — play back recorded mic clips
 - **Geo Data** — view location pings on a map with coordinates + accuracy
-- **Credentials** — see captured form submissions
-- **Devices** — browser fingerprints and device info
 
 ### Auto-Update
 
@@ -377,9 +363,6 @@ php run-local.php                 # localhost:2525
 # Lint
 php -l storm-web/<file>.php       # PHP syntax check
 node --check storm-web/assets/payloads/<file>.js   # JS syntax check
-
-# Rebuild knowledge graph (after large changes)
-graphify . --update
 ```
 
 ---
@@ -387,4 +370,3 @@ graphify . --update
 ## License
 
 MIT License — see [LICENSE](LICENSE) for details.
-
