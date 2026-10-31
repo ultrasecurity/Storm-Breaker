@@ -38,7 +38,6 @@ Storm Breaker clones a target web page and injects capture modules (camera, micr
 - **Device Fingerprinting** — browser, OS, screen, and hardware info (always on)
 - **Homograph Domain Generator** — 9 confusion categories: Cyrillic, Armenian, Greek, mixed-script, diacritics, digit swap, bigram swap, edit distance, and TLD swap with RDAP availability check
 - **Real-time SSE Stream** — Server-Sent Events push for live credential and session notifications
-- **Auto-Update** — checks GitHub for new versions, self-updates with backup + rollback
 
 ---
 
