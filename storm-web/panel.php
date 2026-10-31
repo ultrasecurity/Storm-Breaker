@@ -69,8 +69,42 @@ if ($route !== 'home' && isset($badge_map[$route])) {
   <?php include "./assets/components/sidebar.php"; ?>
 
   <div class="panel-content">
-    <h1 class="panel-page-title"><?= htmlspecialchars($page['title']) ?></h1>
-    <p class="panel-page-sub"><?= htmlspecialchars($page['sub']) ?></p>
+    <div class="panel-page-header">
+      <div>
+        <h1 class="panel-page-title"><?= htmlspecialchars($page['title']) ?></h1>
+        <p class="panel-page-sub"><?= htmlspecialchars($page['sub']) ?></p>
+      </div>
+      <div class="panel-page-actions">
+        <div class="notif-wrap">
+          <button class="icon-btn notif-btn" id="notif-btn" type="button"
+                  aria-label="Notifications" aria-haspopup="true" aria-expanded="false">
+            <svg class="icon icon-md" id="notif-icon"><use href="#i-bell"/></svg>
+            <span class="notif-badge" id="notif-badge" hidden>0</span>
+          </button>
+          <div class="notif-panel" id="notif-panel" role="menu" aria-hidden="true">
+            <div class="notif-panel-head">
+              <div>
+                <div class="notif-panel-title">// captures &amp; events</div>
+                <div class="notif-panel-sub" id="notif-panel-sub">no unread events</div>
+              </div>
+              <button type="button" class="btn btn-outline btn-xs" id="notif-mark-read" disabled>
+                <svg class="icon icon-sm"><use href="#i-check"/></svg>
+                Mark all as read
+              </button>
+            </div>
+            <ul class="notif-list" id="notif-list"></ul>
+            <div class="notif-empty" id="notif-empty">
+              <svg class="icon icon-md"><use href="#i-bell"/></svg>
+              <div>You're all caught up.</div>
+              <div class="notif-empty-sub">// new captures will pop up here in real time</div>
+            </div>
+          </div>
+        </div>
+        <button class="icon-btn" aria-label="Account settings" type="button" onclick="openModal('modal-settings')">
+          <svg class="icon icon-md"><use href="#i-settings"/></svg>
+        </button>
+      </div>
+    </div>
 
     <?php if ($route === 'home'):
       $db = store_open();

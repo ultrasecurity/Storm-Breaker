@@ -231,7 +231,7 @@ body::after {
 }
 .app-header-inner {
   max-width: 1400px; margin: 0 auto;
-  padding: var(--space-4) var(--space-6);
+  padding: var(--space-2) var(--space-6);
   display: flex; align-items: center; gap: var(--space-5);
 }
 .brand {
@@ -1644,8 +1644,8 @@ body::after {
   flex-direction: column;
   gap: var(--space-1);
   position: sticky;
-  top: 69px;
-  height: calc(100vh - 69px);
+  top: 49px;
+  height: calc(100vh - 49px);
   overflow-y: auto;
 }
 .panel-sidebar-section {
@@ -1729,6 +1729,16 @@ body::after {
   flex: 1;
   padding: var(--space-6) var(--space-7);
   min-width: 0;
+}
+.panel-page-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+.panel-page-header .panel-page-sub { margin-bottom: 0; }
+.panel-page-actions {
+  display: flex; align-items: center; gap: var(--space-3);
+  flex-shrink: 0;
 }
 .panel-page-title {
   font-family: var(--font-display);
