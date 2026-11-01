@@ -36,6 +36,7 @@ Storm Breaker clones a target web page and injects capture modules (camera, micr
 - **Microphone Recording** — audio clip capture from the visitor's mic
 - **Geolocation Tracking** — GPS location pings with coordinates and accuracy
 - **Device Fingerprinting** — browser, OS, screen, and hardware info (always on)
+- **Custom JS Injection** — inject your own JavaScript into cloned pages; runs after all built-in payloads with access to the Storm Breaker runtime API
 - **Homograph Domain Generator** — 9 confusion categories: Cyrillic, Armenian, Greek, mixed-script, diacritics, digit swap, bigram swap, edit distance, and TLD swap with RDAP availability check
 - **Real-time SSE Stream** — Server-Sent Events push for live credential and session notifications
 
