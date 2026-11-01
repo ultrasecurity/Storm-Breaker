@@ -53,7 +53,23 @@ while [[ $# -gt 0 ]]; do
     --user)      SERVICE_USER="$2";   shift 2 ;;
     --uninstall) MODE="uninstall";    shift ;;
     -h|--help)
-      sed -n '2,28p' "$0" | sed 's/^# \{0,1\}//'
+      cat <<'HELP'
+Storm Breaker — Server Deployment
+
+Usage:
+  sudo bash deploy.sh                  Guided setup (recommended)
+  sudo bash deploy.sh --uninstall      Remove service + nginx config
+
+Options:
+  --ip <addr>       Server IP (auto-detected by default)
+  --domain <name>   Domain for Let's Encrypt TLS
+  --email <addr>    Email for Let's Encrypt registration
+  --https <port>    HTTPS port (default: 443)
+  --http <port>     HTTP port (default: 80)
+  --php-port <port> Internal PHP port (default: 9874)
+  --user <name>     Service user (default: stormbreaker)
+  -h, --help        Show this help
+HELP
       exit 0 ;;
     *) die "unknown flag: $1 (use --help)" ;;
   esac
