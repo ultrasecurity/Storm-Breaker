@@ -106,9 +106,14 @@ DETECTED_IP="$(ip -4 route get 1.1.1.1 2>/dev/null | awk '/src/{for (i=1;i<=NF;i
 [[ -z "$DETECTED_IP" ]] && DETECTED_IP="$(hostname -I 2>/dev/null | awk '{print $1}')"
 [[ -z "$DETECTED_IP" ]] && DETECTED_IP="0.0.0.0"
 
-# Only run interactive mode if no flags were passed on the command line
+# Interactive mode when no CLI flags were given at all
 INTERACTIVE=false
-[[ -z "$BIND_IP" && -z "$DOMAIN" && -z "$EMAIL" ]] && INTERACTIVE=true
+if [[ -z "$BIND_IP" && -z "$DOMAIN" && -z "$EMAIL" ]]; then
+  INTERACTIVE=true
+fi
+
+# Always fill in BIND_IP from auto-detection if not set
+[[ -z "$BIND_IP" ]] && BIND_IP="$DETECTED_IP"
 
 if $INTERACTIVE; then
   printf '\n'
@@ -139,8 +144,8 @@ if $INTERACTIVE; then
   printf '     %sb)%s No domain yet → use self-signed certificate\n' "$C_BOLD" "$C_RESET"
   read -r -p "     Choose [a/b]: " TLS_CHOICE || true
   TLS_CHOICE="${TLS_CHOICE:-a}"
-
-  if [[ "$TLS_CHOICE" =~ ^[Aa]$ ]]; then
+  # Anything other than explicit b/B → treat as "a" (the recommended path)
+  if [[ ! "$TLS_CHOICE" =~ ^[Bb]$ ]]; then
     printf '\n'
     read -r -p "     Domain name (e.g. panel.example.com): " DOMAIN || true
     if [[ -n "$DOMAIN" ]]; then
@@ -160,9 +165,6 @@ if $INTERACTIVE; then
   fi
   printf '\n'
 
-else
-  # Non-interactive: fill in defaults for missing values
-  [[ -z "$BIND_IP" ]] && BIND_IP="$DETECTED_IP"
 fi
 
 # ─── Summary ──────────────────────────────────────────────────────────
