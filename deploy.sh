@@ -10,17 +10,11 @@
 # Idempotent — rerun to upgrade or change port/IP/domain. Safe to re-run.
 #
 # Usage:
-#   sudo bash deploy.sh                           # interactive
-#   sudo bash deploy.sh --ip 1.2.3.4 --domain panel.example.com --https 443
-#   sudo bash deploy.sh --uninstall               # remove service + config
+#   sudo bash deploy.sh                  # guided setup (recommended)
+#   sudo bash deploy.sh --uninstall      # remove service + config
 #
-# Defaults:
-#   bind ip      auto-detected primary IP
-#   https port   443
-#   http port    80 (redirects to https)
-#   php port     9874 (internal, 127.0.0.1)
-#   cert         self-signed if no domain; Let's Encrypt if domain + email given
-#   install dir  current working directory (the cloned repo)
+# Advanced (skip the wizard):
+#   sudo bash deploy.sh --ip 1.2.3.4 --domain panel.example.com --email you@example.com
 # ─────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
@@ -106,35 +100,87 @@ if [[ "$MODE" == "uninstall" ]]; then
 fi
 
 # ── Interactive prompts (only if flags missing) ──────────────────────────────
-step "configuration"
 
-if [[ -z "$BIND_IP" ]]; then
-  DETECTED_IP="$(ip -4 route get 1.1.1.1 2>/dev/null | awk '/src/{for (i=1;i<=NF;i++) if ($i=="src") print $(i+1); exit}')"
-  [[ -z "$DETECTED_IP" ]] && DETECTED_IP="$(hostname -I 2>/dev/null | awk '{print $1}')"
-  [[ -z "$DETECTED_IP" ]] && DETECTED_IP="0.0.0.0"
-  read -r -p "bind IP [$DETECTED_IP]: " BIND_IP || true
-  BIND_IP="${BIND_IP:-$DETECTED_IP}"
+# Detect server IP once (used by prompts and config)
+DETECTED_IP="$(ip -4 route get 1.1.1.1 2>/dev/null | awk '/src/{for (i=1;i<=NF;i++) if ($i=="src") print $(i+1); exit}')"
+[[ -z "$DETECTED_IP" ]] && DETECTED_IP="$(hostname -I 2>/dev/null | awk '{print $1}')"
+[[ -z "$DETECTED_IP" ]] && DETECTED_IP="0.0.0.0"
+
+# Only run interactive mode if no flags were passed on the command line
+INTERACTIVE=false
+[[ -z "$BIND_IP" && -z "$DOMAIN" && -z "$EMAIL" ]] && INTERACTIVE=true
+
+if $INTERACTIVE; then
+  printf '\n'
+  printf '%s╭──────────────────────────────────────────────────────────────╮%s\n' "$C_BOLD$C_CYAN" "$C_RESET"
+  printf '%s│              ⚡  Storm Breaker — Setup Wizard               │%s\n' "$C_BOLD$C_CYAN" "$C_RESET"
+  printf '%s╰──────────────────────────────────────────────────────────────╯%s\n' "$C_BOLD$C_CYAN" "$C_RESET"
+  printf '\n'
+
+  # ─── Step 1: Server IP ───────────────────────────────────────────────
+  printf '  %s1)%s Server IP address\n' "$C_BOLD" "$C_RESET"
+  printf '     %sDetected: %s%s\n' "$C_DIM" "$DETECTED_IP" "$C_RESET"
+  read -r -p "     Use this IP? [Y/n] " USE_IP || true
+  USE_IP="${USE_IP:-Y}"
+  if [[ "$USE_IP" =~ ^[Yy]$ ]]; then
+    BIND_IP="$DETECTED_IP"
+  else
+    read -r -p "     Enter IP: " BIND_IP || true
+    [[ -z "$BIND_IP" ]] && BIND_IP="$DETECTED_IP"
+  fi
+  printf '     %s✓ %s%s\n\n' "$C_GREEN" "$BIND_IP" "$C_RESET"
+
+  # ─── Step 2: HTTPS ──────────────────────────────────────────────────
+  printf '  %s2)%s HTTPS (secure connection)\n' "$C_BOLD" "$C_RESET"
+  printf '     %sHTTPS is required for camera, mic, and geolocation to work.%s\n' "$C_DIM" "$C_RESET"
+  printf '     %sYou can get a free certificate from Let'\''s Encrypt.%s\n' "$C_DIM" "$C_RESET"
+  printf '\n'
+  printf '     %sa)%s I have a domain → get a real certificate (recommended)\n' "$C_BOLD" "$C_RESET"
+  printf '     %sb)%s No domain yet → use self-signed certificate\n' "$C_BOLD" "$C_RESET"
+  read -r -p "     Choose [a/b]: " TLS_CHOICE || true
+  TLS_CHOICE="${TLS_CHOICE:-a}"
+
+  if [[ "$TLS_CHOICE" =~ ^[Aa]$ ]]; then
+    printf '\n'
+    read -r -p "     Domain name (e.g. panel.example.com): " DOMAIN || true
+    if [[ -n "$DOMAIN" ]]; then
+      printf '\n'
+      printf '     %sLet'\''s Encrypt needs an email to send certificate expiry reminders.%s\n' "$C_DIM" "$C_RESET"
+      read -r -p "     Your email: " EMAIL || true
+      if [[ -z "$EMAIL" ]]; then
+        warn "no email given — will use self-signed certificate instead"
+      else
+        printf '     %s✓ HTTPS via Let'\''s Encrypt for %s%s\n' "$C_GREEN" "$DOMAIN" "$C_RESET"
+      fi
+    else
+      warn "no domain given — will use self-signed certificate"
+    fi
+  else
+    printf '     %s✓ Using self-signed certificate%s\n' "$C_GREEN" "$C_RESET"
+  fi
+  printf '\n'
+
+else
+  # Non-interactive: fill in defaults for missing values
+  [[ -z "$BIND_IP" ]] && BIND_IP="$DETECTED_IP"
 fi
 
-if [[ -z "$DOMAIN" ]]; then
-  read -r -p "domain name (blank for IP-only / self-signed): " DOMAIN || true
+# ─── Summary ──────────────────────────────────────────────────────────
+step "ready to deploy"
+printf '\n'
+printf '     Server IP : %s%s%s\n' "$C_BOLD" "$BIND_IP" "$C_RESET"
+if [[ -n "$DOMAIN" ]]; then
+  printf '     Domain    : %s%s%s\n' "$C_BOLD" "$DOMAIN" "$C_RESET"
 fi
-
-if [[ -n "$DOMAIN" && -z "$EMAIL" ]]; then
-  read -r -p "admin email for Let's Encrypt (blank = use self-signed): " EMAIL || true
+if [[ -n "$DOMAIN" && -n "$EMAIL" ]]; then
+  printf '     HTTPS     : %sLet'\''s Encrypt%s (%s)\n' "$C_GREEN" "$C_RESET" "$EMAIL"
+else
+  printf '     HTTPS     : %sSelf-signed certificate%s\n' "$C_YELLOW" "$C_RESET"
 fi
+printf '     App dir   : %s\n' "$APP_DIR"
+printf '\n'
 
-say "summary:"
-printf "    bind ip    : %s\n"   "$BIND_IP"
-printf "    domain     : %s\n"   "${DOMAIN:-<none>}"
-printf "    http  port : %s → https\n" "$HTTP_PORT"
-printf "    https port : %s\n"   "$HTTPS_PORT"
-printf "    php   port : %s (127.0.0.1)\n" "$PHP_PORT"
-printf "    app dir    : %s\n"   "$APP_DIR"
-printf "    web root   : %s\n"   "$WEB_DIR"
-printf "    svc user   : %s\n"   "$SERVICE_USER"
-
-read -r -p "proceed? [Y/n] " PROCEED || true
+read -r -p "  Start deployment? [Y/n] " PROCEED || true
 PROCEED="${PROCEED:-Y}"
 [[ "$PROCEED" =~ ^[Yy]$ ]] || die "aborted"
 
@@ -512,31 +558,29 @@ else
 fi
 
 # ── Summary ──────────────────────────────────────────────────────────────────
+PANEL_URL="https://${DOMAIN:-$BIND_IP}${HTTPS_PORT:+$([[ $HTTPS_PORT == 443 ]] && echo "" || echo ":$HTTPS_PORT")}"
+
 cat <<SUM
 
 ${C_GREEN}${C_BOLD}╭──────────────────────────────────────────────────────────────╮
-│                    DEPLOYMENT COMPLETE                       │
+│                  ⚡ Storm Breaker is live!                   │
 ╰──────────────────────────────────────────────────────────────╯${C_RESET}
 
-  open             ${C_BOLD}https://${DOMAIN:-$BIND_IP}${HTTPS_PORT:+$([[ $HTTPS_PORT == 443 ]] && echo "" || echo ":$HTTPS_PORT")}${C_RESET}
-  service status   systemctl status $SERVICE_NAME
-  live logs        journalctl -u $SERVICE_NAME -f
-  app dir          $APP_DIR
-  web root         $WEB_DIR
-  data dir         $WEB_DIR/data  (owner: $SERVICE_USER)
-  tls cert         $CERT_FILE
-  php port         127.0.0.1:$PHP_PORT
-  uninstall        sudo bash $0 --uninstall
+  ${C_BOLD}Open your panel:${C_RESET}  $PANEL_URL
+
+  ${C_DIM}Useful commands:${C_RESET}
+    systemctl status $SERVICE_NAME     # check service
+    journalctl -u $SERVICE_NAME -f     # live logs
+    sudo bash $0 --uninstall           # remove everything
 SUM
 
 if [[ -z "$DOMAIN" || -z "$EMAIL" ]]; then
   cat <<WARN
 
-${C_YELLOW}heads-up${C_RESET}: using a self-signed certificate. Browsers will flag it on
-first visit. If you own a domain, rerun with:
+  ${C_YELLOW}Note:${C_RESET} You're using a self-signed certificate.
+  Browsers will show a warning on first visit.
+  To get a real certificate, rerun the setup with a domain:
 
-  sudo bash deploy.sh --domain panel.example.com --email you@example.com
-
-to get a real Let's Encrypt certificate.
+    sudo bash deploy.sh
 WARN
 fi

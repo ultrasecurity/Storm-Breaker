@@ -77,22 +77,32 @@ Open `http://localhost:2525` — default credentials: `admin` / `admin`.
 ## Server Deployment
 
 ```bash
+sudo bash deploy.sh
+```
+
+The setup wizard walks you through everything: server IP, HTTPS certificate, and admin credentials. It handles Debian/Ubuntu and RHEL/CentOS/Fedora automatically.
+
+If you have a domain, the wizard can set up a **free HTTPS certificate** from Let's Encrypt — just have your domain and email ready.
+
+> **HTTPS is required** — camera, microphone, and geolocation APIs only work in secure contexts.
+
+<details>
+<summary>Advanced: skip the wizard with flags</summary>
+
+```bash
 sudo bash deploy.sh --ip 1.2.3.4 --domain panel.example.com --email you@example.com
 ```
 
-The script auto-detects Debian/Ubuntu and RHEL/CentOS/Fedora, installs dependencies, creates a hardened systemd service, configures nginx with TLS, opens firewall ports, and sets SELinux contexts. It prompts for new credentials if defaults are still in place.
-
 | Flag | Description |
 |------|-------------|
-| `--ip` | Server IP address |
-| `--domain` | Domain for Let's Encrypt TLS (uses self-signed without it) |
-| `--email` | Email for Let's Encrypt registration |
-| `--https` / `--http` | HTTPS (default) or HTTP-only mode |
+| `--ip` | Server IP (auto-detected by default) |
+| `--domain` | Domain for Let's Encrypt TLS |
+| `--email` | Email for Let's Encrypt |
 | `--php-port` | Internal PHP port (default: 9874) |
-| `--user` | Service user name (default: stormbreaker) |
+| `--user` | Service user (default: stormbreaker) |
 | `--uninstall` | Remove service + nginx config |
 
-> **HTTPS is required** — camera, microphone, and geolocation APIs only work in secure contexts.
+</details>
 
 ---
 
