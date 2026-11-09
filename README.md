@@ -76,6 +76,38 @@ Open `http://localhost:2525` — default credentials: `admin` / `admin`.
 
 ---
 
+## Local Setup (`--local`)
+
+The `--local` flag installs only the prerequisites needed to run Storm Breaker on your own machine — no nginx, systemd, TLS, or firewall configuration.
+
+| Platform | Package Manager | Root Required? |
+|----------|----------------|----------------|
+| macOS | Homebrew | No |
+| Debian / Ubuntu | apt | Yes |
+| RHEL / CentOS / Fedora | dnf | Yes |
+
+What it does:
+- Installs PHP and required extensions (sqlite3, curl, json, session)
+- Verifies PHP version is 7.4+
+- Checks for headless Chrome (optional — needed for full SPA cloning)
+- Prints a summary and the command to start the local server
+
+```bash
+bash deploy.sh --local       # macOS — no sudo needed
+sudo bash deploy.sh --local  # Linux — needs root for package install
+```
+
+After setup, start the panel:
+
+```bash
+php run-local.php
+# → http://localhost:2525
+```
+
+> **Note:** Local mode is for testing and development. For production use with HTTPS (required for camera/mic/geo), use the full server deployment below.
+
+---
+
 ## Server Deployment
 
 ```bash
@@ -102,6 +134,7 @@ sudo bash deploy.sh --ip 1.2.3.4 --domain panel.example.com --email you@example.
 | `--email` | Email for Let's Encrypt |
 | `--php-port` | Internal PHP port (default: 9874) |
 | `--user` | Service user (default: stormbreaker) |
+| `--local` | Install prerequisites only (no server setup) |
 | `--uninstall` | Remove service + nginx config |
 
 </details>
