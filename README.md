@@ -66,12 +66,13 @@ Storm Breaker clones a target web page and injects capture modules (camera, micr
 ```bash
 git clone https://github.com/ultrasecurity/Storm-Breaker.git
 cd Storm-Breaker
+bash deploy.sh --local    # installs PHP + extensions (macOS & Linux)
 php run-local.php
 ```
 
 Open `http://localhost:2525` — default credentials: `admin` / `admin`.
 
-**Requirements:** PHP 7.4+ with ext-sqlite3, ext-curl, ext-json, ext-session. Headless Chrome optional (enables full SPA cloning).
+**Requirements:** PHP 7.4+ with ext-sqlite3, ext-curl, ext-json, ext-session. Headless Chrome optional (enables full SPA cloning). The `--local` flag handles all of this automatically on macOS (Homebrew) and Linux (apt/dnf).
 
 ---
 

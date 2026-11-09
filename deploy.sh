@@ -1,20 +1,22 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-# Storm-Breaker — one-shot Linux deployment
+# Storm-Breaker — deployment & local setup
 #
-# Installs PHP 7.4+ with the extensions we need, stands up nginx as a TLS-
-# terminating reverse proxy, writes a systemd unit for the PHP built-in
-# server, opens the firewall, and prints the final URL.
+# Two modes:
+#   --local     Install prerequisites only (PHP + extensions).
+#               Works on macOS (Homebrew) and Linux (apt/dnf). No root needed
+#               on macOS. Prints the command to run the dev server when done.
 #
-# Supports Debian/Ubuntu (apt) and RHEL/Rocky/Alma/CentOS Stream/Fedora (dnf).
-# Idempotent — rerun to upgrade or change port/IP/domain. Safe to re-run.
+#   (default)   Full server deployment — installs PHP, nginx, TLS cert,
+#               systemd service, firewall rules. Linux only, requires root.
+#
+# Supports Debian/Ubuntu (apt), RHEL/Rocky/Alma/CentOS/Fedora (dnf), macOS.
+# Idempotent — safe to re-run.
 #
 # Usage:
-#   sudo bash deploy.sh                  # guided setup (recommended)
+#   bash deploy.sh --local               # install deps for local dev
+#   sudo bash deploy.sh                  # guided server setup
 #   sudo bash deploy.sh --uninstall      # remove service + config
-#
-# Advanced (skip the wizard):
-#   sudo bash deploy.sh --ip 1.2.3.4 --domain panel.example.com --email you@example.com
 # ─────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
@@ -35,7 +37,7 @@ EMAIL=""
 HTTPS_PORT=443
 HTTP_PORT=80
 PHP_PORT=9874
-MODE="install"
+MODE="server"
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WEB_DIR="$APP_DIR/storm-web"
 SERVICE_USER="stormbreaker"
@@ -51,16 +53,19 @@ while [[ $# -gt 0 ]]; do
     --php-port)  PHP_PORT="$2";       shift 2 ;;
     --app-dir)   APP_DIR="$2"; WEB_DIR="$APP_DIR/storm-web"; shift 2 ;;
     --user)      SERVICE_USER="$2";   shift 2 ;;
+    --local)     MODE="local";        shift ;;
     --uninstall) MODE="uninstall";    shift ;;
     -h|--help)
       cat <<'HELP'
-Storm Breaker — Server Deployment
+Storm Breaker — Deployment & Local Setup
 
 Usage:
-  sudo bash deploy.sh                  Guided setup (recommended)
+  bash deploy.sh --local               Install prerequisites for local dev
+  sudo bash deploy.sh                  Guided server setup (recommended)
   sudo bash deploy.sh --uninstall      Remove service + nginx config
 
 Options:
+  --local           Install PHP + extensions only (macOS & Linux)
   --ip <addr>       Server IP (auto-detected by default)
   --domain <name>   Domain for Let's Encrypt TLS
   --email <addr>    Email for Let's Encrypt registration
@@ -78,29 +83,121 @@ done
 # Sanity check — storm-web/ must exist
 [[ -d "$WEB_DIR" ]] || die "storm-web/ not found at $WEB_DIR"
 
-# ── Root check ───────────────────────────────────────────────────────────────
-[[ $EUID -eq 0 ]] || die "run as root (sudo bash deploy.sh)"
-
-# ── Distro detection ─────────────────────────────────────────────────────────
+# ── OS detection (runs before root check — macOS --local doesn't need root) ─
 step "detecting OS"
-if [[ -r /etc/os-release ]]; then
+IS_MACOS=false
+PM="" ; PM_INSTALL="" ; PM_UPDATE=""
+
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  IS_MACOS=true
+  if [[ "$MODE" != "local" ]]; then
+    die "macOS is only supported with --local (full server deployment requires Linux)"
+  fi
+  if ! command -v brew >/dev/null 2>&1; then
+    die "Homebrew not found — install it first: https://brew.sh"
+  fi
+  PM="brew"; PM_INSTALL="brew install"; PM_UPDATE="brew update"
+  ok "detected: macOS $(sw_vers -productVersion 2>/dev/null || echo '') (Homebrew)"
+elif [[ -r /etc/os-release ]]; then
   . /etc/os-release
   DISTRO_ID="${ID:-unknown}"
   DISTRO_LIKE="${ID_LIKE:-}"
+
+  if [[ "$DISTRO_ID" == "debian" || "$DISTRO_ID" == "ubuntu" || "$DISTRO_LIKE" == *debian* ]]; then
+    PM="apt";   PM_INSTALL="apt-get install -y"; PM_UPDATE="apt-get update -y"
+  elif [[ "$DISTRO_ID" == "rhel" || "$DISTRO_ID" == "rocky" || "$DISTRO_ID" == "almalinux" \
+       || "$DISTRO_ID" == "centos" || "$DISTRO_ID" == "fedora" || "$DISTRO_LIKE" == *rhel* ]]; then
+    PM="dnf";   PM_INSTALL="dnf install -y";     PM_UPDATE="dnf makecache -y"
+    command -v dnf >/dev/null || { PM="yum"; PM_INSTALL="yum install -y"; PM_UPDATE="yum makecache -y"; }
+  else
+    die "unsupported distro: $DISTRO_ID (supported: Debian/Ubuntu, RHEL/Rocky/Alma/CentOS/Fedora, macOS)"
+  fi
+  ok "detected: $PRETTY_NAME (package manager: $PM)"
 else
-  die "cannot read /etc/os-release — unsupported system"
+  die "cannot detect OS — supported: Debian/Ubuntu, RHEL/CentOS/Fedora, macOS"
 fi
 
-if [[ "$DISTRO_ID" == "debian" || "$DISTRO_ID" == "ubuntu" || "$DISTRO_LIKE" == *debian* ]]; then
-  PM="apt";   PM_INSTALL="apt-get install -y"; PM_UPDATE="apt-get update -y"
-elif [[ "$DISTRO_ID" == "rhel" || "$DISTRO_ID" == "rocky" || "$DISTRO_ID" == "almalinux" \
-     || "$DISTRO_ID" == "centos" || "$DISTRO_ID" == "fedora" || "$DISTRO_LIKE" == *rhel* ]]; then
-  PM="dnf";   PM_INSTALL="dnf install -y";     PM_UPDATE="dnf makecache -y"
-  command -v dnf >/dev/null || { PM="yum"; PM_INSTALL="yum install -y"; PM_UPDATE="yum makecache -y"; }
-else
-  die "unsupported distro: $DISTRO_ID (supported: Debian/Ubuntu, RHEL/Rocky/Alma/CentOS/Fedora)"
+# ── Root check (skipped for macOS --local) ──────────────────────────────────
+if [[ "$MODE" != "local" ]]; then
+  [[ $EUID -eq 0 ]] || die "run as root (sudo bash deploy.sh)"
+elif ! $IS_MACOS && [[ $EUID -ne 0 ]]; then
+  die "Linux --local still needs root for package install (sudo bash deploy.sh --local)"
 fi
-ok "detected: $PRETTY_NAME (package manager: $PM)"
+
+# ── Local mode: install deps only ────────────────────────────────────────────
+if [[ "$MODE" == "local" ]]; then
+  step "installing PHP & extensions"
+  if $IS_MACOS; then
+    $PM_UPDATE 2>/dev/null || true
+    brew install php 2>/dev/null || brew upgrade php 2>/dev/null || true
+  elif [[ "$PM" == "apt" ]]; then
+    $PM_UPDATE
+    DEBIAN_FRONTEND=noninteractive $PM_INSTALL \
+      php-cli php-sqlite3 php-curl php-json
+  else
+    $PM_UPDATE
+    $PM_INSTALL php-cli php-pdo php-sqlite3 php-curl php-json 2>/dev/null \
+      || $PM_INSTALL php-cli php-pdo php-sqlite3 php-curl
+  fi
+
+  # Verify PHP
+  step "verifying PHP"
+  PHP_BIN="$(command -v php || true)"
+  [[ -z "$PHP_BIN" ]] && die "php not found after install"
+
+  PHP_VER="$($PHP_BIN -r 'echo PHP_VERSION;')"
+  PHP_MAJOR="$(printf '%s' "$PHP_VER" | cut -d. -f1)"
+  PHP_MINOR="$(printf '%s' "$PHP_VER" | cut -d. -f2)"
+  if (( PHP_MAJOR < 7 || (PHP_MAJOR == 7 && PHP_MINOR < 4) )); then
+    die "PHP $PHP_VER is too old — Storm-Breaker requires PHP 7.4+"
+  fi
+  ok "PHP $PHP_VER"
+
+  MISSING_EXTS=""
+  for ext in sqlite3 curl json session; do
+    if $PHP_BIN -r "exit(extension_loaded('$ext')?0:1);" 2>/dev/null; then
+      ok "ext: $ext"
+    else
+      MISSING_EXTS="$MISSING_EXTS $ext"
+    fi
+  done
+  [[ -n "$MISSING_EXTS" ]] && die "missing PHP extensions:$MISSING_EXTS"
+
+  # Check headless Chrome
+  step "checking headless Chrome"
+  if command -v google-chrome >/dev/null 2>&1 || command -v chromium-browser >/dev/null 2>&1 \
+     || command -v chromium >/dev/null 2>&1; then
+    ok "headless Chrome found — full DOM cloning available"
+  elif $IS_MACOS && [[ -d "/Applications/Google Chrome.app" ]]; then
+    ok "Google Chrome.app found — full DOM cloning available"
+  else
+    warn "headless Chrome not found — clone will fall back to cURL"
+    if $IS_MACOS; then
+      say "install Chrome or run: brew install --cask chromium"
+    else
+      say "install: apt install chromium-browser  or  dnf install chromium"
+    fi
+  fi
+
+  # Done
+  cat <<LOCAL
+
+${C_GREEN}${C_BOLD}╭──────────────────────────────────────────────────────────────╮
+│             ⚡ Prerequisites installed!                       │
+╰──────────────────────────────────────────────────────────────╯${C_RESET}
+
+  ${C_BOLD}Run the dev server:${C_RESET}
+    cd $APP_DIR
+    php run-local.php
+
+  ${C_BOLD}Then open:${C_RESET}  http://localhost:2525
+  ${C_DIM}Default credentials: admin / admin${C_RESET}
+
+  ${C_DIM}For production deployment on a Linux server, run without --local:${C_RESET}
+    sudo bash deploy.sh
+LOCAL
+  exit 0
+fi
 
 # ── Uninstall path ───────────────────────────────────────────────────────────
 if [[ "$MODE" == "uninstall" ]]; then
@@ -118,8 +215,14 @@ fi
 # ── Interactive prompts (only if flags missing) ──────────────────────────────
 
 # Detect server IP once (used by prompts and config)
-DETECTED_IP="$(ip -4 route get 1.1.1.1 2>/dev/null | awk '/src/{for (i=1;i<=NF;i++) if ($i=="src") print $(i+1); exit}')"
-[[ -z "$DETECTED_IP" ]] && DETECTED_IP="$(hostname -I 2>/dev/null | awk '{print $1}')"
+DETECTED_IP=""
+if $IS_MACOS; then
+  DETECTED_IP="$(ipconfig getifaddr en0 2>/dev/null || true)"
+  [[ -z "$DETECTED_IP" ]] && DETECTED_IP="$(ipconfig getifaddr en1 2>/dev/null || true)"
+else
+  DETECTED_IP="$(ip -4 route get 1.1.1.1 2>/dev/null | awk '/src/{for (i=1;i<=NF;i++) if ($i=="src") print $(i+1); exit}')"
+  [[ -z "$DETECTED_IP" ]] && DETECTED_IP="$(hostname -I 2>/dev/null | awk '{print $1}')"
+fi
 [[ -z "$DETECTED_IP" ]] && DETECTED_IP="0.0.0.0"
 
 # Interactive mode when no CLI flags were given at all
