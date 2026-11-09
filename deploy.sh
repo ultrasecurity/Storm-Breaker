@@ -129,7 +129,7 @@ if [[ "$MODE" == "local" ]]; then
   step "installing PHP & extensions"
   if $IS_MACOS; then
     $PM_UPDATE 2>/dev/null || true
-    brew install php 2>/dev/null || brew upgrade php 2>/dev/null || true
+    brew install php || brew upgrade php || true
   elif [[ "$PM" == "apt" ]]; then
     $PM_UPDATE
     DEBIAN_FRONTEND=noninteractive $PM_INSTALL \
@@ -286,6 +286,13 @@ if $INTERACTIVE; then
 
 fi
 
+# ── Input validation ────────────────────────────────────────────────────
+[[ "$BIND_IP" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]] \
+  || die "invalid IP address: $BIND_IP"
+if [[ -n "$DOMAIN" ]] && ! [[ "$DOMAIN" =~ ^[a-zA-Z0-9]([a-zA-Z0-9.-]*[a-zA-Z0-9])?$ ]]; then
+  die "invalid domain: $DOMAIN"
+fi
+
 # ─── Summary ──────────────────────────────────────────────────────────
 step "ready to deploy"
 printf '\n'
@@ -327,7 +334,7 @@ ok "packages installed"
 
 # ── Verify PHP version + extensions ──────────────────────────────────────────
 step "verifying PHP"
-PHP_BIN="$(command -v php)"
+PHP_BIN="$(command -v php || true)"
 [[ -z "$PHP_BIN" ]] && die "php not on PATH after install"
 
 PHP_VER="$($PHP_BIN -r 'echo PHP_VERSION;')"
@@ -443,7 +450,7 @@ if grep -q "$DEFAULT_HASH" "$CONFIG_FILE" 2>/dev/null; then
     break
   done
 
-  NEW_HASH=$($PHP_BIN -r "echo password_hash(\$argv[1], PASSWORD_BCRYPT);" "$NEW_PASS")
+  NEW_HASH=$(printf '%s' "$NEW_PASS" | $PHP_BIN -r 'echo password_hash(file_get_contents("php://stdin"), PASSWORD_BCRYPT);')
 
   # Write config.php via PHP so special chars in username/hash are properly escaped
   $PHP_BIN -r '
