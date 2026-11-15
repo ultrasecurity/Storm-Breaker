@@ -57,4 +57,7 @@ try {
 } catch (RuntimeException $e) {
     http_response_code(400);
     echo json_encode(['ok' => false, 'error' => $e->getMessage()]);
+} catch (\Throwable $e) {
+    http_response_code(500);
+    echo json_encode(['ok' => false, 'error' => 'Internal error: ' . $e->getMessage()]);
 }

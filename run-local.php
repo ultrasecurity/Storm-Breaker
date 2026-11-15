@@ -70,9 +70,11 @@ if (!is_file($router)) {
 
 // -d display_errors=stderr  → PHP warnings go to the terminal, not into
 //    HTTP response bodies (which would corrupt JSON API responses).
+// -d html_errors=off        → if a fatal error leaks into the response despite
+//    the above, it comes as plain text, not <br /><b> tags that break JSON.
 // -d log_errors=1           → errors are always logged.
 $cmd = sprintf(
-    'php -d display_errors=stderr -d log_errors=1 -S %s:%d -t %s %s',
+    'php -d display_errors=stderr -d html_errors=off -d log_errors=1 -S %s:%d -t %s %s',
     escapeshellarg($host),
     $port,
     escapeshellarg($docroot),

@@ -133,11 +133,11 @@ if [[ "$MODE" == "local" ]]; then
   elif [[ "$PM" == "apt" ]]; then
     $PM_UPDATE
     DEBIAN_FRONTEND=noninteractive $PM_INSTALL \
-      php-cli php-sqlite3 php-curl php-json
+      php-cli php-sqlite3 php-curl php-json php-mbstring
   else
     $PM_UPDATE
-    $PM_INSTALL php-cli php-pdo php-sqlite3 php-curl php-json 2>/dev/null \
-      || $PM_INSTALL php-cli php-pdo php-sqlite3 php-curl
+    $PM_INSTALL php-cli php-pdo php-sqlite3 php-curl php-json php-mbstring 2>/dev/null \
+      || $PM_INSTALL php-cli php-pdo php-sqlite3 php-curl php-mbstring
   fi
 
   # Verify PHP
@@ -154,7 +154,7 @@ if [[ "$MODE" == "local" ]]; then
   ok "PHP $PHP_VER"
 
   MISSING_EXTS=""
-  for ext in sqlite3 curl json session; do
+  for ext in sqlite3 curl json session mbstring; do
     if $PHP_BIN -r "exit(extension_loaded('$ext')?0:1);" 2>/dev/null; then
       ok "ext: $ext"
     else
@@ -318,15 +318,15 @@ $PM_UPDATE
 
 if [[ "$PM" == "apt" ]]; then
   DEBIAN_FRONTEND=noninteractive $PM_INSTALL \
-    php-cli php-sqlite3 php-curl php-json \
+    php-cli php-sqlite3 php-curl php-json php-mbstring \
     nginx openssl curl coreutils
   [[ -n "$DOMAIN" && -n "$EMAIL" ]] && DEBIAN_FRONTEND=noninteractive $PM_INSTALL certbot python3-certbot-nginx || true
 else
   $PM_INSTALL \
-    php-cli php-pdo php-sqlite3 php-curl php-json \
+    php-cli php-pdo php-sqlite3 php-curl php-json php-mbstring \
     nginx openssl curl coreutils policycoreutils-python-utils || \
   $PM_INSTALL \
-    php-cli php-pdo php-sqlite3 php-curl \
+    php-cli php-pdo php-sqlite3 php-curl php-mbstring \
     nginx openssl curl coreutils
   [[ -n "$DOMAIN" && -n "$EMAIL" ]] && $PM_INSTALL certbot python3-certbot-nginx || true
 fi
@@ -345,7 +345,7 @@ if (( PHP_MAJOR < 7 || (PHP_MAJOR == 7 && PHP_MINOR < 4) )); then
 fi
 ok "PHP $PHP_VER"
 
-for ext in sqlite3 curl json session; do
+for ext in sqlite3 curl json session mbstring; do
   if $PHP_BIN -r "exit(extension_loaded('$ext')?0:1);"; then
     ok "ext: $ext"
   else
