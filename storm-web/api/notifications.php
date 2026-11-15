@@ -73,8 +73,9 @@ function notif_make_preview(string $kind, array $obj): string {
 }
 
 function notif_truncate(string $s, int $max): string {
-    if (mb_strlen($s) <= $max) return $s;
-    return mb_substr($s, 0, $max - 1) . '…';
+    $len = function_exists('mb_strlen') ? mb_strlen($s) : strlen($s);
+    if ($len <= $max) return $s;
+    return (function_exists('mb_substr') ? mb_substr($s, 0, $max - 1) : substr($s, 0, $max - 1)) . '…';
 }
 
 /* ------------------------------------------------------------------ *

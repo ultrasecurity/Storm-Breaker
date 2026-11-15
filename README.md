@@ -72,7 +72,7 @@ php run-local.php
 
 Open `http://localhost:2525` — default credentials: `admin` / `admin`.
 
-**Requirements:** PHP 7.4+ with ext-sqlite3, ext-curl, ext-json, ext-session. Headless Chrome optional (enables full SPA cloning). The `--local` flag handles all of this automatically on macOS (Homebrew) and Linux (apt/dnf).
+**Requirements:** PHP 7.4+ with ext-sqlite3, ext-curl, ext-json, ext-session, ext-mbstring. Headless Chrome optional (enables full SPA cloning). The `--local` flag handles all of this automatically on macOS (Homebrew) and Linux (apt/dnf).
 
 ---
 

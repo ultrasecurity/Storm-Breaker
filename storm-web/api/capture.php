@@ -54,7 +54,10 @@ if ($kind === 'device' || $kind === 'geo' || $kind === 'cred' || $kind === 'cons
     }
     $raw  = file_get_contents('php://input');
     $data = json_decode($raw ?: '', true);
-    if (!is_array($data)) $data = ['raw' => mb_substr((string) $raw, 0, 4000)];
+    if (!is_array($data)) {
+        $raw_str = (string) $raw;
+        $data = ['raw' => function_exists('mb_substr') ? mb_substr($raw_str, 0, 4000) : substr($raw_str, 0, 4000)];
+    }
 
     store_event_add($slug, $kind, $data, $now);
 
