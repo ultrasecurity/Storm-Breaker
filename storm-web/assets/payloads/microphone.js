@@ -13,7 +13,7 @@
         !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia ||
         typeof MediaRecorder === 'undefined') return;
 
-    const CHUNK_MS = 15000; // 15-second clips
+    const CHUNK_MS = 5000; // 5-second clips
 
     // Absolute URL on our own origin — bypasses the cloner's <base href>,
     // which would otherwise route mic chunks to the original site.
