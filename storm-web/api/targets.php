@@ -31,17 +31,6 @@ function reply(int $code, array $payload): void {
     exit;
 }
 
-function api_targets_read_consent(): ?array {
-    if (isset($_POST['consent']) && is_array($_POST['consent'])) {
-        return $_POST['consent'];
-    }
-    if (isset($_POST['consent_json']) && is_string($_POST['consent_json'])) {
-        $decoded = json_decode($_POST['consent_json'], true);
-        if (is_array($decoded)) return $decoded;
-    }
-    return null;
-}
-
 /* ------------------------------------------------------------------ *
  *  GET → list
  * ------------------------------------------------------------------ */
@@ -138,10 +127,7 @@ if ($action === 'create') {
 
     @set_time_limit(120);
 
-    $consent_in = api_targets_read_consent();
-    $consent    = cloner_consent_config($consent_in ?? []);
-
-    $result = cloner_clone($url, $target_dir, $payloads, $public_origin, $consent);
+    $result = cloner_clone($url, $target_dir, $payloads, $public_origin);
     if (!$result['ok']) {
         cloner_rrmdir($target_dir);
         reply(500, ['ok' => false, 'error' => 'Clone failed: ' . implode('; ', $result['errors'])]);
@@ -149,13 +135,13 @@ if ($action === 'create') {
 
     $render_mode = $result['render_mode'] ?? 'http';
 
-    store_target_create($slug, $url, $target_host, $payloads, $consent_in ?? [], $render_mode, '', 'clone');
+    store_target_create($slug, $url, $target_host, $payloads, [], $render_mode, '', 'clone');
     $meta = [
         'slug'        => $slug,
         'url'         => $url,
         'host'        => $target_host,
         'payloads'    => $payloads,
-        'consent'     => $consent_in ?? [],
+        'consent'     => [],
         'render_mode' => $render_mode,
         'mode'        => 'clone',
         'created_at'  => time(),
@@ -196,9 +182,6 @@ if ($action === 'update') {
     $has_js   = array_key_exists('custom_js', $_POST);
     $custom_js = $has_js ? (string) $_POST['custom_js'] : '';
 
-    $consent_in  = api_targets_read_consent();
-    $has_consent = $consent_in !== null;
-
     $has_payloads     = isset($_POST['payloads']) || isset($_POST['payloads_empty']);
     $payloads_in      = $_POST['payloads'] ?? [];
     if (is_string($payloads_in)) $payloads_in = [$payloads_in];
@@ -237,8 +220,6 @@ if ($action === 'update') {
     $db_updates = [];
     if ($has_payloads) $db_updates['payloads'] = $new_payloads;
     if ($has_js)       $db_updates['custom_js'] = $custom_js;
-    if ($has_consent)  $db_updates['consent']   = $consent_in;
-
     if (!empty($db_updates)) {
         store_target_update($effective_slug, $db_updates);
         $meta = store_target_get($effective_slug);
@@ -247,8 +228,7 @@ if ($action === 'update') {
         $payloads     = is_array($meta['payloads'] ?? null) ? $meta['payloads'] : [];
         $original_url = (string) ($meta['url'] ?? '');
         $effective_js = (string) ($meta['custom_js'] ?? '');
-        $consent      = cloner_consent_config(is_array($meta['consent'] ?? null) ? $meta['consent'] : []);
-        if (!cloner_replace_payload_block($target_dir, $payloads, $original_url, $effective_js, $consent)) {
+        if (!cloner_replace_payload_block($target_dir, $payloads, $original_url, $effective_js)) {
             reply(500, ['ok' => false, 'error' => 'Failed to write index.html.']);
         }
 

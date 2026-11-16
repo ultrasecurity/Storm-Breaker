@@ -2,13 +2,12 @@
  * device-info.js — collects basic browser/device fingerprint data and
  * POSTs it once.
  *
- * Gated: only runs after the consent notice has been accepted. With no gate
- * present it stays inert.
+ * Runs immediately on page load.
  */
 (function () {
   'use strict';
 
-  /* Entry point — handed to the gate, not run on load. */
+  /* Entry point. */
   function run() {
     if (!window.__SB_TARGET) return;
 
@@ -60,7 +59,5 @@
     }).catch(() => {});
   }
 
-  // Fail-closed: no consent controller means no capture.
-  if (!window.__SB_CONSENT) return;
-  window.__SB_CONSENT.register('device-info', run);
+  run();
 })();

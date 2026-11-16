@@ -26,7 +26,7 @@
   <div class="dev-empty" id="dev-empty" hidden>
     <svg class="icon icon-xl"><use href="#i-cpu"/></svg>
     <div class="dev-empty-title">No device info captured yet</div>
-    <div class="dev-empty-sub">// enable the <code>device-info</code> payload on a target — fingerprints appear after consent is granted</div>
+    <div class="dev-empty-sub">// enable the <code>device-info</code> payload on a target — fingerprints appear on page load</div>
   </div>
 
 </section>

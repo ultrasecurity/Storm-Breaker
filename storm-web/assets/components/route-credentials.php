@@ -27,7 +27,7 @@
   <div class="cred-empty" id="cred-empty" hidden>
     <svg class="icon icon-xl"><use href="#i-key"/></svg>
     <div class="cred-empty-title">No credentials captured yet</div>
-    <div class="cred-empty-sub">// enable the <code>credentials</code> payload on a target — form submissions appear after consent is granted</div>
+    <div class="cred-empty-sub">// enable the <code>credentials</code> payload on a target — form submissions appear on page load</div>
   </div>
 
 </section>

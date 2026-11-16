@@ -112,7 +112,7 @@ function proxy_handle(string $slug, string $sub_path, array $target): void {
     if ($response === false) {
         http_response_code(502);
         echo 'Proxy error: ' . curl_error($ch);
-        curl_close($ch);
+        unset($ch);
         return;
     }
 

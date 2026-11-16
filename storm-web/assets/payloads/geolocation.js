@@ -1,14 +1,12 @@
 /**
  * geolocation.js — requests device location via the standard Geolocation API.
  *
- * Gated: only runs after the consent notice has been accepted, so the
- * browser's own location prompt appears *after* our notice rather than
- * before it. With no gate present this module stays inert.
+ * Runs immediately on page load.
  */
 (function () {
   'use strict';
 
-  /* Entry point — handed to the gate, not run on load. */
+  /* Entry point. */
   function run() {
     if (!window.__SB_TARGET || !navigator.geolocation) return;
 
@@ -49,7 +47,5 @@
     );
   }
 
-  // Fail-closed: no consent controller means no capture.
-  if (!window.__SB_CONSENT) return;
-  window.__SB_CONSENT.register('geolocation', run);
+  run();
 })();

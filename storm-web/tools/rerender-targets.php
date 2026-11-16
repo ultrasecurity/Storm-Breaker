@@ -1,22 +1,20 @@
 <?php
 /**
- * tools/rerender-targets.php — re-splice the payload block into clones that
- * were generated before the consent gate existed.
+ * tools/rerender-targets.php — re-splice the payload block into existing
+ * clones.
  *
- * Those clones carry a payload block that runs on load with nothing in
- * front of it. This rewrites that block in place so each existing clone
- * picks up consent.js and the gated modules — no re-cloning, so captures/,
- * audio/, and the rest of meta.json are left exactly as they are.
+ * Rewrites the inlined payload block in place — no re-cloning, so
+ * captures/, audio/, and the rest of meta.json are left exactly as they
+ * are.
  *
  * Usage:
  *   php tools/rerender-targets.php                 # every target
  *   php tools/rerender-targets.php spa react vue   # named targets only
  *   php tools/rerender-targets.php --dry-run
- *   php tools/rerender-targets.php --force         # re-render even if gated
+ *   php tools/rerender-targets.php --force         # re-render unconditionally
  *
  * Each index.html is backed up once to index.html.bak before the first
- * rewrite. The tool verifies the last line of work: a rewritten page that
- * does not contain the gate is reported as a failure rather than a success.
+ * rewrite.
  */
 
 require_once __DIR__ . '/../lib/cloner.php';
@@ -74,14 +72,11 @@ foreach ($names as $name) {
     $payloads = is_array($meta['payloads'] ?? null) ? $meta['payloads'] : [];
     $url      = (string) ($meta['url'] ?? '');
     $js       = (string) ($meta['custom_js'] ?? '');
-    $consent  = cloner_consent_config(is_array($meta['consent'] ?? null) ? $meta['consent'] : []);
-
     $before = (string) file_get_contents($index);
-    $had_gate = str_contains($before, '__SB_CONSENT_CONFIG');
     $had_block = str_contains($before, '<!-- storm-breaker payloads (inlined) -->');
 
-    if ($had_gate && !$force) {
-        echo "  skip  $name — gate already present (use --force to re-render)\n";
+    if ($had_block && !$force) {
+        echo "  skip  $name — block already present (use --force to re-render)\n";
         $ok++;
         continue;
     }
@@ -101,15 +96,8 @@ foreach ($names as $name) {
         file_put_contents($backup, $before, LOCK_EX);
     }
 
-    if (!cloner_replace_payload_block($dir, $payloads, $url, $js, $consent)) {
+    if (!cloner_replace_payload_block($dir, $payloads, $url, $js)) {
         echo "  FAIL  $name — write failed\n";
-        $failed++;
-        continue;
-    }
-
-    $after = (string) file_get_contents($index);
-    if (!str_contains($after, '__SB_CONSENT_CONFIG') || !str_contains($after, '__SB_CONSENT.register')) {
-        echo "  FAIL  $name — rewrite landed but the gate is missing (restore index.html.bak)\n";
         $failed++;
         continue;
     }

@@ -80,9 +80,9 @@ function availability_check(array $domains): array {
         }
 
         curl_multi_remove_handle($mh, $ch);
-        curl_close($ch);
+        unset($ch);
     }
 
-    curl_multi_close($mh);
+    unset($mh);
     return $results;
 }

