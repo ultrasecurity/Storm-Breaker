@@ -136,6 +136,8 @@ if ($action === 'create') {
         reply(200, ['ok' => true, 'target' => $meta, 'warnings' => []]);
     }
 
+    @set_time_limit(120);
+
     $consent_in = api_targets_read_consent();
     $consent    = cloner_consent_config($consent_in ?? []);
 

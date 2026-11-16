@@ -86,7 +86,7 @@ foreach (scandir($targets_root) ?: [] as $slug) {
                 if (!in_array($kind_raw, ['device', 'geo', 'cred', 'consent'], true)) continue;
 
                 $payload = json_decode(trim($m[3]), true);
-                if (!is_array($payload)) $payload = ['raw' => mb_substr(trim($m[3]), 0, 4000)];
+                if (!is_array($payload)) $payload = ['raw' => (function_exists('mb_substr') ? mb_substr(trim($m[3]), 0, 4000) : substr(trim($m[3]), 0, 4000))];
 
                 try {
                     store_event_add($slug, $kind_raw, $payload, $ts);
