@@ -237,7 +237,7 @@ function cloner_strip_scripts(DOMDocument $doc): int {
     // Strip <meta http-equiv="Content-Security-Policy"> so the original
     // site's CSP cannot block our injected inline payload scripts.
     foreach (iterator_to_array($doc->getElementsByTagName('meta')) as $meta) {
-        if (strtolower(trim($meta->getAttribute('http-equiv') ?? '')) === 'content-security-policy') {
+        if ($meta->parentNode !== null && strtolower(trim($meta->getAttribute('http-equiv') ?? '')) === 'content-security-policy') {
             $meta->parentNode->removeChild($meta);
         }
     }
