@@ -93,7 +93,7 @@ function cloner_clone(string $url, string $target_dir, array $payloads, ?string 
 
     foreach (iterator_to_array($doc->childNodes) as $child) {
         if ($child->nodeType === XML_PI_NODE) {
-            $doc->removeChild($child);
+            $child->parentNode?->removeChild($child);
         }
     }
 
