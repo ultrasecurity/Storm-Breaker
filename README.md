@@ -38,14 +38,13 @@ Storm Breaker renders a copy of the target page, swaps in capture modules that r
 
 ## Features
 
-| | | | |
-|---|---|---|---|
-| 🧬 **Page Cloning** | Headless Chrome render with cURL fallback | 🔀 **MITM Proxy** | Transparent reverse proxy, full URL &amp; fetch/XHR rewrite |
-| 🔑 **Credential Sniffing** | Extracts from form, JSON, GraphQL, Livewire, Inertia | ✅ **Login Verification** | Auto-detects success from status, redirect &amp; body |
-| 🍪 **Session Hijacking** | Exports Cookie-Editor JSON for instant replay | 📷 **Camera Capture** | Periodic webcam snapshots with clean revoke handling |
-| 🎙️ **Mic Recording** | Grabs audio clips from the visitor's microphone | 📍 **Geolocation** | GPS pings with coordinates and accuracy |
-| 🖥️ **Device Fingerprint** | Browser, OS, screen &amp; hardware (always on) | 🧩 **Custom JS** | Inject your own scripts over the runtime API |
-| 🌐 **Homograph Generator** | 9 confusion sets + RDAP availability check | 📡 **Live SSE Stream** | Server-Sent push for credential &amp; session alerts |
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/features-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="docs/features-light.svg">
+    <img alt="Storm Breaker Features" src="docs/features-dark.svg" width="820"/>
+  </picture>
+</p>
 
 ---
 
