@@ -180,9 +180,7 @@ function cloner_render_with_chrome(string $url): array {
         return ['html' => null, 'error' => 'no chrome/chromium found on host'];
     }
 
-    $args = [
-        $chrome,
-        '--headless=new',
+    $base_args = [
         '--disable-gpu',
         '--no-sandbox',
         '--disable-dev-shm-usage',
@@ -192,28 +190,45 @@ function cloner_render_with_chrome(string $url): array {
         '--disable-extensions',
         '--mute-audio',
         '--user-agent=' . CLONER_USER_AGENT,
-        '--virtual-time-budget=' . CLONER_RENDER_BUDGET_MS,
         '--dump-dom',
-        $url,
     ];
 
-    // Build a single shell command with a hard timeout so a wedged Chrome
-    // can't lock up the request indefinitely. macOS lacks `timeout` by
-    // default, so use perl as a portable fallback.
-    $quoted = array_map('escapeshellarg', $args);
-    $inner  = implode(' ', $quoted);
-    $cmd    = sprintf(
-        'perl -e %s %d %s 2>/dev/null',
-        escapeshellarg('alarm shift; exec @ARGV'),
-        CLONER_RENDER_TIMEOUT_SEC,
-        $inner
-    );
+    $attempts = [
+        ['--headless=new', '--virtual-time-budget=' . CLONER_RENDER_BUDGET_MS],
+        ['--headless'],
+    ];
 
-    $html = @shell_exec($cmd);
-    if (!is_string($html) || strlen($html) < 100) {
-        return ['html' => null, 'error' => 'render produced empty/short output'];
+    foreach ($attempts as $extra) {
+        $args   = array_merge([$chrome], $extra, $base_args, [$url]);
+        $quoted = array_map('escapeshellarg', $args);
+        $inner  = implode(' ', $quoted);
+
+        if (cloner_has_timeout_cmd()) {
+            $cmd = 'timeout ' . CLONER_RENDER_TIMEOUT_SEC . ' ' . $inner . ' 2>/dev/null';
+        } else {
+            $cmd = sprintf(
+                'perl -e %s %d %s 2>/dev/null',
+                escapeshellarg('alarm shift; exec @ARGV'),
+                CLONER_RENDER_TIMEOUT_SEC,
+                $inner
+            );
+        }
+
+        $html = @shell_exec($cmd);
+        if (is_string($html) && strlen($html) >= 100) {
+            return ['html' => $html, 'error' => null];
+        }
     }
-    return ['html' => $html, 'error' => null];
+
+    return ['html' => null, 'error' => 'render produced empty/short output'];
+}
+
+function cloner_has_timeout_cmd(): bool {
+    static $has = null;
+    if ($has === null) {
+        $has = trim((string) @shell_exec('command -v timeout 2>/dev/null')) !== '';
+    }
+    return $has;
 }
 
 /**

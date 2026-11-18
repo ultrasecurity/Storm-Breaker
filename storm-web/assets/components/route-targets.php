@@ -439,12 +439,15 @@
     e.preventDefault();
     $err.style.display = 'none';
     setCreateBusy(true);
+    stopPoll();
 
     try {
       const fd = new FormData($form);
       fd.append('action', 'create');
       const res = await fetch(API, { method: 'POST', body: fd, credentials: 'same-origin' });
-      const json = await res.json();
+      const text = await res.text();
+      let json;
+      try { json = JSON.parse(text); } catch { throw new Error('Server returned invalid response: ' + text.substring(0, 200)); }
       if (!res.ok || !json.ok) throw new Error(json.error || 'create failed');
 
       $form.reset();
@@ -456,6 +459,7 @@
       $err.style.display = '';
     } finally {
       setCreateBusy(false);
+      startPoll();
     }
   }
   window.createTarget = createTarget;

