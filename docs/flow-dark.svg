@@ -1,0 +1,185 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 440" width="820" height="440">
+  <defs>
+    <marker id="arrow-cyan" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="none" stroke="#00c8ff" stroke-width="1.5"/>
+    </marker>
+    <marker id="arrow-purple" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="none" stroke="#7c5cff" stroke-width="1.5"/>
+    </marker>
+    <linearGradient id="glow-cyan" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#00c8ff" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#00c8ff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="glow-purple" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7c5cff" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#7c5cff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="glow-green" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#00e68a" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#00e68a" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <style>
+    text { font-family: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace; }
+  </style>
+
+  <!-- Background -->
+  <rect width="820" height="440" rx="12" fill="#0a0a0c"/>
+
+  <!-- Subtle grid pattern -->
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-opacity="0.02" stroke-width="0.5"/>
+  </pattern>
+  <rect width="820" height="440" rx="12" fill="url(#grid)"/>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- PHASE 01: CLONE                                        -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+
+  <!-- Phase header -->
+  <text x="42" y="52" fill="#00c8ff" font-size="28" font-weight="bold" opacity="0.3">01</text>
+  <text x="82" y="52" fill="#8a8a9a" font-size="13" font-weight="500">clone</text>
+
+  <!-- Phase box -->
+  <rect x="30" y="68" width="230" height="340" rx="10" fill="url(#glow-cyan)" stroke="#00c8ff" stroke-opacity="0.2" stroke-width="1"/>
+
+  <!-- Clone icon: browser window -->
+  <g transform="translate(120, 95)">
+    <rect x="-20" y="-14" width="40" height="30" rx="4" fill="none" stroke="#00c8ff" stroke-width="1.5"/>
+    <line x1="-20" y1="-4" x2="20" y2="-4" stroke="#00c8ff" stroke-width="1" stroke-opacity="0.5"/>
+    <circle cx="-14" cy="-9" r="2" fill="#00c8ff" opacity="0.6"/>
+    <circle cx="-8" cy="-9" r="2" fill="#00c8ff" opacity="0.4"/>
+    <circle cx="-2" cy="-9" r="2" fill="#00c8ff" opacity="0.2"/>
+  </g>
+
+  <text x="145" y="134" fill="#c8c8d4" font-size="11" text-anchor="middle">Clone or proxy</text>
+  <text x="145" y="149" fill="#c8c8d4" font-size="11" text-anchor="middle">any target page</text>
+
+  <!-- Item boxes -->
+  <rect x="50" y="172" width="190" height="36" rx="6" fill="#12121a" stroke="#1e1e2e" stroke-width="1"/>
+  <circle cx="70" cy="190" r="6" fill="none" stroke="#00c8ff" stroke-width="1" stroke-opacity="0.6"/>
+  <path d="M67,190 L73,190 M70,187 L70,193" stroke="#00c8ff" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="84" y="194" fill="#a0a0b0" font-size="11">target URL</text>
+
+  <rect x="50" y="220" width="190" height="36" rx="6" fill="#12121a" stroke="#1e1e2e" stroke-width="1"/>
+  <rect x="63" y="231" width="14" height="10" rx="2" fill="none" stroke="#00c8ff" stroke-width="1" stroke-opacity="0.6"/>
+  <circle cx="70" cy="244" r="2" fill="#00c8ff" opacity="0.4"/>
+  <text x="84" y="242" fill="#a0a0b0" font-size="11">Chrome headless</text>
+
+  <rect x="50" y="268" width="190" height="36" rx="6" fill="#12121a" stroke="#1e1e2e" stroke-width="1"/>
+  <text x="70" y="291" fill="#00c8ff" font-size="10" opacity="0.6">$</text>
+  <text x="84" y="290" fill="#a0a0b0" font-size="11">cURL fallback</text>
+
+  <rect x="50" y="316" width="190" height="36" rx="6" fill="#12121a" stroke="#1e1e2e" stroke-width="1"/>
+  <text x="66" y="339" fill="#00c8ff" font-size="13" opacity="0.6">⇄</text>
+  <text x="84" y="338" fill="#a0a0b0" font-size="11">MITM proxy mode</text>
+
+  <!-- Mode labels -->
+  <rect x="50" y="366" width="85" height="24" rx="12" fill="#00c8ff" fill-opacity="0.1" stroke="#00c8ff" stroke-opacity="0.3" stroke-width="1"/>
+  <text x="92" y="382" fill="#00c8ff" font-size="10" text-anchor="middle">clone mode</text>
+  <rect x="145" y="366" width="95" height="24" rx="12" fill="#7c5cff" fill-opacity="0.1" stroke="#7c5cff" stroke-opacity="0.3" stroke-width="1"/>
+  <text x="192" y="382" fill="#7c5cff" font-size="10" text-anchor="middle">proxy mode</text>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- CONNECTOR 01 → 02                                      -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <line x1="268" y1="238" x2="290" y2="238" stroke="#00c8ff" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arrow-cyan)" opacity="0.6"/>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- PHASE 02: INJECT                                        -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+
+  <text x="310" y="52" fill="#7c5cff" font-size="28" font-weight="bold" opacity="0.3">02</text>
+  <text x="350" y="52" fill="#8a8a9a" font-size="13" font-weight="500">inject</text>
+
+  <rect x="298" y="68" width="230" height="340" rx="10" fill="url(#glow-purple)" stroke="#7c5cff" stroke-opacity="0.2" stroke-width="1"/>
+
+  <!-- Inject icon: syringe / code injection -->
+  <g transform="translate(413, 95)">
+    <text x="-5" y="5" fill="#7c5cff" font-size="20" text-anchor="middle" opacity="0.9">&lt;/&gt;</text>
+  </g>
+
+  <text x="413" y="134" fill="#c8c8d4" font-size="11" text-anchor="middle">Inject capture</text>
+  <text x="413" y="149" fill="#c8c8d4" font-size="11" text-anchor="middle">payloads into clone</text>
+
+  <!-- Item boxes -->
+  <rect x="318" y="172" width="190" height="36" rx="6" fill="#12121a" stroke="#1e1e2e" stroke-width="1"/>
+  <text x="338" y="195" fill="#7c5cff" font-size="12" opacity="0.7">🔑</text>
+  <text x="354" y="194" fill="#a0a0b0" font-size="11">credential sniffing</text>
+
+  <rect x="318" y="220" width="190" height="36" rx="6" fill="#12121a" stroke="#1e1e2e" stroke-width="1"/>
+  <text x="338" y="243" fill="#7c5cff" font-size="12" opacity="0.7">🍪</text>
+  <text x="354" y="242" fill="#a0a0b0" font-size="11">session hijacking</text>
+
+  <rect x="318" y="268" width="190" height="36" rx="6" fill="#12121a" stroke="#1e1e2e" stroke-width="1"/>
+  <text x="338" y="291" fill="#7c5cff" font-size="12" opacity="0.7">📷</text>
+  <text x="354" y="290" fill="#a0a0b0" font-size="11">camera + mic</text>
+
+  <rect x="318" y="316" width="190" height="36" rx="6" fill="#12121a" stroke="#1e1e2e" stroke-width="1"/>
+  <text x="338" y="339" fill="#7c5cff" font-size="12" opacity="0.7">📍</text>
+  <text x="354" y="338" fill="#a0a0b0" font-size="11">geolocation</text>
+
+  <rect x="318" y="366" width="90" height="24" rx="6" fill="#12121a" stroke="#1e1e2e" stroke-width="1"/>
+  <text x="363" y="382" fill="#606070" font-size="9" text-anchor="middle">fingerprint</text>
+  <rect x="416" y="366" width="92" height="24" rx="6" fill="#12121a" stroke="#1e1e2e" stroke-width="1"/>
+  <text x="462" y="382" fill="#606070" font-size="9" text-anchor="middle">custom JS</text>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- CONNECTOR 02 → 03                                      -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <line x1="536" y1="238" x2="558" y2="238" stroke="#7c5cff" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arrow-purple)" opacity="0.6"/>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- PHASE 03: HARVEST                                       -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+
+  <text x="578" y="52" fill="#00e68a" font-size="28" font-weight="bold" opacity="0.3">03</text>
+  <text x="618" y="52" fill="#8a8a9a" font-size="13" font-weight="500">harvest</text>
+
+  <rect x="566" y="68" width="230" height="340" rx="10" fill="url(#glow-green)" stroke="#00e68a" stroke-opacity="0.2" stroke-width="1"/>
+
+  <!-- Harvest icon: dashboard/monitor -->
+  <g transform="translate(681, 90)">
+    <rect x="-22" y="-12" width="44" height="28" rx="3" fill="none" stroke="#00e68a" stroke-width="1.5"/>
+    <line x1="-10" y1="16" x2="10" y2="16" stroke="#00e68a" stroke-width="1.5"/>
+    <line x1="0" y1="16" x2="0" y2="20" stroke="#00e68a" stroke-width="1.5"/>
+    <!-- Signal bars -->
+    <rect x="-14" y="4" width="5" height="6" rx="1" fill="#00e68a" opacity="0.3"/>
+    <rect x="-6" y="0" width="5" height="10" rx="1" fill="#00e68a" opacity="0.5"/>
+    <rect x="2" y="-4" width="5" height="14" rx="1" fill="#00e68a" opacity="0.7"/>
+    <rect x="10" y="-8" width="5" height="18" rx="1" fill="#00e68a" opacity="0.9"/>
+  </g>
+
+  <text x="681" y="134" fill="#c8c8d4" font-size="11" text-anchor="middle">Data streams to</text>
+  <text x="681" y="149" fill="#c8c8d4" font-size="11" text-anchor="middle">operator panel</text>
+
+  <!-- Item boxes -->
+  <rect x="586" y="172" width="190" height="36" rx="6" fill="#12121a" stroke="#1e1e2e" stroke-width="1"/>
+  <circle cx="604" cy="190" r="4" fill="#00e68a" opacity="0.6"/>
+  <circle cx="604" cy="190" r="7" fill="none" stroke="#00e68a" stroke-width="1" opacity="0.3"/>
+  <text x="618" y="194" fill="#a0a0b0" font-size="11">live SSE stream</text>
+
+  <rect x="586" y="220" width="190" height="36" rx="6" fill="#12121a" stroke="#1e1e2e" stroke-width="1"/>
+  <path d="M598,233 L610,233 L610,245 L598,245 Z" fill="none" stroke="#00e68a" stroke-width="1" opacity="0.6"/>
+  <path d="M601,237 L607,237" stroke="#00e68a" stroke-width="1" opacity="0.4"/>
+  <path d="M601,241 L605,241" stroke="#00e68a" stroke-width="1" opacity="0.4"/>
+  <text x="618" y="242" fill="#a0a0b0" font-size="11">captured logins</text>
+
+  <rect x="586" y="268" width="190" height="36" rx="6" fill="#12121a" stroke="#1e1e2e" stroke-width="1"/>
+  <rect x="598" y="280" width="12" height="8" rx="2" fill="none" stroke="#00e68a" stroke-width="1" opacity="0.6"/>
+  <text x="618" y="290" fill="#a0a0b0" font-size="11">session cookies</text>
+
+  <rect x="586" y="316" width="190" height="36" rx="6" fill="#12121a" stroke="#1e1e2e" stroke-width="1"/>
+  <circle cx="604" cy="334" r="6" fill="none" stroke="#00e68a" stroke-width="1" opacity="0.6"/>
+  <circle cx="604" cy="334" r="2" fill="#00e68a" opacity="0.5"/>
+  <text x="618" y="338" fill="#a0a0b0" font-size="11">media captures</text>
+
+  <rect x="586" y="366" width="190" height="24" rx="6" fill="#12121a" stroke="#1e1e2e" stroke-width="1"/>
+  <text x="681" y="382" fill="#606070" font-size="9" text-anchor="middle">GPS pings + device info</text>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- Bottom tagline                                          -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <text x="410" y="430" fill="#3a3a4a" font-size="10" text-anchor="middle">storm-breaker v3 — phishing &amp; social-engineering framework</text>
+</svg>
