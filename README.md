@@ -24,16 +24,13 @@
 
 ## How It Works
 
-```mermaid
-flowchart LR
-    A[🎯 Clone / proxy<br/>the target page] --> B[🔗 Victim opens<br/>your link]
-    B --> C[⚡ Payloads fire<br/>in their browser]
-    C --> D[📊 Data streams<br/>to your panel]
-    style A fill:#0b3d5c,stroke:#00c8ff,color:#fff
-    style B fill:#0b3d5c,stroke:#00c8ff,color:#fff
-    style C fill:#0b3d5c,stroke:#00c8ff,color:#fff
-    style D fill:#0b3d5c,stroke:#00c8ff,color:#fff
-```
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/flow-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="docs/flow-light.svg">
+    <img alt="Storm Breaker Flow" src="docs/flow-dark.svg" width="820"/>
+  </picture>
+</p>
 
 Storm Breaker renders a copy of the target page, swaps in capture modules that run client-side, and relays everything the visitor's browser gives up back to a real-time operator dashboard.
 
