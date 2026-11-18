@@ -1,63 +1,63 @@
 <p align="center">
-  <img src="docs/st-cover.png" alt="Storm Breaker v3" width="800"/>
+  <img src="docs/st-cover.png" alt="Storm Breaker" width="820"/>
 </p>
 
-<h1 align="center">Storm Breaker v3</h1>
+<h1 align="center">Storm Breaker</h1>
 
 <p align="center">
-  <b>Advanced Phishing & Social Engineering Framework with MITM Proxy, Credential Harvesting, Session Hijacking, and Browser-Based Tracking.</b>
+  <b>Phishing &amp; social-engineering framework — clone any page, inject capture payloads, harvest credentials and sessions from one live panel.</b>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-3.1.0-00c8ff?style=flat-square" alt="Version 3.1.0"/>
-  <img src="https://img.shields.io/badge/PHP-7.4+-777bb4?style=flat-square&logo=php" alt="PHP 7.4+"/>
-  <img src="https://img.shields.io/badge/SQLite-3-003b57?style=flat-square&logo=sqlite" alt="SQLite 3"/>
-  <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT License"/>
+  <a href="https://github.com/ultrasecurity/Storm-Breaker/stargazers"><img src="https://img.shields.io/github/stars/ultrasecurity/Storm-Breaker?style=flat-square&color=00c8ff" alt="Stars"/></a>
+  <a href="https://github.com/ultrasecurity/Storm-Breaker/network/members"><img src="https://img.shields.io/github/forks/ultrasecurity/Storm-Breaker?style=flat-square&color=777bb4" alt="Forks"/></a>
+  <img src="https://img.shields.io/badge/version-3.1.0-00c8ff?style=flat-square" alt="Version"/>
+  <img src="https://img.shields.io/badge/PHP-7.4+-777bb4?style=flat-square&logo=php&logoColor=white" alt="PHP 7.4+"/>
+  <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT"/>
+</p>
+
+<p align="center">
+  <sub>For authorized security testing and research only. Use within legal boundaries.</sub>
 </p>
 
 ---
 
-## What is Storm Breaker?
+## How It Works
 
-Storm Breaker clones a target web page and injects capture modules (camera, microphone, geolocation, device-info, form credentials) that run in the visitor's browser, collecting data back to the operator's panel.
+```mermaid
+flowchart LR
+    A[🎯 Clone / proxy<br/>the target page] --> B[🔗 Victim opens<br/>your link]
+    B --> C[⚡ Payloads fire<br/>in their browser]
+    C --> D[📊 Data streams<br/>to your panel]
+    style A fill:#0b3d5c,stroke:#00c8ff,color:#fff
+    style B fill:#0b3d5c,stroke:#00c8ff,color:#fff
+    style C fill:#0b3d5c,stroke:#00c8ff,color:#fff
+    style D fill:#0b3d5c,stroke:#00c8ff,color:#fff
+```
 
-> **This is a lab tool for authorized security testing. Use responsibly and within legal boundaries.**
+Storm Breaker renders a copy of the target page, swaps in capture modules that run client-side, and relays everything the visitor's browser gives up back to a real-time operator dashboard.
 
 ---
 
 ## Features
 
-- **Page Cloning** — Headless Chrome rendering with cURL fallback; strips original scripts, injects payloads, resolves assets via `<base href>`
-- **MITM Proxy** — transparent reverse proxy that relays requests to the real target, rewrites all URLs, and patches fetch/XHR/WebSocket/history so the entire session stays routed through the operator
-- **Credential Sniffing** — smart extraction from POST bodies: form-urlencoded, multipart, JSON, GraphQL, Livewire RPC, Inertia.js, and nested structures
-- **Credential Verification** — auto-detects login success or failure from HTTP status codes, redirects, JSON responses, and HTML re-renders
-- **Session Hijacking** — snapshots the victim's cookie jar on verified login and exports Cookie-Editor JSON for instant session replay
-- **Camera Capture** — periodic snapshots from the visitor's webcam with proper cleanup on revoke/pagehide
-- **Microphone Recording** — audio clip capture from the visitor's mic
-- **Geolocation Tracking** — GPS location pings with coordinates and accuracy
-- **Device Fingerprinting** — browser, OS, screen, and hardware info (always on)
-- **Custom JS Injection** — inject your own JavaScript into cloned pages; runs after all built-in payloads with access to the Storm Breaker runtime API
-- **Homograph Domain Generator** — 9 confusion categories: Cyrillic, Armenian, Greek, mixed-script, diacritics, digit swap, bigram swap, edit distance, and TLD swap with RDAP availability check
-- **Real-time SSE Stream** — Server-Sent Events push for live credential and session notifications
+| | | | |
+|---|---|---|---|
+| 🧬 **Page Cloning** | Headless Chrome render with cURL fallback | 🔀 **MITM Proxy** | Transparent reverse proxy, full URL &amp; fetch/XHR rewrite |
+| 🔑 **Credential Sniffing** | Extracts from form, JSON, GraphQL, Livewire, Inertia | ✅ **Login Verification** | Auto-detects success from status, redirect &amp; body |
+| 🍪 **Session Hijacking** | Exports Cookie-Editor JSON for instant replay | 📷 **Camera Capture** | Periodic webcam snapshots with clean revoke handling |
+| 🎙️ **Mic Recording** | Grabs audio clips from the visitor's microphone | 📍 **Geolocation** | GPS pings with coordinates and accuracy |
+| 🖥️ **Device Fingerprint** | Browser, OS, screen &amp; hardware (always on) | 🧩 **Custom JS** | Inject your own scripts over the runtime API |
+| 🌐 **Homograph Generator** | 9 confusion sets + RDAP availability check | 📡 **Live SSE Stream** | Server-Sent push for credential &amp; session alerts |
 
 ---
 
 ## Screenshots
 
-### Targets — Clone & Host
-<p align="center">
-  <img src="docs/screenshots/targets.png" alt="Targets" width="100%"/>
-</p>
-
-### Credentials — Captured Logins
-<p align="center">
-  <img src="docs/screenshots/credentials.png" alt="Credentials" width="100%"/>
-</p>
-
-### Geo Data — Location Pings
-<p align="center">
-  <img src="docs/screenshots/geo.png" alt="Geo Data" width="100%"/>
-</p>
+| Targets | Credentials | Dashboard |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/targets.png" alt="Targets"/> | <img src="docs/screenshots/credentials.png" alt="Credentials"/> | <img src="docs/screenshots/dashboard.png" alt="Dashboard"/> |
+| Clone &amp; host a page | Captured logins | Live operator panel |
 
 ---
 
@@ -67,74 +67,49 @@ Storm Breaker clones a target web page and injects capture modules (camera, micr
 git clone https://github.com/ultrasecurity/Storm-Breaker.git
 cd Storm-Breaker
 bash deploy.sh --local    # installs PHP + extensions (macOS & Linux)
-php run-local.php
+php run-local.php          # → http://localhost:2525  (admin / admin)
 ```
 
-Open `http://localhost:2525` — default credentials: `admin` / `admin`.
+<details>
+<summary><b>Local setup details</b></summary>
 
-**Requirements:** PHP 7.4+ with ext-sqlite3, ext-curl, ext-json, ext-session, ext-mbstring. Headless Chrome optional (enables full SPA cloning). The `--local` flag handles all of this automatically on macOS (Homebrew) and Linux (apt/dnf).
+<br>
 
----
+`--local` installs only what's needed to run on your own machine — no nginx, systemd, or TLS.
 
-## Local Setup (`--local`)
-
-The `--local` flag installs only the prerequisites needed to run Storm Breaker on your own machine — no nginx, systemd, TLS, or firewall configuration.
-
-| Platform | Package Manager | Root Required? |
-|----------|----------------|----------------|
+| Platform | Package Manager | Root |
+|----------|-----------------|------|
 | macOS | Homebrew | No |
 | Debian / Ubuntu | apt | Yes |
-| RHEL / CentOS / Fedora | dnf | Yes |
+| RHEL / Fedora | dnf | Yes |
 
-What it does:
-- Installs PHP and required extensions (sqlite3, curl, json, session)
-- Verifies PHP version is 7.4+
-- Checks for headless Chrome (optional — needed for full SPA cloning)
-- Prints a summary and the command to start the local server
+**Requirements:** PHP 7.4+ with `ext-sqlite3`, `ext-curl`, `ext-json`, `ext-session`, `ext-mbstring`. Headless Chrome is optional and unlocks full SPA cloning. Local mode is for testing — camera, mic, and geo need HTTPS, so use a server deployment for live work.
 
-```bash
-bash deploy.sh --local       # macOS — no sudo needed
-sudo bash deploy.sh --local  # Linux — needs root for package install
-```
+</details>
 
-After setup, start the panel:
+<details>
+<summary><b>Server deployment (HTTPS)</b></summary>
 
-```bash
-php run-local.php
-# → http://localhost:2525
-```
-
-> **Note:** Local mode is for testing and development. For production use with HTTPS (required for camera/mic/geo), use the full server deployment below.
-
----
-
-## Server Deployment
+<br>
 
 ```bash
 sudo bash deploy.sh
 ```
 
-The setup wizard walks you through everything: server IP, HTTPS certificate, and admin credentials. It handles Debian/Ubuntu and RHEL/CentOS/Fedora automatically.
-
-If you have a domain, the wizard can set up a **free HTTPS certificate** from Let's Encrypt — just have your domain and email ready.
-
-> **HTTPS is required** — camera, microphone, and geolocation APIs only work in secure contexts.
-
-<details>
-<summary>Advanced: skip the wizard with flags</summary>
+The wizard walks through server IP, admin credentials, and a free Let's Encrypt certificate (have your domain and email ready). **HTTPS is required** — camera, mic, and geolocation only work in a secure context.
 
 ```bash
+# skip the wizard with flags
 sudo bash deploy.sh --ip 1.2.3.4 --domain panel.example.com --email you@example.com
 ```
 
 | Flag | Description |
 |------|-------------|
-| `--ip` | Server IP (auto-detected by default) |
+| `--ip` | Server IP (auto-detected) |
 | `--domain` | Domain for Let's Encrypt TLS |
 | `--email` | Email for Let's Encrypt |
-| `--php-port` | Internal PHP port (default: 9874) |
-| `--user` | Service user (default: stormbreaker) |
-| `--local` | Install prerequisites only (no server setup) |
+| `--php-port` | Internal PHP port (default 9874) |
+| `--user` | Service user (default stormbreaker) |
 | `--uninstall` | Remove service + nginx config |
 
 </details>
@@ -143,31 +118,36 @@ sudo bash deploy.sh --ip 1.2.3.4 --domain panel.example.com --email you@example.
 
 ## Usage
 
-1. Go to **Targets** → enter a URL → select payloads → **Clone & host**
-2. Send the generated `https://your-domain.com/<slug>` link to the target
-3. View captured data in **Devices**, **Credentials**, **Captures**, **Audio**, **Geo Data**
+**1.** Open **Targets**, enter a URL, pick payloads, and hit **Clone &amp; host**. &nbsp;→&nbsp; **2.** Send the generated link to your target. &nbsp;→&nbsp; **3.** Watch captures land under **Devices**, **Credentials**, **Captures**, **Audio**, and **Geo Data**.
 
----
+<details>
+<summary><b>Security notes &amp; migrating from v2</b></summary>
 
-## Security Notes
+<br>
 
-- **Change default credentials** — the deploy script prompts for this; do it.
-- **`capture.php` is intentionally public** — it has slug validation, path-traversal guards, and size/rate caps.
-- **`data/` is protected** — `router.php` blocks direct access; `.htaccess` as backup.
-- **systemd hardening** — `NoNewPrivileges`, `PrivateTmp`, `ProtectSystem=full`, `UMask=0077`.
+- **Change the default credentials** — the deploy script prompts for this.
+- `capture.php` is intentionally public, guarded by slug validation, path-traversal checks, and size/rate caps.
+- `data/` is protected by `router.php` (with `.htaccess` as backup).
+- systemd hardening: `NoNewPrivileges`, `PrivateTmp`, `ProtectSystem=full`, `UMask=0077`.
 
----
-
-## Migrating from v2
+Migrating a v2 install:
 
 ```bash
-php storm-web/tools/migrate-to-sqlite.php
+php storm-web/tools/migrate-to-sqlite.php   # imports result.txt, meta.json, captures/, audio/ — safe to re-run
 ```
 
-Imports `result.txt`, `meta.json`, `captures/`, and `audio/` from each target into SQLite. Safe to re-run.
+</details>
 
 ---
 
-## License
+<p align="center">
+  <img src="https://api.star-history.com/svg?repos=ultrasecurity/Storm-Breaker&type=Date" alt="Star History" width="650"/>
+</p>
 
-MIT License — see [LICENSE](LICENSE) for details.
+<p align="center">
+  <img src="https://contrib.rocks/image?repo=ultrasecurity/Storm-Breaker" alt="Contributors"/>
+</p>
+
+<p align="center">
+  <sub>Released under the <a href="LICENSE">MIT License</a>.</sub>
+</p>
