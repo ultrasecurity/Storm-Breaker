@@ -85,6 +85,10 @@ function cloner_clone(string $url, string $target_dir, array $payloads, ?string 
     // but it survives parsing as a stray processing-instruction node — strip
     // it back out below so saveHTML() doesn't emit an xml prolog as the first
     // line of every clone.
+    if (!class_exists('DOMDocument')) {
+        return ['ok' => false, 'errors' => ['php-xml extension is missing — run: apt install php-xml'], 'render_mode' => 'http'];
+    }
+
     $doc = new DOMDocument();
     $prev = libxml_use_internal_errors(true);
     $doc->loadHTML('<?xml encoding="UTF-8">' . $body, LIBXML_NOWARNING | LIBXML_NOERROR);

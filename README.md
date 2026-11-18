@@ -83,7 +83,7 @@ php run-local.php          # → http://localhost:2525  (admin / admin)
 | Debian / Ubuntu | apt | Yes |
 | RHEL / Fedora | dnf | Yes |
 
-**Requirements:** PHP 7.4+ with `ext-sqlite3`, `ext-curl`, `ext-json`, `ext-session`, `ext-mbstring`. Headless Chrome is optional and unlocks full SPA cloning. Local mode is for testing — camera, mic, and geo need HTTPS, so use a server deployment for live work.
+**Requirements:** PHP 7.4+ with `ext-sqlite3`, `ext-curl`, `ext-json`, `ext-session`, `ext-mbstring`, `ext-dom`, `ext-xml`. Headless Chrome is optional and unlocks full SPA cloning. Local mode is for testing — camera, mic, and geo need HTTPS, so use a server deployment for live work.
 
 </details>
 
