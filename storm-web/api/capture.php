@@ -88,7 +88,9 @@ if ($kind === 'camera') {
     }
 
     $name = sprintf('%d_%s.png', $now, substr(bin2hex(random_bytes(3)), 0, 6));
-    @file_put_contents($target_dir . '/captures/' . $name, $bin, LOCK_EX);
+    $cap_dir = $target_dir . '/captures';
+    if (!is_dir($cap_dir)) @mkdir($cap_dir, 0755, true);
+    @file_put_contents($cap_dir . '/' . $name, $bin, LOCK_EX);
     store_media_register($slug, 'camera', $name, strlen($bin), $now);
 
     http_response_code(204);
@@ -106,7 +108,9 @@ if ($kind === 'mic') {
         exit('too large or empty');
     }
     $name = sprintf('%d_%s.webm', $now, substr(bin2hex(random_bytes(3)), 0, 6));
-    @file_put_contents($target_dir . '/audio/' . $name, $raw, LOCK_EX);
+    $aud_dir = $target_dir . '/audio';
+    if (!is_dir($aud_dir)) @mkdir($aud_dir, 0755, true);
+    @file_put_contents($aud_dir . '/' . $name, $raw, LOCK_EX);
     store_media_register($slug, 'mic', $name, strlen($raw), $now);
 
     http_response_code(204);

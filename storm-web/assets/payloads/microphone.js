@@ -26,7 +26,6 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/octet-stream' },
         body: blob,
-        keepalive: true,
       }).catch(() => {});
     }
 
