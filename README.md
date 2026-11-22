@@ -13,11 +13,11 @@
   <a href="https://github.com/ultrasecurity/Storm-Breaker/network/members"><img src="https://img.shields.io/github/forks/ultrasecurity/Storm-Breaker?style=flat-square&color=777bb4" alt="Forks"/></a>
   <img src="https://img.shields.io/badge/version-3.1.0-00c8ff?style=flat-square" alt="Version"/>
   <img src="https://img.shields.io/badge/PHP-7.4+-777bb4?style=flat-square&logo=php&logoColor=white" alt="PHP 7.4+"/>
-  <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT"/>
+  <img src="https://img.shields.io/badge/license-Non--Commercial-red?style=flat-square" alt="Non-Commercial"/>
 </p>
 
 <p align="center">
-  <sub>For authorized security testing and research only. Use within legal boundaries.</sub>
+  <sub>For authorized security testing and research only. Use within legal boundaries. See <a href="#disclaimer">Disclaimer</a>.</sub>
 </p>
 
 ---
@@ -188,6 +188,22 @@ php storm-web/tools/migrate-to-sqlite.php   # imports result.txt, meta.json, cap
   <img src="https://contrib.rocks/image?repo=ultrasecurity/Storm-Breaker" alt="Contributors"/>
 </p>
 
+---
+
+## Disclaimer
+
+> **Storm Breaker is provided strictly for authorized security testing, educational purposes, and security research.** By downloading, installing, or using this software, you acknowledge and agree to the following:
+>
+> - You will only use this tool on systems and individuals for which you have **explicit written authorization**.
+> - The authors and contributors are **not responsible** for any misuse, damage, or illegal activity resulting from the use of this software.
+> - Unauthorized access to computer systems, networks, webcams, microphones, or personal data is **illegal** in most jurisdictions and may result in severe criminal penalties.
+> - You assume **full responsibility** for ensuring your use complies with all applicable local, state, national, and international laws.
+> - This software is intended to demonstrate social engineering attack vectors so that organizations can **defend against them** — not to enable malicious activity.
+>
+> **If you are unsure whether your intended use is authorized and legal, do not use this software.**
+
+---
+
 <p align="center">
-  <sub>Released under the <a href="LICENSE">MIT License</a>.</sub>
+  <sub>Released under a <a href="LICENSE">Non-Commercial License</a>. Commercial use is prohibited.</sub>
 </p>
