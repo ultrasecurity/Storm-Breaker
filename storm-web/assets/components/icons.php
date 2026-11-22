@@ -48,6 +48,8 @@
   <!-- Targets / actions -->
   <symbol id="i-target" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
   <symbol id="i-zap" viewBox="0 0 24 24" fill="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="i-pulse" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24" fill="none"><polygon points="5 3 19 12 5 21 5 3"/></symbol>
   <symbol id="i-pause" viewBox="0 0 24 24" fill="none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></symbol>
   <symbol id="i-square" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/></symbol>
