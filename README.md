@@ -50,10 +50,54 @@ Storm Breaker renders a copy of the target page, swaps in capture modules that r
 
 ## Screenshots
 
-| Targets | Credentials | Dashboard |
-|:---:|:---:|:---:|
-| <img src="docs/screenshots/targets.png" alt="Targets"/> | <img src="docs/screenshots/credentials.png" alt="Credentials"/> | <img src="docs/screenshots/dashboard.png" alt="Dashboard"/> |
-| Clone &amp; host a page | Captured logins | Live operator panel |
+<details open>
+<summary><sub>Click to expand / collapse</sub></summary>
+<br>
+
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/dashboard.png" alt="Dashboard"/>
+      <br><sub><b>Dashboard</b> — live operator panel</sub>
+    </td>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/targets.png" alt="Targets"/>
+      <br><sub><b>Targets</b> — clone &amp; host a page</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="docs/screenshots/credentials.png" alt="Credentials"/>
+      <br><sub><b>Credentials</b> — captured logins</sub>
+    </td>
+    <td align="center">
+      <img src="docs/screenshots/devices.png" alt="Devices"/>
+      <br><sub><b>Devices</b> — browser fingerprints</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="docs/screenshots/captures.png" alt="Captures"/>
+      <br><sub><b>Captures</b> — camera frames</sub>
+    </td>
+    <td align="center">
+      <img src="docs/screenshots/audio.png" alt="Audio"/>
+      <br><sub><b>Audio</b> — mic recordings</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="docs/screenshots/geo.png" alt="Geo Data"/>
+      <br><sub><b>Geo Data</b> — location pings</sub>
+    </td>
+    <td align="center">
+      <img src="docs/screenshots/login.png" alt="Login"/>
+      <br><sub><b>Login</b> — operator sign-in</sub>
+    </td>
+  </tr>
+</table>
+
+</details>
 
 ---
 
