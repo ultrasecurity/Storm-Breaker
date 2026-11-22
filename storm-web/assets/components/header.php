@@ -17,12 +17,7 @@
       <svg class="icon icon-md"><use href="#i-menu"/></svg>
     </button>
 
-    <div class="app-header-actions">
-      <a href="panel.php?route=targets" class="panel-cta" title="Create a new target">
-        <svg class="icon icon-sm"><use href="#i-plus"/></svg>
-        <span>New Target</span>
-      </a>
-    </div>
+    <div class="app-header-actions"></div>
   </div>
 </header>
 
